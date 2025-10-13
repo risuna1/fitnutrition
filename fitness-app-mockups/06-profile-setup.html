@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitNutrition - Profile Setup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-indigo-50 to-purple-50 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-heartbeat text-4xl text-indigo-600"></i>
+                <span class="ml-2 text-3xl font-bold text-gray-800">FitNutrition</span>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Complete Your Profile</h1>
+            <p class="text-gray-600">Help us personalize your fitness journey</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex flex-col items-center flex-1">
+                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold mb-2">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <p class="text-sm font-semibold text-indigo-600">Basic Info</p>
+                </div>
+                <div class="flex-1 h-1 bg-indigo-600 mx-2"></div>
+                <div class="flex flex-col items-center flex-1">
+                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold mb-2">
+                        2
+                    </div>
+                    <p class="text-sm font-semibold text-indigo-600">Body Measurements</p>
+                </div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="flex flex-col items-center flex-1">
+                    <div class="w-12 h-12 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold mb-2">
+                        3
+                    </div>
+                    <p class="text-sm font-semibold text-gray-600">Goals</p>
+                </div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="flex flex-col items-center flex-1">
+                    <div class="w-12 h-12 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold mb-2">
+                        4
+                    </div>
+                    <p class="text-sm font-semibold text-gray-600">Preferences</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Step 2: Body Measurements</h2>
+            
+            <form class="space-y-6">
+                <!-- Current Weight -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Current Weight *
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="number" 
+                                step="0.1"
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                                placeholder="75.5"
+                            >
+                            <span class="absolute right-4 top-3 text-gray-500">kg</span>
+                        </div>
+                    </div>
+
+                    <!-- Height -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Height *
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="number" 
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                                placeholder="175"
+                            >
+                            <span class="absolute right-4 top-3 text-gray-500">cm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Age & Gender -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Age *
+                        </label>
+                        <input 
+                            type="number" 
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                            placeholder="28"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Gender *
+                        </label>
+                        <select class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            <option value="">Select gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Body Fat Percentage -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Body Fat Percentage (Optional)
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="number" 
+                            step="0.1"
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                            placeholder="18.5"
+                        >
+                        <span class="absolute right-4 top-3 text-gray-500">%</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        If you don't know, you can skip this and we'll help you estimate it later
+                    </p>
+                </div>
+
+                <!-- Body Measurements -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Body Measurements (Optional)</h3>
+                    <p class="text-sm text-gray-600 mb-4">These measurements help track your progress more accurately</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Chest</label>
+                            <div class="relative">
+                                <input 
+                                    type="number" 
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                                    placeholder="98"
+                                >
+                                <span class="absolute right-4 top-3 text-gray-500 text-sm">cm</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Waist</label>
+                            <div class="relative">
+                                <input 
+                                    type="number" 
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                                    placeholder="82"
+                                >
+                                <span class="absolute right-4 top-3 text-gray-500 text-sm">cm</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Hips</label>
+                            <div class="relative">
+                                <input 
+                                    type="number" 
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                                    placeholder="95"
+                                >
+                                <span class="absolute right-4 top-3 text-gray-500 text-sm">cm</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Arms</label>
+                            <div class="relative">
+                                <input 
+                                    type="number" 
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                                    placeholder="35"
+                                >
+                                <span class="absolute right-4 top-3 text-gray-500 text-sm">cm</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Thighs</label>
+                            <div class="relative">
+                                <input 
+                                    type="number" 
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                                    placeholder="58"
+                                >
+                                <span class="absolute right-4 top-3 text-gray-500 text-sm">cm</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Calves</label>
+                            <div class="relative">
+                                <input 
+                                    type="number" 
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                                    placeholder="38"
+                                >
+                                <span class="absolute right-4 top-3 text-gray-500 text-sm">cm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Level -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        Activity Level *
+                    </label>
+                    <div class="space-y-3">
+                        <label class="flex items-start p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-indigo-500 transition">
+                            <input type="radio" name="activity" class="mt-1 mr-3" value="sedentary">
+                            <div>
+                                <p class="font-semibold text-gray-900">Sedentary</p>
+                                <p class="text-sm text-gray-600">Little or no exercise, desk job</p>
+                            </div>
+                        </label>
+                        <label class="flex items-start p-4 border-2 border-indigo-500 bg-indigo-50 rounded-lg cursor-pointer">
+                            <input type="radio" name="activity" class="mt-1 mr-3" value="light" checked>
+                            <div>
+                                <p class="font-semibold text-gray-900">Lightly Active</p>
+                                <p class="text-sm text-gray-600">Light exercise 1-3 days/week</p>
+                            </div>
+                        </label>
+                        <label class="flex items-start p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-indigo-500 transition">
+                            <input type="radio" name="activity" class="mt-1 mr-3" value="moderate">
+                            <div>
+                                <p class="font-semibold text-gray-900">Moderately Active</p>
+                                <p class="text-sm text-gray-600">Moderate exercise 3-5 days/week</p>
+                            </div>
+                        </label>
+                        <label class="flex items-start p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-indigo-500 transition">
+                            <input type="radio" name="activity" class="mt-1 mr-3" value="very">
+                            <div>
+                                <p class="font-semibold text-gray-900">Very Active</p>
+                                <p class="text-sm text-gray-600">Hard exercise 6-7 days/week</p>
+                            </div>
+                        </label>
+                        <label class="flex items-start p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-indigo-500 transition">
+                            <input type="radio" name="activity" class="mt-1 mr-3" value="extra">
+                            <div>
+                                <p class="font-semibold text-gray-900">Extra Active</p>
+                                <p class="text-sm text-gray-600">Very hard exercise, physical job or training twice a day</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Calculated Metrics Preview -->
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-6 border-2 border-indigo-200">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Your Estimated Metrics</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white rounded-lg p-4">
+                            <p class="text-sm text-gray-600 mb-1">BMI</p>
+                            <p class="text-2xl font-bold text-indigo-600">24.7</p>
+                            <p class="text-xs text-green-600 mt-1">Normal weight</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4">
+                            <p class="text-sm text-gray-600 mb-1">BMR</p>
+                            <p class="text-2xl font-bold text-indigo-600">1,680</p>
+                            <p class="text-xs text-gray-600 mt-1">kcal/day</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4">
+                            <p class="text-sm text-gray-600 mb-1">TDEE</p>
+                            <p class="text-2xl font-bold text-indigo-600">2,352</p>
+                            <p class="text-xs text-gray-600 mt-1">kcal/day</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-4">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        These are estimates based on your inputs. We'll refine them as you track your progress.
+                    </p>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between pt-6 border-t-2 border-gray-200">
+                    <button type="button" class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition">
+                        <i class="fas fa-arrow-left mr-2"></i>Back
+                    </button>
+                    <button type="submit" class="px-8 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg">
+                        Continue<i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Help Section -->
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-600">
+                Need help? <a href="#" class="text-indigo-600 font-semibold hover:text-indigo-700">Contact Support</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

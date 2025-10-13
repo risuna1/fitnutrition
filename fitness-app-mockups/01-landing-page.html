@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitNutrition - ホーム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-heartbeat text-3xl text-indigo-600"></i>
+                    <span class="ml-2 text-2xl font-bold text-gray-800">FitNutrition</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#features" class="text-gray-700 hover:text-indigo-600">機能</a>
+                    <a href="#about" class="text-gray-700 hover:text-indigo-600">について</a>
+                    <button class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
+                        ログイン
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h1 class="text-5xl font-bold text-gray-900 mb-6">
+                    体を変えて、<br>
+                    <span class="text-indigo-600">人生を変える</span>
+                </h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    AI搭載のフィットネス＆栄養管理プラットフォーム。パーソナライズされたワークアウトプラン、
+                    食事の推奨、高度な分析による進捗追跡を提供します。
+                </p>
+                <div class="flex space-x-4">
+                    <button class="bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition shadow-lg">
+                        無料で始める
+                    </button>
+                    <button class="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition shadow-lg border-2 border-indigo-600">
+                        デモを見る
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-2xl p-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">アカウントを作成</h3>
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">氏名</label>
+                        <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="山田太郎">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">メールアドレス</label>
+                        <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="yamada@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">パスワード</label>
+                        <input type="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                        登録する
+                    </button>
+                    <p class="text-center text-sm text-gray-600">
+                        すでにアカウントをお持ちですか？ <a href="#" class="text-indigo-600 font-semibold">ログイン</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div id="features" class="bg-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-gray-900 mb-4">強力な機能</h2>
+            <p class="text-xl text-center text-gray-600 mb-12">フィットネス目標を達成するために必要なすべて</p>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="bg-indigo-600 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-line text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">進捗追跡</h3>
+                    <p class="text-gray-600">体の測定値、ワークアウト、栄養を詳細な分析と美しい視覚化で追跡します。</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="bg-green-600 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-utensils text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">食事計画</h3>
+                    <p class="text-gray-600">パーソナライズされた食事プラン、カロリーとマクロの追跡、お気に入りのレシピを保存できます。</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="bg-purple-600 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-dumbbell text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">ワークアウトプラン</h3>
+                    <p class="text-gray-600">数百のエクササイズにアクセスし、目標に合わせたAI搭載のワークアウト推奨を受け取れます。</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="bg-orange-600 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-brain text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">AI推奨</h3>
+                    <p class="text-gray-600">進捗状況、好み、フィットネス目標に基づいたインテリジェントな提案を受け取れます。</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-gradient-to-br from-yellow-50 to-amber-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="bg-yellow-600 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-calculator text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">BMR・TDEE計算機</h3>
+                    <p class="text-gray-600">科学的精度で代謝率と1日のカロリー必要量を計算します。</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-gradient-to-br from-teal-50 to-cyan-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="bg-teal-600 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">カレンダー統合</h3>
+                    <p class="text-gray-600">直感的なカレンダーインターフェースでワークアウトと食事を計画できます。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-heartbeat text-3xl text-indigo-400"></i>
+                <span class="ml-2 text-2xl font-bold">FitNutrition</span>
+            </div>
+            <p class="text-gray-400">© 2024 FitNutrition. 全著作権所有。</p>
+        </div>
+    </footer>
+</body>
+</html>

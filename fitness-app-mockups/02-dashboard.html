@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitNutrition - ダッシュボード</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div class="flex h-screen">
+        <aside class="w-64 bg-gray-900 text-white">
+            <div class="p-6">
+                <div class="flex items-center mb-8">
+                    <i class="fas fa-heartbeat text-3xl text-indigo-400"></i>
+                    <span class="ml-2 text-xl font-bold">FitNutrition</span>
+                </div>
+                
+                <nav class="space-y-2">
+                    <a href="#" class="flex items-center px-4 py-3 bg-indigo-600 rounded-lg">
+                        <i class="fas fa-home mr-3"></i>
+                        ダッシュボード
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-user mr-3"></i>
+                        プロフィール
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-weight mr-3"></i>
+                        体測定
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-utensils mr-3"></i>
+                        食事計画
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-dumbbell mr-3"></i>
+                        ワークアウト
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-chart-line mr-3"></i>
+                        進捗状況
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-lightbulb mr-3"></i>
+                        おすすめ
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-cog mr-3"></i>
+                        設定
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="absolute bottom-0 w-64 p-6 border-t border-gray-800">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold">JD</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="font-semibold">John Doe</p>
+                        <p class="text-sm text-gray-400">john@example.com</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Header -->
+            <header class="bg-white shadow-sm">
+                <div class="px-8 py-4 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">ダッシュボード</h1>
+                        <p class="text-gray-600">おかえりなさい、ジョンさん！進捗状況の概要です。</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="relative">
+                            <i class="fas fa-bell text-xl text-gray-600"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                        </button>
+                        <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                            <i class="fas fa-plus mr-2"></i>クイック追加
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-8">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Card 1 -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">現在の体重</p>
+                                <h3 class="text-3xl font-bold text-gray-900 mt-2">75.5 kg</h3>
+                                <p class="text-green-600 text-sm mt-2">
+                                    <i class="fas fa-arrow-down"></i> 今月 -2.5 kg
+                                </p>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-lg">
+                                <i class="fas fa-weight text-2xl text-blue-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">今日のカロリー</p>
+                                <h3 class="text-3xl font-bold text-gray-900 mt-2">1,850</h3>
+                                <p class="text-gray-600 text-sm mt-2">
+                                    目標: 2,200 kcal
+                                </p>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <i class="fas fa-fire text-2xl text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">今週のワークアウト</p>
+                                <h3 class="text-3xl font-bold text-gray-900 mt-2">4/5</h3>
+                                <p class="text-purple-600 text-sm mt-2">
+                                    <i class="fas fa-check"></i> 80% 完了
+                                </p>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-lg">
+                                <i class="fas fa-dumbbell text-2xl text-purple-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">体脂肪率</p>
+                                <h3 class="text-3xl font-bold text-gray-900 mt-2">18.5%</h3>
+                                <p class="text-green-600 text-sm mt-2">
+                                    <i class="fas fa-arrow-down"></i> 今月 -1.2%
+                                </p>
+                            </div>
+                            <div class="bg-orange-100 p-3 rounded-lg">
+                                <i class="fas fa-percentage text-2xl text-orange-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Weight Progress Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">体重の推移</h3>
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="weightChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Macros Distribution -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">今日のマクロ栄養素</h3>
+                        <div class="space-y-4">
+                            <!-- Protein -->
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">タンパク質</span>
+                                    <span class="text-sm font-bold text-gray-900">120g / 150g</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="bg-blue-600 h-3 rounded-full" style="width: 80%"></div>
+                                </div>
+                            </div>
+                            <!-- Carbs -->
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">炭水化物</span>
+                                    <span class="text-sm font-bold text-gray-900">180g / 220g</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="bg-green-600 h-3 rounded-full" style="width: 82%"></div>
+                                </div>
+                            </div>
+                            <!-- Fats -->
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">脂質</span>
+                                    <span class="text-sm font-bold text-gray-900">55g / 70g</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="bg-yellow-600 h-3 rounded-full" style="width: 79%"></div>
+                                </div>
+                            </div>
+                            <!-- Calories Pie Chart -->
+                            <div class="mt-6" style="position: relative; height: 250px;">
+                                <canvas id="macrosChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Schedule & Quick Actions -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Today's Schedule -->
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-900">今日のスケジュール</h3>
+                            <button class="text-indigo-600 text-sm font-semibold hover:text-indigo-700">
+                                カレンダーを見る
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <!-- Breakfast -->
+                            <div class="flex items-start p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                                <div class="bg-green-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                                    <i class="fas fa-coffee"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between">
+                                        <h4 class="font-semibold text-gray-900">朝食</h4>
+                                        <span class="text-sm text-gray-600">午前8:00</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">ベリー入りオートミール、ギリシャヨーグルト</p>
+                                    <p class="text-sm font-semibold text-green-600 mt-1">450 kcal</p>
+                                </div>
+                                <button class="ml-4 text-green-600 hover:text-green-700">
+                                    <i class="fas fa-check-circle text-xl"></i>
+                                </button>
+                            </div>
+
+                            <!-- Morning Workout -->
+                            <div class="flex items-start p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
+                                <div class="bg-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                                    <i class="fas fa-dumbbell"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between">
+                                        <h4 class="font-semibold text-gray-900">上半身ワークアウト</h4>
+                                        <span class="text-sm text-gray-600">午前10:00</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">胸、背中、肩 - 45分</p>
+                                    <p class="text-sm font-semibold text-purple-600 mt-1">約350 kcal消費</p>
+                                </div>
+                                <button class="ml-4 text-gray-400 hover:text-purple-600">
+                                    <i class="far fa-circle text-xl"></i>
+                                </button>
+                            </div>
+
+                            <!-- Lunch -->
+                            <div class="flex items-start p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                                <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                                    <i class="fas fa-utensils"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between">
+                                        <h4 class="font-semibold text-gray-900">昼食</h4>
+                                        <span class="text-sm text-gray-600">午後1:00</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">グリルチキン、キヌア、野菜</p>
+                                    <p class="text-sm font-semibold text-blue-600 mt-1">650 kcal</p>
+                                </div>
+                                <button class="ml-4 text-gray-400 hover:text-blue-600">
+                                    <i class="far fa-circle text-xl"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Recommendations -->
+                    <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-brain text-2xl mr-2"></i>
+                            <h3 class="text-lg font-bold">AIインサイト</h3>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                                <p class="text-sm font-semibold mb-2">🎯 素晴らしい進歩！</p>
+                                <p class="text-sm">6週間で目標体重に到達する予定です。この調子で頑張りましょう！</p>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                                <p class="text-sm font-semibold mb-2">💪 ワークアウトのヒント</p>
+                                <p class="text-sm">下半身のエクササイズを増やすことを検討してください。上半身の方が早く進歩しています。</p>
+                            </div>
+                            
+                            <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                                <p class="text-sm font-semibold mb-2">🥗 栄養アドバイス</p>
+                                <p class="text-sm">タンパク質の摂取量は素晴らしいです！微量栄養素のために野菜を増やしてみてください。</p>
+                            </div>
+                            
+                            <button class="w-full bg-white text-indigo-600 py-2 rounded-lg font-semibold hover:bg-gray-100 transition mt-4">
+                                完全なレポートを取得
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Wait for both DOM and Chart.js to be ready
+        window.addEventListener('load', function() {
+            try {
+                // Weight Progress Chart
+                const weightCanvas = document.getElementById('weightChart');
+                if (weightCanvas && typeof Chart !== 'undefined') {
+                    const weightCtx = weightCanvas.getContext('2d');
+                    const weightChart = new Chart(weightCtx, {
+                        type: 'line',
+                        data: {
+                                labels: ['第1週', '第2週', '第3週', '第4週', '第5週', '第6週'],
+                            datasets: [{
+                                label: '体重',
+                                data: [78, 77.5, 77, 76.5, 76, 75.5],
+                                borderColor: '#4F46E5',
+                                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                borderWidth: 3,
+                                pointRadius: 6,
+                                pointBackgroundColor: '#4F46E5',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 2,
+                                pointHoverRadius: 8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    enabled: true,
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    padding: 12,
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    borderColor: '#4F46E5',
+                                    borderWidth: 1,
+                                    displayColors: false,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return '体重: ' + context.parsed.y + ' kg';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    min: 74,
+                                    max: 79,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + ' kg';
+                                        },
+                                        font: {
+                                            size: 11
+                                        }
+                                    },
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.05)',
+                                        drawBorder: false
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false,
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            size: 11
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    console.log('Weight chart created successfully');
+                } else {
+                    console.error('Weight chart canvas not found or Chart.js not loaded');
+                }
+
+                // Macros Pie Chart
+                const macrosCanvas = document.getElementById('macrosChart');
+                if (macrosCanvas && typeof Chart !== 'undefined') {
+                    const macrosCtx = macrosCanvas.getContext('2d');
+                    const macrosChart = new Chart(macrosCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['タンパク質', '炭水化物', '脂質'],
+                            datasets: [{
+                                data: [480, 720, 495],
+                                backgroundColor: [
+                                    '#2563EB',
+                                    '#22C55E',
+                                    '#EAB308'
+                                ],
+                                borderWidth: 3,
+                                borderColor: '#ffffff',
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        font: {
+                                            size: 12
+                                        },
+                                        usePointStyle: true,
+                                        pointStyle: 'circle'
+                                    }
+                                },
+                                tooltip: {
+                                    enabled: true,
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    padding: 12,
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            return label + ': ' + value + ' kcal';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    console.log('Macros chart created successfully');
+                } else {
+                    console.error('Macros chart canvas not found or Chart.js not loaded');
+                }
+            } catch (error) {
+                console.error('Error creating charts:', error);
+            }
+        });
+    </script>
+</body>
+</html>

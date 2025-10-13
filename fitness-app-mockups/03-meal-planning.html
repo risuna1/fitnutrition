@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitNutrition - 食事計画</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar (same as dashboard) -->
+        <aside class="w-64 bg-gray-900 text-white">
+            <div class="p-6">
+                <div class="flex items-center mb-8">
+                    <i class="fas fa-heartbeat text-3xl text-indigo-400"></i>
+                    <span class="ml-2 text-xl font-bold">FitNutrition</span>
+                </div>
+                
+                <nav class="space-y-2">
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-home mr-3"></i>
+                        ダッシュボード
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-user mr-3"></i>
+                        プロフィール
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-weight mr-3"></i>
+                        体測定
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 bg-indigo-600 rounded-lg">
+                        <i class="fas fa-utensils mr-3"></i>
+                        食事計画
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-dumbbell mr-3"></i>
+                        ワークアウト
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-chart-line mr-3"></i>
+                        進捗状況
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-lightbulb mr-3"></i>
+                        おすすめ
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
+                        <i class="fas fa-cog mr-3"></i>
+                        設定
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Header -->
+            <header class="bg-white shadow-sm">
+                <div class="px-8 py-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">食事計画</h1>
+                            <p class="text-gray-600">食事を計画して栄養を追跡</p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="bg-white border-2 border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-50 transition">
+                                <i class="fas fa-heart mr-2"></i>お気に入り
+                            </button>
+                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                                <i class="fas fa-plus mr-2"></i>カスタム食事を作成
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabs -->
+                    <div class="flex space-x-4 mt-4 border-b">
+                        <button class="px-4 py-2 border-b-2 border-indigo-600 text-indigo-600 font-semibold">
+                            食事カレンダー
+                        </button>
+                        <button class="px-4 py-2 text-gray-600 hover:text-gray-900">
+                            食品データベース
+                        </button>
+                        <button class="px-4 py-2 text-gray-600 hover:text-gray-900">
+                            食事プラン
+                        </button>
+                        <button class="px-4 py-2 text-gray-600 hover:text-gray-900">
+                            レシピ
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Calendar Section -->
+                    <div class="lg:col-span-2">
+                        <!-- Week Navigation -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <button class="text-gray-600 hover:text-gray-900">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <h3 class="text-lg font-bold text-gray-900">2024年1月15日〜21日の週</h3>
+                                <button class="text-gray-600 hover:text-gray-900">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Days Grid -->
+                            <div class="grid grid-cols-7 gap-2">
+                                <!-- Day Headers -->
+                                <div class="text-center text-sm font-semibold text-gray-600 py-2">月</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 py-2">火</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 py-2">水</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 py-2">木</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 py-2">金</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 py-2">土</div>
+                                <div class="text-center text-sm font-semibold text-gray-600 py-2">日</div>
+                                
+                                <!-- Day Cells -->
+                                <div class="bg-gray-50 rounded-lg p-2 text-center cursor-pointer hover:bg-gray-100">
+                                    <div class="text-sm font-semibold">15</div>
+                                    <div class="text-xs text-green-600 mt-1">2,150 kcal</div>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-2 text-center cursor-pointer hover:bg-gray-100">
+                                    <div class="text-sm font-semibold">16</div>
+                                    <div class="text-xs text-green-600 mt-1">2,200 kcal</div>
+                                </div>
+                                <div class="bg-indigo-100 border-2 border-indigo-600 rounded-lg p-2 text-center cursor-pointer">
+                                    <div class="text-sm font-semibold text-indigo-600">17</div>
+                                    <div class="text-xs text-indigo-600 mt-1 font-semibold">今日</div>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-2 text-center cursor-pointer hover:bg-gray-100">
+                                    <div class="text-sm font-semibold">18</div>
+                                    <div class="text-xs text-gray-400 mt-1">計画済み</div>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-2 text-center cursor-pointer hover:bg-gray-100">
+                                    <div class="text-sm font-semibold">19</div>
+                                    <div class="text-xs text-gray-400 mt-1">計画済み</div>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-2 text-center cursor-pointer hover:bg-gray-100">
+                                    <div class="text-sm font-semibold">20</div>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-2 text-center cursor-pointer hover:bg-gray-100">
+                                    <div class="text-sm font-semibold">21</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Today's Meals -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-bold text-gray-900">今日の食事 - 1月17日（水）</h3>
+                                <span class="text-sm text-gray-600">1,850 / 2,200 kcal</span>
+                            </div>
+
+                            <!-- Breakfast -->
+                            <div class="mb-6">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h4 class="font-semibold text-gray-900 flex items-center">
+                                        <i class="fas fa-coffee text-orange-500 mr-2"></i>
+                                        朝食
+                                    </h4>
+                                    <button class="text-indigo-600 text-sm hover:text-indigo-700">
+                                        <i class="fas fa-plus mr-1"></i>食品を追加
+                                    </button>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <img src="https://via.placeholder.com/50" alt="Oatmeal" class="w-12 h-12 rounded-lg mr-3">
+                                            <div>
+                                                <p class="font-medium text-gray-900">ベリー入りオートミール</p>
+                                                <p class="text-sm text-gray-600">1ボウル (250g)</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-semibold text-gray-900">320 kcal</p>
+                                            <p class="text-xs text-gray-600">P: 12g C: 54g F: 6g</p>
+                                        </div>
+                                        <button class="ml-4 text-red-500 hover:text-red-700">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <img src="https://via.placeholder.com/50" alt="Greek Yogurt" class="w-12 h-12 rounded-lg mr-3">
+                                            <div>
+                                                <p class="font-medium text-gray-900">ギリシャヨーグルト</p>
+                                                <p class="text-sm text-gray-600">1カップ (200g)</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-semibold text-gray-900">130 kcal</p>
+                                            <p class="text-xs text-gray-600">P: 20g C: 9g F: 0g</p>
+                                        </div>
+                                        <button class="ml-4 text-red-500 hover:text-red-700">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-right">
+                                    <span class="text-sm font-semibold text-gray-900">合計: 450 kcal</span>
+                                </div>
+                            </div>
+
+                            <!-- Lunch -->
+                            <div class="mb-6">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h4 class="font-semibold text-gray-900 flex items-center">
+                                        <i class="fas fa-sun text-yellow-500 mr-2"></i>
+                                        昼食
+                                    </h4>
+                                    <button class="text-indigo-600 text-sm hover:text-indigo-700">
+                                        <i class="fas fa-plus mr-1"></i>食品を追加
+                                    </button>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <img src="https://via.placeholder.com/50" alt="Chicken" class="w-12 h-12 rounded-lg mr-3">
+                                            <div>
+                                                <p class="font-medium text-gray-900">グリルチキン胸肉</p>
+                                                <p class="text-sm text-gray-600">200g</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-semibold text-gray-900">330 kcal</p>
+                                            <p class="text-xs text-gray-600">P: 62g C: 0g F: 7g</p>
+                                        </div>
+                                        <button class="ml-4 text-red-500 hover:text-red-700">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <img src="https://via.placeholder.com/50" alt="Quinoa" class="w-12 h-12 rounded-lg mr-3">
+                                            <div>
+                                                <p class="font-medium text-gray-900">キヌア</p>
+                                                <p class="text-sm text-gray-600">調理済み1カップ (185g)</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-semibold text-gray-900">220 kcal</p>
+                                            <p class="text-xs text-gray-600">P: 8g C: 39g F: 4g</p>
+                                        </div>
+                                        <button class="ml-4 text-red-500 hover:text-red-700">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <img src="https://via.placeholder.com/50" alt="Vegetables" class="w-12 h-12 rounded-lg mr-3">
+                                            <div>
+                                                <p class="font-medium text-gray-900">ミックス野菜</p>
+                                                <p class="text-sm text-gray-600">1カップ (150g)</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-semibold text-gray-900">100 kcal</p>
+                                            <p class="text-xs text-gray-600">P: 4g C: 20g F: 1g</p>
+                                        </div>
+                                        <button class="ml-4 text-red-500 hover:text-red-700">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-right">
+                                    <span class="text-sm font-semibold text-gray-900">合計: 650 kcal</span>
+                                </div>
+                            </div>
+
+                            <!-- Dinner -->
+                            <div class="mb-6">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h4 class="font-semibold text-gray-900 flex items-center">
+                                        <i class="fas fa-moon text-indigo-500 mr-2"></i>
+                                        夕食
+                                    </h4>
+                                    <button class="text-indigo-600 text-sm hover:text-indigo-700">
+                                        <i class="fas fa-plus mr-1"></i>食品を追加
+                                    </button>
+                                </div>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                                    <i class="fas fa-utensils text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-600">まだ食事が計画されていません</p>
+                                    <button class="mt-3 text-indigo-600 font-semibold hover:text-indigo-700">
+                                        レシピを見る
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Snacks -->
+                            <div>
+                                <div class="flex justify-between items-center mb-3">
+                                    <h4 class="font-semibold text-gray-900 flex items-center">
+                                        <i class="fas fa-cookie-bite text-pink-500 mr-2"></i>
+                                        スナック
+                                    </h4>
+                                    <button class="text-indigo-600 text-sm hover:text-indigo-700">
+                                        <i class="fas fa-plus mr-1"></i>食品を追加
+                                    </button>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <img src="https://via.placeholder.com/50" alt="Protein Bar" class="w-12 h-12 rounded-lg mr-3">
+                                            <div>
+                                                <p class="font-medium text-gray-900">プロテインバー</p>
+                                                <p class="text-sm text-gray-600">1本 (60g)</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-semibold text-gray-900">200 kcal</p>
+                                            <p class="text-xs text-gray-600">P: 20g C: 22g F: 6g</p>
+                                        </div>
+                                        <button class="ml-4 text-red-500 hover:text-red-700">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-right">
+                                    <span class="text-sm font-semibold text-gray-900">合計: 200 kcal</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar - Nutrition Summary & Suggestions -->
+                    <div class="space-y-6">
+                        <!-- Daily Summary -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">1日の概要</h3>
+                            
+                            <!-- Calories Progress -->
+                            <div class="mb-6">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">カロリー</span>
+                                    <span class="text-sm font-bold text-gray-900">1,850 / 2,200</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="bg-green-600 h-3 rounded-full" style="width: 84%"></div>
+                                </div>
+                                <p class="text-xs text-gray-600 mt-1">残り350 kcal</p>
+                            </div>
+
+                            <!-- Macros -->
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm text-gray-700">タンパク質</span>
+                                        <span class="text-sm font-semibold">106g / 150g</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 71%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm text-gray-700">炭水化物</span>
+                                        <span class="text-sm font-semibold">144g / 220g</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-600 h-2 rounded-full" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm text-gray-700">脂質</span>
+                                        <span class="text-sm font-semibold">24g / 70g</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-yellow-600 h-2 rounded-full" style="width: 34%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Add Favorites -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">お気に入りをクイック追加</h3>
+                            <div class="space-y-2">
+                                <button class="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-500 mr-2"></i>
+                                        <span class="text-sm font-medium">プロテインシェイク</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">180 kcal</span>
+                                </button>
+                                <button class="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-500 mr-2"></i>
+                                        <span class="text-sm font-medium">サーモン＆ライス</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">520 kcal</span>
+                                </button>
+                                <button class="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-500 mr-2"></i>
+                                        <span class="text-sm font-medium">フルーツスムージー</span>
+                                    </div>
+                                    <span class="text-xs text-gray-600">250 kcal</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AI Suggestions -->
+                        <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg p-6 text-white">
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-magic text-xl mr-2"></i>
+                                <h3 class="text-lg font-bold">AI提案</h3>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                                    <p class="text-sm font-semibold mb-1">🥗 夕食に</p>
+                                    <p class="text-xs">グリルサーモンとサツマイモを試してみてください - 残りのマクロに最適です！</p>
+                                </div>
+                                <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                                    <p class="text-sm font-semibold mb-1">💡 ヒント</p>
+                                    <p class="text-xs">今日はもっと健康的な脂質が必要です。アボカドやナッツを追加しましょう！</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
