@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitNutrition - Progress Tracking</title>
+    <title>FitNutrition - 進捗追跡</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-gray-50">
     <div class="flex h-screen">
@@ -21,35 +21,35 @@
                 <nav class="space-y-2">
                     <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
                         <i class="fas fa-home mr-3"></i>
-                        Dashboard
+                        ダッシュボード
                     </a>
                     <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
                         <i class="fas fa-user mr-3"></i>
-                        Profile
+                        プロフィール
                     </a>
                     <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
                         <i class="fas fa-weight mr-3"></i>
-                        Body Measurements
+                        体測定
                     </a>
                     <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
                         <i class="fas fa-utensils mr-3"></i>
-                        Meal Planning
+                        食事計画
                     </a>
                     <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
                         <i class="fas fa-dumbbell mr-3"></i>
-                        Workouts
+                        ワークアウト
                     </a>
                     <a href="#" class="flex items-center px-4 py-3 bg-indigo-600 rounded-lg">
                         <i class="fas fa-chart-line mr-3"></i>
-                        Progress
+                        進捗状況
                     </a>
                     <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
                         <i class="fas fa-lightbulb mr-3"></i>
-                        Recommendations
+                        おすすめ
                     </a>
                     <a href="#" class="flex items-center px-4 py-3 hover:bg-gray-800 rounded-lg transition">
                         <i class="fas fa-cog mr-3"></i>
-                        Settings
+                        設定
                     </a>
                 </nav>
             </div>
@@ -62,19 +62,19 @@
                 <div class="px-8 py-4">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h1 class="text-2xl font-bold text-gray-900">Progress Tracking</h1>
-                            <p class="text-gray-600">Monitor your fitness journey and achievements</p>
+                            <h1 class="text-2xl font-bold text-gray-900">進捗追跡</h1>
+                            <p class="text-gray-600">フィットネスの旅と成果を監視</p>
                         </div>
                         <div class="flex space-x-3">
                             <select class="border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-indigo-600 focus:outline-none">
-                                <option>Last 30 Days</option>
-                                <option>Last 3 Months</option>
-                                <option>Last 6 Months</option>
-                                <option>Last Year</option>
-                                <option>All Time</option>
+                                <option>過去30日間</option>
+                                <option>過去3ヶ月</option>
+                                <option>過去6ヶ月</option>
+                                <option>過去1年</option>
+                                <option>全期間</option>
                             </select>
                             <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-                                <i class="fas fa-download mr-2"></i>Export Report
+                                <i class="fas fa-download mr-2"></i>レポートをエクスポート
                             </button>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
                     <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <p class="text-blue-100 text-sm font-medium">Weight Lost</p>
+                                <p class="text-blue-100 text-sm font-medium">減量</p>
                                 <h3 class="text-3xl font-bold mt-2">-5.5 kg</h3>
                             </div>
                             <div class="bg-white bg-opacity-20 p-3 rounded-lg">
@@ -96,14 +96,14 @@
                         </div>
                         <div class="flex items-center text-sm">
                             <i class="fas fa-arrow-down mr-2"></i>
-                            <span>7% from starting weight</span>
+                            <span>開始時から7%</span>
                         </div>
                     </div>
 
                     <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <p class="text-green-100 text-sm font-medium">Body Fat Reduced</p>
+                                <p class="text-green-100 text-sm font-medium">体脂肪減少</p>
                                 <h3 class="text-3xl font-bold mt-2">-3.2%</h3>
                             </div>
                             <div class="bg-white bg-opacity-20 p-3 rounded-lg">
@@ -112,14 +112,14 @@
                         </div>
                         <div class="flex items-center text-sm">
                             <i class="fas fa-arrow-down mr-2"></i>
-                            <span>From 21.7% to 18.5%</span>
+                            <span>21.7%から18.5%へ</span>
                         </div>
                     </div>
 
                     <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <p class="text-purple-100 text-sm font-medium">Workouts Completed</p>
+                                <p class="text-purple-100 text-sm font-medium">完了したワークアウト</p>
                                 <h3 class="text-3xl font-bold mt-2">48</h3>
                             </div>
                             <div class="bg-white bg-opacity-20 p-3 rounded-lg">
@@ -128,14 +128,14 @@
                         </div>
                         <div class="flex items-center text-sm">
                             <i class="fas fa-check mr-2"></i>
-                            <span>92% consistency rate</span>
+                            <span>継続率92%</span>
                         </div>
                     </div>
 
                     <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <p class="text-orange-100 text-sm font-medium">Avg. Daily Calories</p>
+                                <p class="text-orange-100 text-sm font-medium">平均1日カロリー</p>
                                 <h3 class="text-3xl font-bold mt-2">2,150</h3>
                             </div>
                             <div class="bg-white bg-opacity-20 p-3 rounded-lg">
@@ -144,7 +144,7 @@
                         </div>
                         <div class="flex items-center text-sm">
                             <i class="fas fa-check mr-2"></i>
-                            <span>Within target range</span>
+                            <span>目標範囲内</span>
                         </div>
                     </div>
                 </div>
@@ -154,25 +154,27 @@
                     <!-- Weight Progress Chart -->
                     <div class="bg-white rounded-xl shadow-lg p-6">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-bold text-gray-900">Weight Progress</h3>
+                            <h3 class="text-lg font-bold text-gray-900">体重の推移</h3>
                             <div class="flex space-x-2">
-                                <button class="px-3 py-1 text-sm bg-indigo-100 text-indigo-600 rounded-lg font-semibold">Week</button>
-                                <button class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Month</button>
-                                <button class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Year</button>
+                                <button class="px-3 py-1 text-sm bg-indigo-100 text-indigo-600 rounded-lg font-semibold">週</button>
+                                <button class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">月</button>
+                                <button class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">年</button>
                             </div>
                         </div>
-                        <canvas id="weightProgressChart" height="250"></canvas>
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="weightProgressChart"></canvas>
+                        </div>
                         <div class="mt-4 grid grid-cols-3 gap-4 text-center">
                             <div>
-                                <p class="text-sm text-gray-600">Starting</p>
+                                <p class="text-sm text-gray-600">開始時</p>
                                 <p class="text-lg font-bold text-gray-900">78.0 kg</p>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-600">Current</p>
+                                <p class="text-sm text-gray-600">現在</p>
                                 <p class="text-lg font-bold text-indigo-600">72.5 kg</p>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-600">Goal</p>
+                                <p class="text-sm text-gray-600">目標</p>
                                 <p class="text-lg font-bold text-green-600">70.0 kg</p>
                             </div>
                         </div>
@@ -180,18 +182,20 @@
 
                     <!-- Body Composition Chart -->
                     <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Body Composition</h3>
-                        <canvas id="bodyCompositionChart" height="250"></canvas>
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">体組成</h3>
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="bodyCompositionChart"></canvas>
+                        </div>
                         <div class="mt-4 grid grid-cols-2 gap-4">
                             <div class="bg-blue-50 p-3 rounded-lg">
-                                <p class="text-sm text-gray-600">Muscle Mass</p>
+                                <p class="text-sm text-gray-600">筋肉量</p>
                                 <p class="text-xl font-bold text-blue-600">58.2 kg</p>
                                 <p class="text-xs text-green-600 mt-1">
                                     <i class="fas fa-arrow-up"></i> +1.5 kg
                                 </p>
                             </div>
                             <div class="bg-orange-50 p-3 rounded-lg">
-                                <p class="text-sm text-gray-600">Body Fat</p>
+                                <p class="text-sm text-gray-600">体脂肪</p>
                                 <p class="text-xl font-bold text-orange-600">13.4 kg</p>
                                 <p class="text-xs text-green-600 mt-1">
                                     <i class="fas fa-arrow-down"></i> -2.8 kg
@@ -201,87 +205,148 @@
                     </div>
                 </div>
 
-                <!-- More Charts -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <!-- Workout Frequency -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Workout Frequency</h3>
-                        <canvas id="workoutFrequencyChart" height="250"></canvas>
+                <!-- Body Measurements Table -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">体測定履歴</h3>
+                        <button class="text-indigo-600 text-sm font-semibold hover:text-indigo-700">
+                            <i class="fas fa-plus mr-1"></i>測定を追加
+                        </button>
                     </div>
-
-                    <!-- Nutrition Trends -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Nutrition Trends</h3>
-                        <canvas id="nutritionTrendsChart" height="250"></canvas>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b-2 border-gray-200">
+                                    <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">日付</th>
+                                    <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">体重</th>
+                                    <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">体脂肪率</th>
+                                    <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">胸囲</th>
+                                    <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">ウエスト</th>
+                                    <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">ヒップ</th>
+                                    <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">腕</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4 text-sm">2024年1月17日</td>
+                                    <td class="py-3 px-4 text-sm font-semibold">72.5 kg</td>
+                                    <td class="py-3 px-4 text-sm">18.5%</td>
+                                    <td class="py-3 px-4 text-sm">98 cm</td>
+                                    <td class="py-3 px-4 text-sm">82 cm</td>
+                                    <td class="py-3 px-4 text-sm">95 cm</td>
+                                    <td class="py-3 px-4 text-sm">35 cm</td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4 text-sm">2024年1月10日</td>
+                                    <td class="py-3 px-4 text-sm">73.2 kg</td>
+                                    <td class="py-3 px-4 text-sm">19.0%</td>
+                                    <td class="py-3 px-4 text-sm">99 cm</td>
+                                    <td class="py-3 px-4 text-sm">83 cm</td>
+                                    <td class="py-3 px-4 text-sm">96 cm</td>
+                                    <td class="py-3 px-4 text-sm">34.5 cm</td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4 text-sm">2024年1月3日</td>
+                                    <td class="py-3 px-4 text-sm">74.0 kg</td>
+                                    <td class="py-3 px-4 text-sm">19.5%</td>
+                                    <td class="py-3 px-4 text-sm">100 cm</td>
+                                    <td class="py-3 px-4 text-sm">84 cm</td>
+                                    <td class="py-3 px-4 text-sm">97 cm</td>
+                                    <td class="py-3 px-4 text-sm">34 cm</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+            </div>
+        </main>
+    </div>
 
-                <!-- Measurements Table & Comparison -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Body Measurements History -->
-                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-bold text-gray-900">Body Measurements History</h3>
-                            <button class="text-indigo-600 text-sm font-semibold hover:text-indigo-700">
-                                <i class="fas fa-plus mr-1"></i>Add Measurement
-                            </button>
-                        </div>
-                        
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead>
-                                    <tr class="border-b-2 border-gray-200">
-                                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>
-                                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Weight</th>
-                                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Body Fat %</th>
-                                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Chest</th>
-                                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Waist</th>
-                                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Hips</th>
-                                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Arms</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                        <td class="py-3 px-4 text-sm">Jan 17, 2024</td>
-                                        <td class="py-3 px-4 text-sm font-semibold">72.5 kg</td>
-                                        <td class="py-3 px-4 text-sm">18.5%</td>
-                                        <td class="py-3 px-4 text-sm">98 cm</td>
-                                        <td class="py-3 px-4 text-sm">82 cm</td>
-                                        <td class="py-3 px-4 text-sm">95 cm</td>
-                                        <td class="py-3 px-4 text-sm">35 cm</td>
-                                    </tr>
-                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                        <td class="py-3 px-4 text-sm">Jan 10, 2024</td>
-                                        <td class="py-3 px-4 text-sm">73.2 kg</td>
-                                        <td class="py-3 px-4 text-sm">19.0%</td>
-                                        <td class="py-3 px-4 text-sm">99 cm</td>
-                                        <td class="py-3 px-4 text-sm">83 cm</td>
-                                        <td class="py-3 px-4 text-sm">96 cm</td>
-                                        <td class="py-3 px-4 text-sm">34.5 cm</td>
-                                    </tr>
-                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                        <td class="py-3 px-4 text-sm">Jan 3, 2024</td>
-                                        <td class="py-3 px-4 text-sm">74.0 kg</td>
-                                        <td class="py-3 px-4 text-sm">19.5%</td>
-                                        <td class="py-3 px-4 text-sm">100 cm</td>
-                                        <td class="py-3 px-4 text-sm">84 cm</td>
-                                        <td class="py-3 px-4 text-sm">97 cm</td>
-                                        <td class="py-3 px-4 text-sm">34 cm</td>
-                                    </tr>
-                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                        <td class="py-3 px-4 text-sm">Dec 27, 2023</td>
-                                        <td class="py-3 px-4 text-sm">75.0 kg</td>
-                                        <td class="py-3 px-4 text-sm">20.0%</td>
-                                        <td class="py-3 px-4 text-sm">101 cm</td>
-                                        <td class="py-3 px-4 text-sm">85 cm</td>
-                                        <td class="py-3 px-4 text-sm">98 cm</td>
-                                        <td class="py-3 px-4 text-sm">33.5 cm</td>
-                                    </tr>
-                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                        <td class="py-3 px-4 text-sm">Dec 20, 2023</td>
-                                        <td class="py-3 px-4 text-sm">76.0 kg</td>
-                                        <td class="py-3 px-4 text-sm">20.5%</td>
-                                        <td class="py-3 px-4 text-sm">102 cm</td>
-                                        <td class="py-3 px-4 text-sm">86 cm</td>
-                                        <td class="py-3 px-4 text-sm">99 cm</td>
-                                        <td class="py-3 px-4 text-sm">33 cm</td>
+    <script>
+        window.addEventListener('load', function() {
+            // Weight Progress Chart
+            const weightCanvas = document.getElementById('weightProgressChart');
+            if (weightCanvas && typeof Chart !== 'undefined') {
+                new Chart(weightCanvas.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['第1週', '第2週', '第3週', '第4週', '第5週', '第6週', '第7週', '第8週'],
+                        datasets: [{
+                            label: '体重',
+                            data: [78, 77, 76, 75.5, 75, 74, 73.5, 72.5],
+                            borderColor: '#4F46E5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            borderWidth: 3,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#4F46E5',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return '体重: ' + context.parsed.y + ' kg';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + ' kg';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Body Composition Chart
+            const bodyCanvas = document.getElementById('bodyCompositionChart');
+            if (bodyCanvas && typeof Chart !== 'undefined') {
+                new Chart(bodyCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['第1週', '第2週', '第3週', '第4週', '第5週', '第6週', '第7週', '第8週'],
+                        datasets: [{
+                            label: '筋肉量',
+                            data: [56.5, 56.8, 57.0, 57.3, 57.6, 57.8, 58.0, 58.2],
+                            backgroundColor: '#3B82F6'
+                        }, {
+                            label: '体脂肪',
+                            data: [16.9, 16.5, 16.2, 15.8, 15.4, 15.0, 14.2, 13.4],
+                            backgroundColor: '#F97316'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + ' kg';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
