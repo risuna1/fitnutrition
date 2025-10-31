@@ -257,23 +257,34 @@ class ProgressAnalyzer:
         """Get nutrition trends"""
         start_date = timezone.now().date() - timedelta(days=days)
         
+        # Get all meals in the date range
         meals = Meal.objects.filter(
             user=user,
             date__gte=start_date
-        ).aggregate(
-            avg_calories=Avg('total_calories'),
-            avg_protein=Avg('total_protein'),
-            avg_carbs=Avg('total_carbs'),
-            avg_fats=Avg('total_fats'),
-            total_meals=Count('id')
         )
         
+        total_meals = meals.count()
+        
+        # Calculate totals from meal properties
+        if total_meals > 0:
+            total_calories = sum(meal.total_calories for meal in meals)
+            total_protein = sum(meal.total_protein for meal in meals)
+            total_carbs = sum(meal.total_carbs for meal in meals)
+            total_fats = sum(meal.total_fats for meal in meals)
+            
+            avg_calories = total_calories / total_meals
+            avg_protein = total_protein / total_meals
+            avg_carbs = total_carbs / total_meals
+            avg_fats = total_fats / total_meals
+        else:
+            avg_calories = avg_protein = avg_carbs = avg_fats = 0
+        
         return {
-            'average_daily_calories': round(meals['avg_calories'] or 0, 0),
-            'average_daily_protein': round(meals['avg_protein'] or 0, 1),
-            'average_daily_carbs': round(meals['avg_carbs'] or 0, 1),
-            'average_daily_fats': round(meals['avg_fats'] or 0, 1),
-            'total_meals_logged': meals['total_meals'],
+            'average_daily_calories': round(avg_calories, 0),
+            'average_daily_protein': round(avg_protein, 1),
+            'average_daily_carbs': round(avg_carbs, 1),
+            'average_daily_fats': round(avg_fats, 1),
+            'total_meals_logged': total_meals,
             'days': days
         }
     

@@ -75,8 +75,8 @@ const Nutrition = () => {
       setFavorites(favoritesResponse.data.results || favoritesResponse.data);
     } catch (error) {
       toast({
-        title: 'Error loading data',
-        description: error.response?.data?.detail || 'Failed to load nutrition data',
+        title: 'データ読み込みエラー',
+        description: error.response?.data?.detail || '栄養データの読み込みに失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -111,8 +111,8 @@ const Nutrition = () => {
     e.preventDefault();
     if (selectedFoods.length === 0) {
       toast({
-        title: 'No foods selected',
-        description: 'Please add at least one food to your meal',
+        title: '食品が選択されていません',
+        description: '少なくとも1つの食品を追加してください',
         status: 'warning',
         duration: 3000,
         isClosable: true,
@@ -133,7 +133,7 @@ const Nutrition = () => {
 
       await nutritionService.createMeal(mealData);
       toast({
-        title: 'Meal added',
+        title: '食事を追加しました',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -147,8 +147,8 @@ const Nutrition = () => {
       });
     } catch (error) {
       toast({
-        title: 'Error adding meal',
-        description: error.response?.data?.detail || 'Failed to add meal',
+        title: '食事追加エラー',
+        description: error.response?.data?.detail || '食事の追加に失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -164,7 +164,7 @@ const Nutrition = () => {
       loadData();
     } catch (error) {
       toast({
-        title: 'Error updating favorites',
+        title: 'お気に入り更新エラー',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -209,12 +209,12 @@ const Nutrition = () => {
       {/* Header */}
       <Box mb={8} display="flex" justifyContent="space-between" alignItems="center">
         <Box>
-          <Heading size="lg" mb={2}>Nutrition</Heading>
-          <Text color="gray.600">Track your meals and nutrition intake</Text>
+          <Heading size="lg" mb={2}>栄養管理</Heading>
+          <Text color="gray.600">食事と栄養摂取を記録</Text>
         </Box>
         <Button colorScheme="brand" onClick={onOpen}>
           <Icon as={FiPlus} mr={2} />
-          Log Meal
+          食事を記録
         </Button>
       </Box>
 
@@ -223,9 +223,9 @@ const Nutrition = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Today's Calories</StatLabel>
+              <StatLabel>今日のカロリー</StatLabel>
               <StatNumber>{todayCalories}</StatNumber>
-              <StatHelpText>Target: 2,200 kcal</StatHelpText>
+              <StatHelpText>目標: 2,200 kcal</StatHelpText>
             </Stat>
           </CardBody>
         </Card>
@@ -233,9 +233,9 @@ const Nutrition = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Protein</StatLabel>
+              <StatLabel>タンパク質</StatLabel>
               <StatNumber>{todayProtein.toFixed(1)}g</StatNumber>
-              <StatHelpText>Target: 150g</StatHelpText>
+              <StatHelpText>目標: 150g</StatHelpText>
             </Stat>
           </CardBody>
         </Card>
@@ -243,9 +243,9 @@ const Nutrition = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Carbohydrates</StatLabel>
+              <StatLabel>炭水化物</StatLabel>
               <StatNumber>{todayCarbs.toFixed(1)}g</StatNumber>
-              <StatHelpText>Target: 220g</StatHelpText>
+              <StatHelpText>目標: 220g</StatHelpText>
             </Stat>
           </CardBody>
         </Card>
@@ -253,9 +253,9 @@ const Nutrition = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Fats</StatLabel>
+              <StatLabel>脂質</StatLabel>
               <StatNumber>{todayFats.toFixed(1)}g</StatNumber>
-              <StatHelpText>Target: 70g</StatHelpText>
+              <StatHelpText>目標: 70g</StatHelpText>
             </Stat>
           </CardBody>
         </Card>
@@ -264,7 +264,7 @@ const Nutrition = () => {
       {/* Today's Meals */}
       <Card bg={bgColor} borderWidth="1px" borderColor={borderColor} mb={8}>
         <CardHeader>
-          <Heading size="md">Today's Meals</Heading>
+          <Heading size="md">今日の食事</Heading>
         </CardHeader>
         <CardBody>
           {todayMeals.length > 0 ? (
@@ -280,7 +280,7 @@ const Nutrition = () => {
                     </Text>
                   </HStack>
                   <Text fontSize="sm" color="gray.600">
-                    {meal.foods.length} foods • P: {meal.total_protein.toFixed(1)}g • C: {meal.total_carbs.toFixed(1)}g • F: {meal.total_fats.toFixed(1)}g
+                    {meal.foods.length} 品 • P: {meal.total_protein.toFixed(1)}g • C: {meal.total_carbs.toFixed(1)}g • F: {meal.total_fats.toFixed(1)}g
                   </Text>
                 </Box>
               ))}
@@ -288,9 +288,9 @@ const Nutrition = () => {
           ) : (
             <Center py={8}>
               <VStack>
-                <Text color="gray.500">No meals logged today</Text>
+                <Text color="gray.500">今日の食事はまだ記録されていません</Text>
                 <Button colorScheme="brand" size="sm" onClick={onOpen}>
-                  Log Your First Meal
+                  最初の食事を記録
                 </Button>
               </VStack>
             </Center>
@@ -301,7 +301,7 @@ const Nutrition = () => {
       {/* Favorites */}
       <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
         <CardHeader>
-          <Heading size="md">Favorite Foods</Heading>
+          <Heading size="md">お気に入りの食品</Heading>
         </CardHeader>
         <CardBody>
           {favorites.length > 0 ? (
@@ -318,14 +318,14 @@ const Nutrition = () => {
                     />
                   </HStack>
                   <Text fontSize="xs" color="gray.600">
-                    {favorite.food.calories} kcal per 100g
+                    100gあたり {favorite.food.calories} kcal
                   </Text>
                 </Box>
               ))}
             </Grid>
           ) : (
             <Center py={8}>
-              <Text color="gray.500">No favorite foods yet</Text>
+              <Text color="gray.500">お気に入りの食品はまだありません</Text>
             </Center>
           )}
         </CardBody>
@@ -336,16 +336,16 @@ const Nutrition = () => {
         <ModalOverlay />
         <ModalContent>
           <form onSubmit={handleSubmit}>
-            <ModalHeader>Log Meal</ModalHeader>
+            <ModalHeader>食事を記録</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={6}>
                 {/* Meal Details */}
                 <Box>
-                  <Heading size="sm" mb={4}>Meal Details</Heading>
+                  <Heading size="sm" mb={4}>食事の詳細</Heading>
                   <VStack spacing={4}>
                     <FormControl isRequired>
-                      <FormLabel>Meal Type</FormLabel>
+                      <FormLabel>食事タイプ</FormLabel>
                       <Select name="meal_type" value={formData.meal_type} onChange={handleChange}>
                         {MEAL_TYPES.map((type) => (
                           <option key={type.value} value={type.value}>
@@ -356,7 +356,7 @@ const Nutrition = () => {
                     </FormControl>
 
                     <FormControl isRequired>
-                      <FormLabel>Date</FormLabel>
+                      <FormLabel>日付</FormLabel>
                       <Input
                         type="date"
                         name="date"
@@ -367,7 +367,7 @@ const Nutrition = () => {
                   </VStack>
 
                   {/* Selected Foods */}
-                  <Heading size="sm" mt={6} mb={4}>Selected Foods</Heading>
+                  <Heading size="sm" mt={6} mb={4}>選択した食品</Heading>
                   {selectedFoods.length > 0 ? (
                     <VStack spacing={2} align="stretch">
                       {selectedFoods.map((food, index) => (
@@ -375,7 +375,7 @@ const Nutrition = () => {
                           <Box>
                             <Text fontSize="sm" fontWeight="medium">{food.name}</Text>
                             <Text fontSize="xs" color="gray.600">
-                              {food.calories} kcal per 100g
+                              100gあたり {food.calories} kcal
                             </Text>
                           </Box>
                           <HStack>
@@ -396,17 +396,17 @@ const Nutrition = () => {
                       ))}
                     </VStack>
                   ) : (
-                    <Text fontSize="sm" color="gray.500">No foods selected</Text>
+                    <Text fontSize="sm" color="gray.500">食品が選択されていません</Text>
                   )}
                 </Box>
 
                 {/* Food Search */}
                 <Box>
-                  <Heading size="sm" mb={4}>Add Foods</Heading>
+                  <Heading size="sm" mb={4}>食品を追加</Heading>
                   <FormControl mb={4}>
-                    <FormLabel>Search Foods</FormLabel>
+                    <FormLabel>食品を検索</FormLabel>
                     <Input
-                      placeholder="Search for foods..."
+                      placeholder="食品を検索..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -441,10 +441,10 @@ const Nutrition = () => {
 
             <ModalFooter>
               <Button variant="ghost" mr={3} onClick={onClose}>
-                Cancel
+                キャンセル
               </Button>
               <Button colorScheme="brand" type="submit" isLoading={submitting}>
-                Log Meal
+                食事を記録
               </Button>
             </ModalFooter>
           </form>

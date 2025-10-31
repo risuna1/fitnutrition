@@ -34,23 +34,59 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         style={'input_type': 'password'}
     )
     
+    # Profile fields
+    gender = serializers.CharField(required=False, write_only=True)
+    height = serializers.DecimalField(max_digits=5, decimal_places=2, required=False, write_only=True)
+    weight = serializers.DecimalField(max_digits=5, decimal_places=2, required=False, write_only=True)
+    activity_level = serializers.CharField(required=False, write_only=True)
+    fitness_goal = serializers.CharField(required=False, write_only=True)
+    
     class Meta:
         model = User
         fields = [
             'username', 'email', 'password', 'password2',
-            'first_name', 'last_name', 'phone', 'date_of_birth'
+            'first_name', 'last_name', 'phone', 'date_of_birth',
+            'gender', 'height', 'weight', 'activity_level', 'fitness_goal'
         ]
     
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError(
-                {"password": "Password fields didn't match."}
+                {"password": "パスワードが一致しません。"}
             )
+        
+        # Generate username from email if not provided
+        if not attrs.get('username'):
+            email = attrs.get('email', '')
+            username = email.split('@')[0]
+            # Ensure username is unique
+            base_username = username
+            counter = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+            attrs['username'] = username
+        
         return attrs
     
     def create(self, validated_data):
+        # Extract profile fields
+        profile_data = {
+            'gender': validated_data.pop('gender', None),
+            'height': validated_data.pop('height', None),
+            'current_weight': validated_data.pop('weight', None),
+            'activity_level': validated_data.pop('activity_level', None),
+            'fitness_goal': validated_data.pop('fitness_goal', None),
+        }
+        
+        # Remove password2 and create user
         validated_data.pop('password2')
         user = User.objects.create_user(**validated_data)
+        
+        # Create user profile if profile data is provided
+        if any(profile_data.values()):
+            UserProfile.objects.create(user=user, **{k: v for k, v in profile_data.items() if v is not None})
+        
         return user
 
 
@@ -131,6 +167,6 @@ class ChangePasswordSerializer(serializers.Serializer):
     def validate(self, attrs):
         if attrs['new_password'] != attrs['new_password2']:
             raise serializers.ValidationError(
-                {"new_password": "Password fields didn't match."}
+                {"new_password": "パスワードが一致しません。"}
             )
         return attrs

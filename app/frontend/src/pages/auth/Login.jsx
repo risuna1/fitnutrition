@@ -50,11 +50,16 @@ const Login = () => {
 
     try {
       const response = await authService.login(formData);
-      login(response.access, response.refresh, response.user);
+      
+      // Backend returns { user, tokens: { refresh, access }, message }
+      const accessToken = response.tokens?.access || response.access;
+      const refreshToken = response.tokens?.refresh || response.refresh;
+      
+      login(accessToken, refreshToken, response.user);
       
       toast({
-        title: 'Login successful',
-        description: 'Welcome back!',
+        title: 'ログイン成功',
+        description: 'おかえりなさい！',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -63,8 +68,8 @@ const Login = () => {
       navigate('/dashboard');
     } catch (error) {
       toast({
-        title: 'Login failed',
-        description: error.response?.data?.detail || 'Invalid credentials',
+        title: 'ログイン失敗',
+        description: error.response?.data?.error || error.response?.data?.detail || '認証情報が無効です',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -95,14 +100,14 @@ const Login = () => {
             >
               FitNutrition
             </Heading>
-            <Text color="gray.600">Sign in to your account</Text>
+            <Text color="gray.600">アカウントにログイン</Text>
           </Box>
 
           {/* Login Form */}
           <form onSubmit={handleSubmit}>
             <Stack spacing={4}>
               <FormControl isRequired>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>メールアドレス</FormLabel>
                 <Input
                   type="email"
                   name="email"
@@ -114,21 +119,21 @@ const Login = () => {
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>パスワード</FormLabel>
                 <InputGroup size="lg">
                   <Input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="Enter your password"
+                    placeholder="パスワードを入力"
                   />
                   <InputRightElement>
                     <IconButton
                       variant="ghost"
                       icon={showPassword ? <FiEyeOff /> : <FiEye />}
                       onClick={() => setShowPassword(!showPassword)}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示'}
                     />
                   </InputRightElement>
                 </InputGroup>
@@ -140,9 +145,9 @@ const Login = () => {
                 size="lg"
                 fontSize="md"
                 isLoading={loading}
-                loadingText="Signing in..."
+                loadingText="ログイン中..."
               >
-                Sign In
+                ログイン
               </Button>
             </Stack>
           </form>
@@ -150,20 +155,20 @@ const Login = () => {
           {/* Links */}
           <Stack mt={6} spacing={2}>
             <Text textAlign="center" fontSize="sm">
-              Don't have an account?{' '}
+              アカウントをお持ちでないですか？{' '}
               <Link as={RouterLink} to="/register" color="brand.500" fontWeight="semibold">
-                Sign up
+                新規登録
               </Link>
             </Text>
           </Stack>
         </Box>
 
         {/* Demo credentials */}
-        <Box mt={4} p={4} bg="blue.50" borderRadius="md" fontSize="sm">
-          <Text fontWeight="bold" mb={2}>Demo Credentials:</Text>
-          <Text>Email: demo@fitnutrition.com</Text>
-          <Text>Password: demo123456</Text>
-        </Box>
+        {/* <Box mt={4} p={4} bg="blue.50" borderRadius="md" fontSize="sm">
+          <Text fontWeight="bold" mb={2}>デモアカウント:</Text>
+          <Text>メール: demo@fitnutrition.com</Text>
+          <Text>パスワード: demo123456</Text>
+        </Box> */}
       </Container>
     </Flex>
   );

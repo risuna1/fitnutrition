@@ -79,9 +79,9 @@ const Navbar = ({ onOpen }) => {
               </Badge>
             </MenuButton>
             <MenuList>
-              <MenuItem>New workout plan available</MenuItem>
-              <MenuItem>You've reached your weekly goal!</MenuItem>
-              <MenuItem>Time to log your measurements</MenuItem>
+              <MenuItem>新しいワークアウトプランが利用可能です</MenuItem>
+              <MenuItem>週間目標を達成しました！</MenuItem>
+              <MenuItem>測定値を記録する時間です</MenuItem>
             </MenuList>
           </Menu>
 
@@ -107,14 +107,14 @@ const Navbar = ({ onOpen }) => {
             </MenuButton>
             <MenuList>
               <MenuItem icon={<FiUser />} onClick={() => navigate('/profile')}>
-                Profile
+                プロフィール
               </MenuItem>
               <MenuItem icon={<FiSettings />} onClick={() => navigate('/settings')}>
-                Settings
+                設定
               </MenuItem>
               <MenuDivider />
               <MenuItem icon={<FiLogOut />} onClick={handleLogout}>
-                Logout
+                ログアウト
               </MenuItem>
             </MenuList>
           </Menu>

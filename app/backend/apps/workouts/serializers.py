@@ -174,7 +174,7 @@ class WorkoutSerializer(serializers.ModelSerializer):
 
 class WorkoutCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating a workout with exercises"""
-    exercises = WorkoutExerciseSerializer(many=True, write_only=True)
+    exercises = WorkoutExerciseSerializer(many=True, write_only=True, required=False)
 
     class Meta:
         model = Workout

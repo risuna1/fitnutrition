@@ -3,51 +3,51 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localho
 
 // Activity Levels
 export const ACTIVITY_LEVELS = [
-  { value: 'sedentary', label: 'Sedentary', description: 'Little or no exercise' },
-  { value: 'light', label: 'Lightly Active', description: 'Light exercise 1-3 days/week' },
-  { value: 'moderate', label: 'Moderately Active', description: 'Moderate exercise 3-5 days/week' },
-  { value: 'active', label: 'Very Active', description: 'Hard exercise 6-7 days/week' },
-  { value: 'very_active', label: 'Extra Active', description: 'Very hard exercise & physical job' },
+  { value: 'sedentary', label: '座りがち', description: 'ほとんど運動しない' },
+  { value: 'light', label: '軽い活動', description: '週1-3日の軽い運動' },
+  { value: 'moderate', label: '中程度の活動', description: '週3-5日の中程度の運動' },
+  { value: 'active', label: '活発', description: '週6-7日の激しい運動' },
+  { value: 'very_active', label: '非常に活発', description: '非常に激しい運動と肉体労働' },
 ];
 
 // Fitness Goals
 export const FITNESS_GOALS = [
-  { value: 'weight_loss', label: 'Weight Loss', icon: '📉' },
-  { value: 'muscle_gain', label: 'Muscle Gain', icon: '💪' },
-  { value: 'maintenance', label: 'Maintenance', icon: '⚖️' },
-  { value: 'endurance', label: 'Endurance', icon: '🏃' },
-  { value: 'flexibility', label: 'Flexibility', icon: '🧘' },
+  { value: 'weight_loss', label: '減量', icon: '📉' },
+  { value: 'muscle_gain', label: '筋肉増強', icon: '💪' },
+  { value: 'maintenance', label: '維持', icon: '⚖️' },
+  { value: 'endurance', label: '持久力', icon: '🏃' },
+  { value: 'flexibility', label: '柔軟性', icon: '🧘' },
 ];
 
 // Gender Options
 export const GENDER_OPTIONS = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'other', label: 'Other' },
+  { value: 'male', label: '男性' },
+  { value: 'female', label: '女性' },
+  { value: 'other', label: 'その他' },
 ];
 
 // Exercise Types
 export const EXERCISE_TYPES = [
-  { value: 'strength', label: 'Strength Training' },
-  { value: 'cardio', label: 'Cardio' },
-  { value: 'flexibility', label: 'Flexibility' },
-  { value: 'balance', label: 'Balance' },
-  { value: 'sports', label: 'Sports' },
+  { value: 'strength', label: '筋力トレーニング' },
+  { value: 'cardio', label: '有酸素運動' },
+  { value: 'flexibility', label: '柔軟性' },
+  { value: 'balance', label: 'バランス' },
+  { value: 'sports', label: 'スポーツ' },
 ];
 
 // Difficulty Levels
 export const DIFFICULTY_LEVELS = [
-  { value: 'beginner', label: 'Beginner', color: 'green' },
-  { value: 'intermediate', label: 'Intermediate', color: 'yellow' },
-  { value: 'advanced', label: 'Advanced', color: 'red' },
+  { value: 'beginner', label: '初心者', color: 'green' },
+  { value: 'intermediate', label: '中級者', color: 'yellow' },
+  { value: 'advanced', label: '上級者', color: 'red' },
 ];
 
 // Meal Types
 export const MEAL_TYPES = [
-  { value: 'breakfast', label: 'Breakfast', icon: '🌅' },
-  { value: 'lunch', label: 'Lunch', icon: '☀️' },
-  { value: 'dinner', label: 'Dinner', icon: '🌙' },
-  { value: 'snack', label: 'Snack', icon: '🍎' },
+  { value: 'breakfast', label: '朝食', icon: '🌅' },
+  { value: 'lunch', label: '昼食', icon: '☀️' },
+  { value: 'dinner', label: '夕食', icon: '🌙' },
+  { value: 'snack', label: '間食', icon: '🍎' },
 ];
 
 // Equipment Types
@@ -85,10 +85,10 @@ export const CHART_COLORS = {
 
 // BMI Categories
 export const BMI_CATEGORIES = [
-  { min: 0, max: 18.5, label: 'Underweight', color: 'blue' },
-  { min: 18.5, max: 25, label: 'Normal', color: 'green' },
-  { min: 25, max: 30, label: 'Overweight', color: 'yellow' },
-  { min: 30, max: 100, label: 'Obese', color: 'red' },
+  { min: 0, max: 18.5, label: '低体重', color: 'blue' },
+  { min: 18.5, max: 25, label: '標準', color: 'green' },
+  { min: 25, max: 30, label: '過体重', color: 'yellow' },
+  { min: 30, max: 100, label: '肥満', color: 'red' },
 ];
 
 // Dietary Restrictions

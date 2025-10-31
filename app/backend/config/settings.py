@@ -85,6 +85,12 @@ DATABASES = {
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
 
+# Authentication Backends
+AUTHENTICATION_BACKENDS = [
+    'apps.users.backends.EmailBackend',  # Custom email authentication backend
+    'django.contrib.auth.backends.ModelBackend',  # Default backend as fallback
+]
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {

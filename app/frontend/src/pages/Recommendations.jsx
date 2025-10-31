@@ -45,8 +45,8 @@ const Recommendations = () => {
       setRecommendations(response.data);
     } catch (error) {
       toast({
-        title: 'Error loading recommendations',
-        description: error.response?.data?.detail || 'Failed to load recommendations',
+        title: 'おすすめ読み込みエラー',
+        description: error.response?.data?.detail || 'おすすめの読み込みに失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -61,7 +61,7 @@ const Recommendations = () => {
       setGenerating(true);
       await recommendationsService.generateRecommendations();
       toast({
-        title: 'Recommendations updated',
+        title: 'おすすめを更新しました',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -69,8 +69,8 @@ const Recommendations = () => {
       loadRecommendations();
     } catch (error) {
       toast({
-        title: 'Error generating recommendations',
-        description: error.response?.data?.detail || 'Failed to generate recommendations',
+        title: 'おすすめ生成エラー',
+        description: error.response?.data?.detail || 'おすすめの生成に失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -93,8 +93,8 @@ const Recommendations = () => {
       {/* Header */}
       <Box mb={8} display="flex" justifyContent="space-between" alignItems="center">
         <Box>
-          <Heading size="lg" mb={2}>AI Recommendations</Heading>
-          <Text color="gray.600">Personalized insights and suggestions for your fitness journey</Text>
+          <Heading size="lg" mb={2}>AIおすすめ</Heading>
+          <Text color="gray.600">あなたのフィットネスジャーニーに合わせたパーソナライズされた提案</Text>
         </Box>
         <Button
           colorScheme="brand"
@@ -102,16 +102,16 @@ const Recommendations = () => {
           onClick={generateNewRecommendations}
           isLoading={generating}
         >
-          Refresh
+          更新
         </Button>
       </Box>
 
       <Tabs colorScheme="brand">
         <TabList>
-          <Tab>Overview</Tab>
-          <Tab>Workout Plans</Tab>
-          <Tab>Meal Plans</Tab>
-          <Tab>Tips & Insights</Tab>
+          <Tab>概要</Tab>
+          <Tab>ワークアウトプラン</Tab>
+          <Tab>食事プラン</Tab>
+          <Tab>ヒント＆インサイト</Tab>
         </TabList>
 
         <TabPanels>
@@ -123,32 +123,32 @@ const Recommendations = () => {
                 <CardHeader>
                   <HStack>
                     <Icon as={FiTarget} color="brand.500" boxSize={6} />
-                    <Heading size="md">Your Current Status</Heading>
+                    <Heading size="md">現在の状態</Heading>
                   </HStack>
                 </CardHeader>
                 <CardBody>
                   <VStack align="stretch" spacing={4}>
                     <Box>
-                      <Text fontWeight="medium" mb={2}>Fitness Level</Text>
+                      <Text fontWeight="medium" mb={2}>フィットネスレベル</Text>
                       <Badge colorScheme="green" fontSize="md" px={3} py={1}>
-                        {recommendations?.fitness_level || 'Intermediate'}
+                        {recommendations?.fitness_level || '中級'}
                       </Badge>
                     </Box>
                     <Box>
-                      <Text fontWeight="medium" mb={2}>Primary Goal</Text>
-                      <Text color="gray.600">{recommendations?.primary_goal || 'Weight Loss'}</Text>
+                      <Text fontWeight="medium" mb={2}>主な目標</Text>
+                      <Text color="gray.600">{recommendations?.primary_goal || '減量'}</Text>
                     </Box>
                     <Box>
-                      <Text fontWeight="medium" mb={2}>Progress Rate</Text>
+                      <Text fontWeight="medium" mb={2}>進捗率</Text>
                       <HStack>
                         <Icon as={FiTrendingUp} color="green.500" />
                         <Text color="green.600" fontWeight="medium">
-                          {recommendations?.progress_rate || 'On Track'}
+                          {recommendations?.progress_rate || '順調'}
                         </Text>
                       </HStack>
                     </Box>
                     <Box>
-                      <Text fontWeight="medium" mb={2}>Consistency Score</Text>
+                      <Text fontWeight="medium" mb={2}>継続スコア</Text>
                       <Text fontSize="2xl" fontWeight="bold" color="brand.500">
                         {recommendations?.consistency_score || 85}%
                       </Text>
@@ -162,7 +162,7 @@ const Recommendations = () => {
                 <CardHeader>
                   <HStack>
                     <Icon as={FiAward} color="purple.500" boxSize={6} />
-                    <Heading size="md">Key Recommendations</Heading>
+                    <Heading size="md">重要なおすすめ</Heading>
                   </HStack>
                 </CardHeader>
                 <CardBody>
@@ -175,21 +175,21 @@ const Recommendations = () => {
                     )) || (
                       <>
                         <Box p={3} bg="purple.50" borderRadius="md" borderLeft="4px" borderColor="purple.500">
-                          <Text fontWeight="medium" mb={1}>Increase Protein Intake</Text>
+                          <Text fontWeight="medium" mb={1}>タンパク質摂取を増やす</Text>
                           <Text fontSize="sm" color="gray.600">
-                            Aim for 1.6-2.2g per kg of body weight to support muscle growth
+                            筋肉成長をサポートするため、体重1kgあたり1.6-2.2gを目標に
                           </Text>
                         </Box>
                         <Box p={3} bg="blue.50" borderRadius="md" borderLeft="4px" borderColor="blue.500">
-                          <Text fontWeight="medium" mb={1}>Add Cardio Sessions</Text>
+                          <Text fontWeight="medium" mb={1}>有酸素運動を追加</Text>
                           <Text fontSize="sm" color="gray.600">
-                            Include 2-3 cardio sessions per week for better fat loss
+                            より効果的な脂肪燃焼のため、週2-3回の有酸素運動を含める
                           </Text>
                         </Box>
                         <Box p={3} bg="green.50" borderRadius="md" borderLeft="4px" borderColor="green.500">
-                          <Text fontWeight="medium" mb={1}>Improve Sleep Quality</Text>
+                          <Text fontWeight="medium" mb={1}>睡眠の質を改善</Text>
                           <Text fontSize="sm" color="gray.600">
-                            Aim for 7-9 hours of quality sleep for optimal recovery
+                            最適な回復のため、7-9時間の質の高い睡眠を目指す
                           </Text>
                         </Box>
                       </>
@@ -202,26 +202,26 @@ const Recommendations = () => {
             {/* Weekly Focus */}
             <Card bg={bgColor} borderWidth="1px" borderColor={borderColor} mt={6}>
               <CardHeader>
-                <Heading size="md">This Week's Focus</Heading>
+                <Heading size="md">今週の重点項目</Heading>
               </CardHeader>
               <CardBody>
                 <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={6}>
                   <Box>
-                    <Text fontWeight="medium" mb={2} color="brand.600">Nutrition</Text>
+                    <Text fontWeight="medium" mb={2} color="brand.600">栄養</Text>
                     <Text fontSize="sm" color="gray.600">
-                      {recommendations?.weekly_focus?.nutrition || 'Focus on hitting your protein targets daily. Track all meals consistently.'}
+                      {recommendations?.weekly_focus?.nutrition || '毎日のタンパク質目標を達成することに集中。すべての食事を一貫して記録。'}
                     </Text>
                   </Box>
                   <Box>
-                    <Text fontWeight="medium" mb={2} color="purple.600">Workouts</Text>
+                    <Text fontWeight="medium" mb={2} color="purple.600">ワークアウト</Text>
                     <Text fontSize="sm" color="gray.600">
-                      {recommendations?.weekly_focus?.workouts || 'Complete 4 strength training sessions. Focus on progressive overload.'}
+                      {recommendations?.weekly_focus?.workouts || '4回の筋力トレーニングセッションを完了。プログレッシブオーバーロードに集中。'}
                     </Text>
                   </Box>
                   <Box>
-                    <Text fontWeight="medium" mb={2} color="green.600">Recovery</Text>
+                    <Text fontWeight="medium" mb={2} color="green.600">回復</Text>
                     <Text fontSize="sm" color="gray.600">
-                      {recommendations?.weekly_focus?.recovery || 'Prioritize sleep and active recovery. Stay hydrated throughout the day.'}
+                      {recommendations?.weekly_focus?.recovery || '睡眠とアクティブリカバリーを優先。一日中水分補給を維持。'}
                     </Text>
                   </Box>
                 </Grid>
@@ -242,20 +242,20 @@ const Recommendations = () => {
                     <Text color="gray.600" mb={4}>{plan.description}</Text>
                     <VStack align="stretch" spacing={2}>
                       <HStack justify="space-between">
-                        <Text fontSize="sm" color="gray.600">Duration:</Text>
+                        <Text fontSize="sm" color="gray.600">期間:</Text>
                         <Text fontSize="sm" fontWeight="medium">{plan.duration}</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text fontSize="sm" color="gray.600">Frequency:</Text>
+                        <Text fontSize="sm" color="gray.600">頻度:</Text>
                         <Text fontSize="sm" fontWeight="medium">{plan.frequency}</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text fontSize="sm" color="gray.600">Focus:</Text>
+                        <Text fontSize="sm" color="gray.600">重点:</Text>
                         <Text fontSize="sm" fontWeight="medium">{plan.focus}</Text>
                       </HStack>
                     </VStack>
                     <Button colorScheme="brand" size="sm" mt={4} w="full">
-                      Start This Plan
+                      このプランを開始
                     </Button>
                   </CardBody>
                 </Card>
@@ -263,58 +263,58 @@ const Recommendations = () => {
                 <>
                   <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
                     <CardHeader>
-                      <Heading size="md">Strength Building Program</Heading>
-                      <Badge colorScheme="brand" mt={2}>Intermediate</Badge>
+                      <Heading size="md">筋力向上プログラム</Heading>
+                      <Badge colorScheme="brand" mt={2}>中級</Badge>
                     </CardHeader>
                     <CardBody>
                       <Text color="gray.600" mb={4}>
-                        4-day split focusing on compound movements and progressive overload
+                        コンパウンド種目とプログレッシブオーバーロードに焦点を当てた4日間スプリット
                       </Text>
                       <VStack align="stretch" spacing={2}>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Duration:</Text>
-                          <Text fontSize="sm" fontWeight="medium">12 weeks</Text>
+                          <Text fontSize="sm" color="gray.600">期間:</Text>
+                          <Text fontSize="sm" fontWeight="medium">12週間</Text>
                         </HStack>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Frequency:</Text>
-                          <Text fontSize="sm" fontWeight="medium">4 days/week</Text>
+                          <Text fontSize="sm" color="gray.600">頻度:</Text>
+                          <Text fontSize="sm" fontWeight="medium">週4日</Text>
                         </HStack>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Focus:</Text>
-                          <Text fontSize="sm" fontWeight="medium">Muscle Building</Text>
+                          <Text fontSize="sm" color="gray.600">重点:</Text>
+                          <Text fontSize="sm" fontWeight="medium">筋肉増強</Text>
                         </HStack>
                       </VStack>
                       <Button colorScheme="brand" size="sm" mt={4} w="full">
-                        Start This Plan
+                        このプランを開始
                       </Button>
                     </CardBody>
                   </Card>
 
                   <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
                     <CardHeader>
-                      <Heading size="md">Fat Loss Circuit Training</Heading>
-                      <Badge colorScheme="orange" mt={2}>Beginner-Intermediate</Badge>
+                      <Heading size="md">脂肪燃焼サーキットトレーニング</Heading>
+                      <Badge colorScheme="orange" mt={2}>初級-中級</Badge>
                     </CardHeader>
                     <CardBody>
                       <Text color="gray.600" mb={4}>
-                        High-intensity circuits combining cardio and strength for maximum calorie burn
+                        最大カロリー消費のための有酸素運動と筋力トレーニングを組み合わせた高強度サーキット
                       </Text>
                       <VStack align="stretch" spacing={2}>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Duration:</Text>
-                          <Text fontSize="sm" fontWeight="medium">8 weeks</Text>
+                          <Text fontSize="sm" color="gray.600">期間:</Text>
+                          <Text fontSize="sm" fontWeight="medium">8週間</Text>
                         </HStack>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Frequency:</Text>
-                          <Text fontSize="sm" fontWeight="medium">5 days/week</Text>
+                          <Text fontSize="sm" color="gray.600">頻度:</Text>
+                          <Text fontSize="sm" fontWeight="medium">週5日</Text>
                         </HStack>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Focus:</Text>
-                          <Text fontSize="sm" fontWeight="medium">Fat Loss</Text>
+                          <Text fontSize="sm" color="gray.600">重点:</Text>
+                          <Text fontSize="sm" fontWeight="medium">脂肪燃焼</Text>
                         </HStack>
                       </VStack>
                       <Button colorScheme="brand" size="sm" mt={4} w="full">
-                        Start This Plan
+                        このプランを開始
                       </Button>
                     </CardBody>
                   </Card>
@@ -330,26 +330,26 @@ const Recommendations = () => {
                 <Card key={index} bg={bgColor} borderWidth="1px" borderColor={borderColor}>
                   <CardHeader>
                     <Heading size="md">{plan.name}</Heading>
-                    <Badge colorScheme="green" mt={2}>{plan.calories} kcal/day</Badge>
+                    <Badge colorScheme="green" mt={2}>{plan.calories} kcal/日</Badge>
                   </CardHeader>
                   <CardBody>
                     <Text color="gray.600" mb={4}>{plan.description}</Text>
                     <VStack align="stretch" spacing={2}>
                       <HStack justify="space-between">
-                        <Text fontSize="sm" color="gray.600">Protein:</Text>
+                        <Text fontSize="sm" color="gray.600">タンパク質:</Text>
                         <Text fontSize="sm" fontWeight="medium">{plan.protein}g</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text fontSize="sm" color="gray.600">Carbs:</Text>
+                        <Text fontSize="sm" color="gray.600">炭水化物:</Text>
                         <Text fontSize="sm" fontWeight="medium">{plan.carbs}g</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text fontSize="sm" color="gray.600">Fats:</Text>
+                        <Text fontSize="sm" color="gray.600">脂質:</Text>
                         <Text fontSize="sm" fontWeight="medium">{plan.fats}g</Text>
                       </HStack>
                     </VStack>
                     <Button colorScheme="green" size="sm" mt={4} w="full">
-                      View Meal Plan
+                      食事プランを表示
                     </Button>
                   </CardBody>
                 </Card>
@@ -357,58 +357,58 @@ const Recommendations = () => {
                 <>
                   <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
                     <CardHeader>
-                      <Heading size="md">Balanced Nutrition Plan</Heading>
-                      <Badge colorScheme="green" mt={2}>2,200 kcal/day</Badge>
+                      <Heading size="md">バランス栄養プラン</Heading>
+                      <Badge colorScheme="green" mt={2}>2,200 kcal/日</Badge>
                     </CardHeader>
                     <CardBody>
                       <Text color="gray.600" mb={4}>
-                        Well-balanced macros for sustainable weight loss and muscle maintenance
+                        持続可能な減量と筋肉維持のためのバランスの取れたマクロ栄養素
                       </Text>
                       <VStack align="stretch" spacing={2}>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Protein:</Text>
+                          <Text fontSize="sm" color="gray.600">タンパク質:</Text>
                           <Text fontSize="sm" fontWeight="medium">165g (30%)</Text>
                         </HStack>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Carbs:</Text>
+                          <Text fontSize="sm" color="gray.600">炭水化物:</Text>
                           <Text fontSize="sm" fontWeight="medium">220g (40%)</Text>
                         </HStack>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Fats:</Text>
+                          <Text fontSize="sm" color="gray.600">脂質:</Text>
                           <Text fontSize="sm" fontWeight="medium">73g (30%)</Text>
                         </HStack>
                       </VStack>
                       <Button colorScheme="green" size="sm" mt={4} w="full">
-                        View Meal Plan
+                        食事プランを表示
                       </Button>
                     </CardBody>
                   </Card>
 
                   <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
                     <CardHeader>
-                      <Heading size="md">High Protein Plan</Heading>
-                      <Badge colorScheme="blue" mt={2}>2,400 kcal/day</Badge>
+                      <Heading size="md">高タンパク質プラン</Heading>
+                      <Badge colorScheme="blue" mt={2}>2,400 kcal/日</Badge>
                     </CardHeader>
                     <CardBody>
                       <Text color="gray.600" mb={4}>
-                        Higher protein intake to support muscle building and recovery
+                        筋肉増強と回復をサポートする高タンパク質摂取
                       </Text>
                       <VStack align="stretch" spacing={2}>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Protein:</Text>
+                          <Text fontSize="sm" color="gray.600">タンパク質:</Text>
                           <Text fontSize="sm" fontWeight="medium">210g (35%)</Text>
                         </HStack>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Carbs:</Text>
+                          <Text fontSize="sm" color="gray.600">炭水化物:</Text>
                           <Text fontSize="sm" fontWeight="medium">240g (40%)</Text>
                         </HStack>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">Fats:</Text>
+                          <Text fontSize="sm" color="gray.600">脂質:</Text>
                           <Text fontSize="sm" fontWeight="medium">67g (25%)</Text>
                         </HStack>
                       </VStack>
                       <Button colorScheme="green" size="sm" mt={4} w="full">
-                        View Meal Plan
+                        食事プランを表示
                       </Button>
                     </CardBody>
                   </Card>
@@ -440,11 +440,11 @@ const Recommendations = () => {
                       <HStack align="start" spacing={4}>
                         <Icon as={FiAward} color="brand.500" boxSize={6} mt={1} />
                         <Box flex="1">
-                          <Heading size="sm" mb={2}>Progressive Overload is Key</Heading>
+                          <Heading size="sm" mb={2}>プログレッシブオーバーロードが鍵</Heading>
                           <Text color="gray.600" fontSize="sm">
-                            Gradually increase the weight, frequency, or number of repetitions in your strength training routine. This progressive overload is essential for continuous muscle growth and strength gains.
+                            筋力トレーニングルーチンで、重量、頻度、または反復回数を徐々に増やしましょう。このプログレッシブオーバーロードは、継続的な筋肉成長と筋力向上に不可欠です。
                           </Text>
-                          <Badge colorScheme="brand" mt={2}>Workout</Badge>
+                          <Badge colorScheme="brand" mt={2}>ワークアウト</Badge>
                         </Box>
                       </HStack>
                     </CardBody>
@@ -455,11 +455,11 @@ const Recommendations = () => {
                       <HStack align="start" spacing={4}>
                         <Icon as={FiAward} color="green.500" boxSize={6} mt={1} />
                         <Box flex="1">
-                          <Heading size="sm" mb={2}>Meal Timing Matters</Heading>
+                          <Heading size="sm" mb={2}>食事のタイミングが重要</Heading>
                           <Text color="gray.600" fontSize="sm">
-                            Consume protein within 2 hours after your workout to maximize muscle protein synthesis. Aim for 20-40g of high-quality protein post-workout.
+                            筋タンパク質合成を最大化するため、ワークアウト後2時間以内にタンパク質を摂取しましょう。ワークアウト後は20-40gの高品質タンパク質を目指しましょう。
                           </Text>
-                          <Badge colorScheme="green" mt={2}>Nutrition</Badge>
+                          <Badge colorScheme="green" mt={2}>栄養</Badge>
                         </Box>
                       </HStack>
                     </CardBody>
@@ -470,11 +470,11 @@ const Recommendations = () => {
                       <HStack align="start" spacing={4}>
                         <Icon as={FiAward} color="purple.500" boxSize={6} mt={1} />
                         <Box flex="1">
-                          <Heading size="sm" mb={2}>Recovery is Part of Training</Heading>
+                          <Heading size="sm" mb={2}>回復もトレーニングの一部</Heading>
                           <Text color="gray.600" fontSize="sm">
-                            Your muscles grow during rest, not during workouts. Ensure you're getting 7-9 hours of quality sleep and taking at least 1-2 rest days per week.
+                            筋肉はワークアウト中ではなく、休息中に成長します。7-9時間の質の高い睡眠を確保し、週に少なくとも1-2日の休息日を取りましょう。
                           </Text>
-                          <Badge colorScheme="purple" mt={2}>Recovery</Badge>
+                          <Badge colorScheme="purple" mt={2}>回復</Badge>
                         </Box>
                       </HStack>
                     </CardBody>
@@ -485,11 +485,11 @@ const Recommendations = () => {
                       <HStack align="start" spacing={4}>
                         <Icon as={FiAward} color="orange.500" boxSize={6} mt={1} />
                         <Box flex="1">
-                          <Heading size="sm" mb={2}>Stay Hydrated</Heading>
+                          <Heading size="sm" mb={2}>水分補給を維持</Heading>
                           <Text color="gray.600" fontSize="sm">
-                            Drink at least 3-4 liters of water daily. Proper hydration improves performance, aids recovery, and supports metabolic processes.
+                            毎日少なくとも3-4リットルの水を飲みましょう。適切な水分補給はパフォーマンスを向上させ、回復を助け、代謝プロセスをサポートします。
                           </Text>
-                          <Badge colorScheme="orange" mt={2}>General</Badge>
+                          <Badge colorScheme="orange" mt={2}>一般</Badge>
                         </Box>
                       </HStack>
                     </CardBody>

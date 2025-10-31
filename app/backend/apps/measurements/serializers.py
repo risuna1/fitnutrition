@@ -41,7 +41,7 @@ class BodyMeasurementCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if BodyMeasurement.objects.filter(user=user, date=value).exists():
             raise serializers.ValidationError(
-                "A measurement for this date already exists. Please update the existing one."
+                "この日付の測定値は既に存在します。既存のものを更新してください。"
             )
         return value
 
@@ -88,7 +88,7 @@ class ProgressLogCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if ProgressLog.objects.filter(user=user, date=value).exists():
             raise serializers.ValidationError(
-                "A progress log for this date already exists. Please update the existing one."
+                "この日付の進捗記録は既に存在します。既存のものを更新してください。"
             )
         return value
 

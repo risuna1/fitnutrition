@@ -72,8 +72,8 @@ const Measurements = () => {
       setMeasurements(response.data.results || response.data);
     } catch (error) {
       toast({
-        title: 'Error loading measurements',
-        description: error.response?.data?.detail || 'Failed to load data',
+        title: '測定値の読み込みエラー',
+        description: error.response?.data?.detail || 'データの読み込みに失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -97,7 +97,7 @@ const Measurements = () => {
     try {
       await measurementsService.createMeasurement(formData);
       toast({
-        title: 'Measurement added',
+        title: '測定値を追加しました',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -117,8 +117,8 @@ const Measurements = () => {
       });
     } catch (error) {
       toast({
-        title: 'Error adding measurement',
-        description: error.response?.data?.detail || 'Failed to add measurement',
+        title: '測定値の追加エラー',
+        description: error.response?.data?.detail || '測定値の追加に失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -153,11 +153,11 @@ const Measurements = () => {
       {/* Header */}
       <Box mb={8} display="flex" justifyContent="space-between" alignItems="center">
         <Box>
-          <Heading size="lg" mb={2}>Body Measurements</Heading>
-          <Text color="gray.600">Track your body composition and progress</Text>
+          <Heading size="lg" mb={2}>身体測定</Heading>
+          <Text color="gray.600">体組成と進捗を記録</Text>
         </Box>
         <Button colorScheme="brand" onClick={onOpen}>
-          Add Measurement
+          測定値を追加
         </Button>
       </Box>
 
@@ -167,7 +167,7 @@ const Measurements = () => {
           <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
             <CardBody>
               <Stat>
-                <StatLabel>Current Weight</StatLabel>
+                <StatLabel>現在の体重</StatLabel>
                 <StatNumber>{latestMeasurement.weight} kg</StatNumber>
                 <StatHelpText>{formatDate(latestMeasurement.date)}</StatHelpText>
               </Stat>
@@ -181,7 +181,7 @@ const Measurements = () => {
                 <StatNumber>{bmi?.toFixed(1)}</StatNumber>
                 <StatHelpText>
                   <Badge colorScheme={bmi < 18.5 ? 'yellow' : bmi < 25 ? 'green' : bmi < 30 ? 'orange' : 'red'}>
-                    {bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese'}
+                    {bmi < 18.5 ? '低体重' : bmi < 25 ? '標準' : bmi < 30 ? '過体重' : '肥満'}
                   </Badge>
                 </StatHelpText>
               </Stat>
@@ -191,9 +191,9 @@ const Measurements = () => {
           <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
             <CardBody>
               <Stat>
-                <StatLabel>BMR</StatLabel>
+                <StatLabel>基礎代謝量</StatLabel>
                 <StatNumber>{bmr?.toFixed(0)} kcal</StatNumber>
-                <StatHelpText>Basal Metabolic Rate</StatHelpText>
+                <StatHelpText>BMR</StatHelpText>
               </Stat>
             </CardBody>
           </Card>
@@ -201,9 +201,9 @@ const Measurements = () => {
           <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
             <CardBody>
               <Stat>
-                <StatLabel>TDEE</StatLabel>
+                <StatLabel>1日の消費カロリー</StatLabel>
                 <StatNumber>{tdee?.toFixed(0)} kcal</StatNumber>
-                <StatHelpText>Daily Energy Expenditure</StatHelpText>
+                <StatHelpText>TDEE</StatHelpText>
               </Stat>
             </CardBody>
           </Card>
@@ -214,7 +214,7 @@ const Measurements = () => {
       {chartData.length > 0 && (
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor} mb={8}>
           <CardHeader>
-            <Heading size="md">Weight Progress</Heading>
+            <Heading size="md">体重の推移</Heading>
           </CardHeader>
           <CardBody>
             <ResponsiveContainer width="100%" height={300}>
@@ -224,9 +224,9 @@ const Measurements = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="weight" stroke="#4F46E5" name="Weight (kg)" />
+                <Line type="monotone" dataKey="weight" stroke="#4F46E5" name="体重 (kg)" />
                 {chartData[0].bodyFat && (
-                  <Line type="monotone" dataKey="bodyFat" stroke="#10B981" name="Body Fat %" />
+                  <Line type="monotone" dataKey="bodyFat" stroke="#10B981" name="体脂肪率 %" />
                 )}
               </LineChart>
             </ResponsiveContainer>
@@ -237,7 +237,7 @@ const Measurements = () => {
       {/* Measurements History */}
       <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
         <CardHeader>
-          <Heading size="md">Measurement History</Heading>
+          <Heading size="md">測定履歴</Heading>
         </CardHeader>
         <CardBody>
           {measurements.length > 0 ? (
@@ -245,12 +245,12 @@ const Measurements = () => {
               <Table variant="simple">
                 <Thead>
                   <Tr>
-                    <Th>Date</Th>
-                    <Th isNumeric>Weight (kg)</Th>
-                    <Th isNumeric>Height (cm)</Th>
-                    <Th isNumeric>Body Fat %</Th>
+                    <Th>日付</Th>
+                    <Th isNumeric>体重 (kg)</Th>
+                    <Th isNumeric>身長 (cm)</Th>
+                    <Th isNumeric>体脂肪率 %</Th>
                     <Th isNumeric>BMI</Th>
-                    <Th isNumeric>Waist (cm)</Th>
+                    <Th isNumeric>ウエスト (cm)</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -269,7 +269,7 @@ const Measurements = () => {
             </Box>
           ) : (
             <Center py={8}>
-              <Text color="gray.500">No measurements yet. Add your first measurement!</Text>
+              <Text color="gray.500">まだ測定値がありません。最初の測定値を追加しましょう！</Text>
             </Center>
           )}
         </CardBody>
@@ -280,12 +280,12 @@ const Measurements = () => {
         <ModalOverlay />
         <ModalContent>
           <form onSubmit={handleSubmit}>
-            <ModalHeader>Add New Measurement</ModalHeader>
+            <ModalHeader>新しい測定値を追加</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
                 <FormControl isRequired>
-                  <FormLabel>Weight (kg)</FormLabel>
+                  <FormLabel>体重 (kg)</FormLabel>
                   <Input
                     type="number"
                     step="0.1"
@@ -297,7 +297,7 @@ const Measurements = () => {
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>Height (cm)</FormLabel>
+                  <FormLabel>身長 (cm)</FormLabel>
                   <Input
                     type="number"
                     name="height"
@@ -308,7 +308,7 @@ const Measurements = () => {
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel>Body Fat %</FormLabel>
+                  <FormLabel>体脂肪率 %</FormLabel>
                   <Input
                     type="number"
                     step="0.1"
@@ -320,7 +320,7 @@ const Measurements = () => {
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel>Chest (cm)</FormLabel>
+                  <FormLabel>胸囲 (cm)</FormLabel>
                   <Input
                     type="number"
                     step="0.1"
@@ -332,7 +332,7 @@ const Measurements = () => {
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel>Waist (cm)</FormLabel>
+                  <FormLabel>ウエスト (cm)</FormLabel>
                   <Input
                     type="number"
                     step="0.1"
@@ -344,7 +344,7 @@ const Measurements = () => {
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel>Hips (cm)</FormLabel>
+                  <FormLabel>ヒップ (cm)</FormLabel>
                   <Input
                     type="number"
                     step="0.1"
@@ -356,7 +356,7 @@ const Measurements = () => {
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel>Arms (cm)</FormLabel>
+                  <FormLabel>腕周り (cm)</FormLabel>
                   <Input
                     type="number"
                     step="0.1"
@@ -368,7 +368,7 @@ const Measurements = () => {
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel>Thighs (cm)</FormLabel>
+                  <FormLabel>太もも (cm)</FormLabel>
                   <Input
                     type="number"
                     step="0.1"
@@ -380,7 +380,7 @@ const Measurements = () => {
                 </FormControl>
 
                 <FormControl>
-                  <FormLabel>Calves (cm)</FormLabel>
+                  <FormLabel>ふくらはぎ (cm)</FormLabel>
                   <Input
                     type="number"
                     step="0.1"
@@ -395,10 +395,10 @@ const Measurements = () => {
 
             <ModalFooter>
               <Button variant="ghost" mr={3} onClick={onClose}>
-                Cancel
+                キャンセル
               </Button>
               <Button colorScheme="brand" type="submit" isLoading={submitting}>
-                Add Measurement
+                測定値を追加
               </Button>
             </ModalFooter>
           </form>

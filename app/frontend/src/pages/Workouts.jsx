@@ -80,8 +80,8 @@ const Workouts = () => {
       setPlans(plansResponse.data.results || plansResponse.data);
     } catch (error) {
       toast({
-        title: 'Error loading data',
-        description: error.response?.data?.detail || 'Failed to load workout data',
+        title: 'データ読み込みエラー',
+        description: error.response?.data?.detail || 'ワークアウトデータの読み込みに失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -116,8 +116,8 @@ const Workouts = () => {
     e.preventDefault();
     if (selectedExercises.length === 0) {
       toast({
-        title: 'No exercises selected',
-        description: 'Please add at least one exercise',
+        title: 'エクササイズが選択されていません',
+        description: '少なくとも1つのエクササイズを追加してください',
         status: 'warning',
         duration: 3000,
         isClosable: true,
@@ -140,7 +140,7 @@ const Workouts = () => {
 
       await workoutsService.createWorkout(workoutData);
       toast({
-        title: 'Workout logged',
+        title: 'ワークアウトを記録しました',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -156,8 +156,8 @@ const Workouts = () => {
       });
     } catch (error) {
       toast({
-        title: 'Error logging workout',
-        description: error.response?.data?.detail || 'Failed to log workout',
+        title: 'ワークアウト記録エラー',
+        description: error.response?.data?.detail || 'ワークアウトの記録に失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -194,12 +194,12 @@ const Workouts = () => {
       {/* Header */}
       <Box mb={8} display="flex" justifyContent="space-between" alignItems="center">
         <Box>
-          <Heading size="lg" mb={2}>Workouts</Heading>
-          <Text color="gray.600">Track your exercises and workout sessions</Text>
+          <Heading size="lg" mb={2}>ワークアウト</Heading>
+          <Text color="gray.600">エクササイズとワークアウトセッションを記録</Text>
         </Box>
         <Button colorScheme="brand" onClick={onOpen}>
           <Icon as={FiPlus} mr={2} />
-          Log Workout
+          ワークアウトを記録
         </Button>
       </Box>
 
@@ -208,9 +208,9 @@ const Workouts = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>This Week</StatLabel>
+              <StatLabel>今週</StatLabel>
               <StatNumber>{thisWeekWorkouts.length}</StatNumber>
-              <StatHelpText>Workouts completed</StatHelpText>
+              <StatHelpText>完了したワークアウト</StatHelpText>
             </Stat>
           </CardBody>
         </Card>
@@ -218,9 +218,9 @@ const Workouts = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Total Duration</StatLabel>
-              <StatNumber>{totalDuration} min</StatNumber>
-              <StatHelpText>This week</StatHelpText>
+              <StatLabel>合計時間</StatLabel>
+              <StatNumber>{totalDuration} 分</StatNumber>
+              <StatHelpText>今週</StatHelpText>
             </Stat>
           </CardBody>
         </Card>
@@ -228,9 +228,9 @@ const Workouts = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Calories Burned</StatLabel>
+              <StatLabel>消費カロリー</StatLabel>
               <StatNumber>{totalCalories}</StatNumber>
-              <StatHelpText>This week</StatHelpText>
+              <StatHelpText>今週</StatHelpText>
             </Stat>
           </CardBody>
         </Card>
@@ -238,11 +238,11 @@ const Workouts = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Avg. Duration</StatLabel>
+              <StatLabel>平均時間</StatLabel>
               <StatNumber>
-                {thisWeekWorkouts.length > 0 ? Math.round(totalDuration / thisWeekWorkouts.length) : 0} min
+                {thisWeekWorkouts.length > 0 ? Math.round(totalDuration / thisWeekWorkouts.length) : 0} 分
               </StatNumber>
-              <StatHelpText>Per workout</StatHelpText>
+              <StatHelpText>1回あたり</StatHelpText>
             </Stat>
           </CardBody>
         </Card>
@@ -252,7 +252,7 @@ const Workouts = () => {
         {/* Workout History */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Recent Workouts</Heading>
+            <Heading size="md">最近のワークアウト</Heading>
           </CardHeader>
           <CardBody>
             {workouts.length > 0 ? (
@@ -266,11 +266,11 @@ const Workouts = () => {
                     <HStack spacing={4} fontSize="sm" color="gray.600">
                       <HStack>
                         <Icon as={FiClock} />
-                        <Text>{workout.duration} min</Text>
+                        <Text>{workout.duration} 分</Text>
                       </HStack>
                       <HStack>
                         <Icon as={FiActivity} />
-                        <Text>{workout.exercises.length} exercises</Text>
+                        <Text>{workout.exercises.length} 種目</Text>
                       </HStack>
                       <HStack>
                         <Icon as={FiCheck} />
@@ -288,9 +288,9 @@ const Workouts = () => {
             ) : (
               <Center py={8}>
                 <VStack>
-                  <Text color="gray.500">No workouts logged yet</Text>
+                  <Text color="gray.500">まだワークアウトが記録されていません</Text>
                   <Button colorScheme="brand" size="sm" onClick={onOpen}>
-                    Log Your First Workout
+                    最初のワークアウトを記録
                   </Button>
                 </VStack>
               </Center>
@@ -301,7 +301,7 @@ const Workouts = () => {
         {/* Workout Plans */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Workout Plans</Heading>
+            <Heading size="md">ワークアウトプラン</Heading>
           </CardHeader>
           <CardBody>
             {plans.length > 0 ? (
@@ -313,16 +313,16 @@ const Workouts = () => {
                       {plan.description}
                     </Text>
                     <HStack fontSize="xs" color="gray.500">
-                      <Text>{plan.duration_weeks} weeks</Text>
+                      <Text>{plan.duration_weeks} 週間</Text>
                       <Text>•</Text>
-                      <Text>{plan.exercises_count} exercises</Text>
+                      <Text>{plan.exercises_count} 種目</Text>
                     </HStack>
                   </Box>
                 ))}
               </VStack>
             ) : (
               <Center py={8}>
-                <Text color="gray.500" fontSize="sm">No workout plans available</Text>
+                <Text color="gray.500" fontSize="sm">利用可能なワークアウトプランがありません</Text>
               </Center>
             )}
           </CardBody>
@@ -334,31 +334,31 @@ const Workouts = () => {
         <ModalOverlay />
         <ModalContent>
           <form onSubmit={handleSubmit}>
-            <ModalHeader>Log Workout</ModalHeader>
+            <ModalHeader>ワークアウトを記録</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Tabs>
                 <TabList>
-                  <Tab>Workout Details</Tab>
-                  <Tab>Add Exercises</Tab>
+                  <Tab>ワークアウトの詳細</Tab>
+                  <Tab>エクササイズを追加</Tab>
                 </TabList>
 
                 <TabPanels>
                   <TabPanel>
                     <VStack spacing={4}>
                       <FormControl isRequired>
-                        <FormLabel>Workout Name</FormLabel>
+                        <FormLabel>ワークアウト名</FormLabel>
                         <Input
                           name="name"
                           value={formData.name}
                           onChange={handleChange}
-                          placeholder="e.g., Upper Body Strength"
+                          placeholder="例: 上半身トレーニング"
                         />
                       </FormControl>
 
                       <Grid templateColumns="repeat(2, 1fr)" gap={4} w="full">
                         <FormControl isRequired>
-                          <FormLabel>Date</FormLabel>
+                          <FormLabel>日付</FormLabel>
                           <Input
                             type="date"
                             name="date"
@@ -368,7 +368,7 @@ const Workouts = () => {
                         </FormControl>
 
                         <FormControl isRequired>
-                          <FormLabel>Duration (minutes)</FormLabel>
+                          <FormLabel>時間 (分)</FormLabel>
                           <Input
                             type="number"
                             name="duration"
@@ -380,18 +380,18 @@ const Workouts = () => {
                       </Grid>
 
                       <FormControl>
-                        <FormLabel>Notes</FormLabel>
+                        <FormLabel>メモ</FormLabel>
                         <Textarea
                           name="notes"
                           value={formData.notes}
                           onChange={handleChange}
-                          placeholder="How did you feel? Any observations?"
+                          placeholder="体調や気づいたことを記録..."
                         />
                       </FormControl>
 
                       {/* Selected Exercises */}
                       <Box w="full">
-                        <Heading size="sm" mb={3}>Selected Exercises ({selectedExercises.length})</Heading>
+                        <Heading size="sm" mb={3}>選択したエクササイズ ({selectedExercises.length})</Heading>
                         {selectedExercises.length > 0 ? (
                           <VStack spacing={2} align="stretch">
                             {selectedExercises.map((exercise, index) => (
@@ -405,7 +405,7 @@ const Workouts = () => {
                                   width="60px"
                                   value={exercise.sets}
                                   onChange={(e) => handleExerciseUpdate(index, 'sets', parseInt(e.target.value))}
-                                  placeholder="Sets"
+                                  placeholder="セット"
                                 />
                                 <Input
                                   type="number"
@@ -413,7 +413,7 @@ const Workouts = () => {
                                   width="60px"
                                   value={exercise.reps}
                                   onChange={(e) => handleExerciseUpdate(index, 'reps', parseInt(e.target.value))}
-                                  placeholder="Reps"
+                                  placeholder="回数"
                                 />
                                 <Input
                                   type="number"
@@ -421,7 +421,7 @@ const Workouts = () => {
                                   width="70px"
                                   value={exercise.weight}
                                   onChange={(e) => handleExerciseUpdate(index, 'weight', parseFloat(e.target.value))}
-                                  placeholder="Weight"
+                                  placeholder="重量"
                                 />
                                 <Button size="sm" colorScheme="red" variant="ghost" onClick={() => handleExerciseRemove(index)}>
                                   ×
@@ -430,7 +430,7 @@ const Workouts = () => {
                             ))}
                           </VStack>
                         ) : (
-                          <Text fontSize="sm" color="gray.500">No exercises selected. Go to "Add Exercises" tab.</Text>
+                          <Text fontSize="sm" color="gray.500">エクササイズが選択されていません。「エクササイズを追加」タブから選択してください。</Text>
                         )}
                       </Box>
                     </VStack>
@@ -467,10 +467,10 @@ const Workouts = () => {
 
             <ModalFooter>
               <Button variant="ghost" mr={3} onClick={onClose}>
-                Cancel
+                キャンセル
               </Button>
               <Button colorScheme="brand" type="submit" isLoading={submitting}>
-                Log Workout
+                ワークアウトを記録
               </Button>
             </ModalFooter>
           </form>

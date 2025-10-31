@@ -44,8 +44,8 @@ const Progress = () => {
       setProgressData(response.data);
     } catch (error) {
       toast({
-        title: 'Error loading progress data',
-        description: error.response?.data?.detail || 'Failed to load data',
+        title: '進捗データ読み込みエラー',
+        description: error.response?.data?.detail || 'データの読み込みに失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -91,15 +91,15 @@ const Progress = () => {
       {/* Header */}
       <Box mb={8} display="flex" justifyContent="space-between" alignItems="center">
         <Box>
-          <Heading size="lg" mb={2}>Progress Tracking</Heading>
-          <Text color="gray.600">Monitor your fitness journey and achievements</Text>
+          <Heading size="lg" mb={2}>進捗追跡</Heading>
+          <Text color="gray.600">フィットネスの進捗と達成状況を確認</Text>
         </Box>
         <Select w="200px" value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
-          <option value="7">Last 7 Days</option>
-          <option value="30">Last 30 Days</option>
-          <option value="90">Last 3 Months</option>
-          <option value="180">Last 6 Months</option>
-          <option value="365">Last Year</option>
+          <option value="7">過去7日間</option>
+          <option value="30">過去30日間</option>
+          <option value="90">過去3ヶ月</option>
+          <option value="180">過去6ヶ月</option>
+          <option value="365">過去1年</option>
         </Select>
       </Box>
 
@@ -108,13 +108,13 @@ const Progress = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Weight Change</StatLabel>
+              <StatLabel>体重変化</StatLabel>
               <StatNumber>{progressData?.weight_change?.toFixed(1) || 0} kg</StatNumber>
               <StatHelpText>
                 {progressData?.weight_change && (
                   <StatArrow type={progressData.weight_change < 0 ? 'decrease' : 'increase'} />
                 )}
-                {timeRange === '7' ? 'This week' : timeRange === '30' ? 'This month' : 'In period'}
+                {timeRange === '7' ? '今週' : timeRange === '30' ? '今月' : '期間内'}
               </StatHelpText>
             </Stat>
           </CardBody>
@@ -123,13 +123,13 @@ const Progress = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Body Fat Change</StatLabel>
+              <StatLabel>体脂肪率変化</StatLabel>
               <StatNumber>{progressData?.body_fat_change?.toFixed(1) || 0}%</StatNumber>
               <StatHelpText>
                 {progressData?.body_fat_change && (
                   <StatArrow type={progressData.body_fat_change < 0 ? 'decrease' : 'increase'} />
                 )}
-                {timeRange === '7' ? 'This week' : timeRange === '30' ? 'This month' : 'In period'}
+                {timeRange === '7' ? '今週' : timeRange === '30' ? '今月' : '期間内'}
               </StatHelpText>
             </Stat>
           </CardBody>
@@ -138,10 +138,10 @@ const Progress = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Total Workouts</StatLabel>
+              <StatLabel>総ワークアウト数</StatLabel>
               <StatNumber>{progressData?.total_workouts || 0}</StatNumber>
               <StatHelpText>
-                {progressData?.workout_consistency || 0}% consistency
+                継続率 {progressData?.workout_consistency || 0}%
               </StatHelpText>
             </Stat>
           </CardBody>
@@ -150,10 +150,10 @@ const Progress = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Avg. Daily Calories</StatLabel>
+              <StatLabel>平均カロリー摂取</StatLabel>
               <StatNumber>{progressData?.avg_calories || 0}</StatNumber>
               <StatHelpText>
-                Target: {progressData?.target_calories || 2000} kcal
+                目標: {progressData?.target_calories || 2000} kcal
               </StatHelpText>
             </Stat>
           </CardBody>
@@ -165,7 +165,7 @@ const Progress = () => {
         {/* Weight Progress */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Weight Progress</Heading>
+            <Heading size="md">体重の推移</Heading>
           </CardHeader>
           <CardBody>
             {weightData.length > 0 ? (
@@ -176,13 +176,13 @@ const Progress = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="weight" stroke="#4F46E5" name="Weight (kg)" strokeWidth={2} />
-                  <Line type="monotone" dataKey="goal" stroke="#10B981" name="Goal" strokeDasharray="5 5" />
+                  <Line type="monotone" dataKey="weight" stroke="#4F46E5" name="体重 (kg)" strokeWidth={2} />
+                  <Line type="monotone" dataKey="goal" stroke="#10B981" name="目標" strokeDasharray="5 5" />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
               <Center h="300px">
-                <Text color="gray.500">No weight data available</Text>
+                <Text color="gray.500">体重データがありません</Text>
               </Center>
             )}
           </CardBody>
@@ -191,7 +191,7 @@ const Progress = () => {
         {/* Body Fat Progress */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Body Fat Percentage</Heading>
+            <Heading size="md">体脂肪率</Heading>
           </CardHeader>
           <CardBody>
             {bodyFatData.length > 0 ? (
@@ -202,12 +202,12 @@ const Progress = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="bodyFat" stroke="#F59E0B" name="Body Fat %" strokeWidth={2} />
+                  <Line type="monotone" dataKey="bodyFat" stroke="#F59E0B" name="体脂肪率 %" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
               <Center h="300px">
-                <Text color="gray.500">No body fat data available</Text>
+                <Text color="gray.500">体脂肪データがありません</Text>
               </Center>
             )}
           </CardBody>
@@ -216,7 +216,7 @@ const Progress = () => {
         {/* Workout Frequency */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Workout Frequency</Heading>
+            <Heading size="md">ワークアウト頻度</Heading>
           </CardHeader>
           <CardBody>
             {workoutData.length > 0 ? (
@@ -227,12 +227,12 @@ const Progress = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="count" fill="#8B5CF6" name="Workouts" />
+                  <Bar dataKey="count" fill="#8B5CF6" name="ワークアウト数" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
               <Center h="300px">
-                <Text color="gray.500">No workout data available</Text>
+                <Text color="gray.500">ワークアウトデータがありません</Text>
               </Center>
             )}
           </CardBody>
@@ -241,7 +241,7 @@ const Progress = () => {
         {/* Calorie Trends */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Calorie Intake</Heading>
+            <Heading size="md">カロリー摂取量</Heading>
           </CardHeader>
           <CardBody>
             {calorieData.length > 0 ? (
@@ -252,13 +252,13 @@ const Progress = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="calories" stroke="#EF4444" name="Calories" strokeWidth={2} />
-                  <Line type="monotone" dataKey="target" stroke="#10B981" name="Target" strokeDasharray="5 5" />
+                  <Line type="monotone" dataKey="calories" stroke="#EF4444" name="カロリー" strokeWidth={2} />
+                  <Line type="monotone" dataKey="target" stroke="#10B981" name="目標" strokeDasharray="5 5" />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
               <Center h="300px">
-                <Text color="gray.500">No calorie data available</Text>
+                <Text color="gray.500">カロリーデータがありません</Text>
               </Center>
             )}
           </CardBody>
@@ -270,35 +270,35 @@ const Progress = () => {
         {/* Current Goals */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Current Goals</Heading>
+            <Heading size="md">現在の目標</Heading>
           </CardHeader>
           <CardBody>
             <SimpleGrid columns={1} spacing={4}>
               <Box p={4} borderWidth="1px" borderRadius="md">
-                <Text fontWeight="medium" mb={2}>Weight Goal</Text>
+                <Text fontWeight="medium" mb={2}>体重目標</Text>
                 <Text fontSize="2xl" fontWeight="bold" color="brand.500">
-                  {progressData?.weight_goal || 'Not set'} kg
+                  {progressData?.weight_goal || '未設定'} kg
                 </Text>
                 <Text fontSize="sm" color="gray.600">
-                  Current: {progressData?.current_weight || 0} kg
+                  現在: {progressData?.current_weight || 0} kg
                 </Text>
               </Box>
               <Box p={4} borderWidth="1px" borderRadius="md">
-                <Text fontWeight="medium" mb={2}>Body Fat Goal</Text>
+                <Text fontWeight="medium" mb={2}>体脂肪率目標</Text>
                 <Text fontSize="2xl" fontWeight="bold" color="orange.500">
-                  {progressData?.body_fat_goal || 'Not set'}%
+                  {progressData?.body_fat_goal || '未設定'}%
                 </Text>
                 <Text fontSize="sm" color="gray.600">
-                  Current: {progressData?.current_body_fat || 0}%
+                  現在: {progressData?.current_body_fat || 0}%
                 </Text>
               </Box>
               <Box p={4} borderWidth="1px" borderRadius="md">
-                <Text fontWeight="medium" mb={2}>Weekly Workout Goal</Text>
+                <Text fontWeight="medium" mb={2}>週間ワークアウト目標</Text>
                 <Text fontSize="2xl" fontWeight="bold" color="purple.500">
-                  {progressData?.workout_goal || 5} sessions
+                  {progressData?.workout_goal || 5} 回
                 </Text>
                 <Text fontSize="sm" color="gray.600">
-                  This week: {progressData?.workouts_this_week || 0}
+                  今週: {progressData?.workouts_this_week || 0}
                 </Text>
               </Box>
             </SimpleGrid>
@@ -308,7 +308,7 @@ const Progress = () => {
         {/* Achievements */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Recent Achievements</Heading>
+            <Heading size="md">最近の達成</Heading>
           </CardHeader>
           <CardBody>
             {progressData?.achievements?.length > 0 ? (
@@ -323,7 +323,7 @@ const Progress = () => {
               </SimpleGrid>
             ) : (
               <Center py={8}>
-                <Text color="gray.500">No achievements yet. Keep working towards your goals!</Text>
+                <Text color="gray.500">まだ達成がありません。目標に向かって頑張りましょう！</Text>
               </Center>
             )}
           </CardBody>

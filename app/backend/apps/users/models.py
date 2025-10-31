@@ -10,14 +10,14 @@ class User(AbstractUser):
     """
     Custom User Model extending Django's AbstractUser
     """
-    email = models.EmailField(unique=True, verbose_name='Email Address')
-    phone = models.CharField(max_length=20, blank=True, null=True, verbose_name='Phone Number')
-    date_of_birth = models.DateField(blank=True, null=True, verbose_name='Date of Birth')
+    email = models.EmailField(unique=True, verbose_name='メールアドレス')
+    phone = models.CharField(max_length=20, blank=True, null=True, verbose_name='電話番号')
+    date_of_birth = models.DateField(blank=True, null=True, verbose_name='生年月日')
     profile_picture = models.ImageField(
         upload_to='profile_pictures/',
         blank=True,
         null=True,
-        verbose_name='Profile Picture'
+        verbose_name='プロフィール画像'
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -26,8 +26,8 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
     
     class Meta:
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
+        verbose_name = 'ユーザー'
+        verbose_name_plural = 'ユーザー'
         ordering = ['-created_at']
     
     def __str__(self):
@@ -50,43 +50,43 @@ class UserProfile(models.Model):
     Extended User Profile with fitness-related information
     """
     GENDER_CHOICES = [
-        ('male', 'Male'),
-        ('female', 'Female'),
-        ('other', 'Other'),
+        ('male', '男性'),
+        ('female', '女性'),
+        ('other', 'その他'),
     ]
     
     ACTIVITY_LEVEL_CHOICES = [
-        ('sedentary', 'Sedentary (little or no exercise)'),
-        ('light', 'Lightly Active (light exercise 1-3 days/week)'),
-        ('moderate', 'Moderately Active (moderate exercise 3-5 days/week)'),
-        ('very', 'Very Active (hard exercise 6-7 days/week)'),
-        ('extra', 'Extra Active (very hard exercise, physical job)'),
+        ('sedentary', '座りがち（ほとんど運動なし）'),
+        ('light', '軽い活動（週1-3日の軽い運動）'),
+        ('moderate', '中程度の活動（週3-5日の中程度の運動）'),
+        ('very', '活発（週6-7日のハードな運動）'),
+        ('extra', '非常に活発（非常にハードな運動、肉体労働）'),
     ]
     
     FITNESS_GOAL_CHOICES = [
-        ('weight_loss', 'Weight Loss'),
-        ('muscle_gain', 'Muscle Gain'),
-        ('maintenance', 'Maintenance'),
-        ('endurance', 'Endurance'),
-        ('flexibility', 'Flexibility'),
-        ('general_fitness', 'General Fitness'),
+        ('weight_loss', '減量'),
+        ('muscle_gain', '筋肉増強'),
+        ('maintenance', '維持'),
+        ('endurance', '持久力'),
+        ('flexibility', '柔軟性'),
+        ('general_fitness', '総合的なフィットネス'),
     ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, verbose_name='Gender')
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, verbose_name='性別')
     height = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         validators=[MinValueValidator(50), MaxValueValidator(300)],
-        help_text='Height in centimeters',
-        verbose_name='Height (cm)'
+        help_text='身長（センチメートル）',
+        verbose_name='身長 (cm)'
     )
     current_weight = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         validators=[MinValueValidator(20), MaxValueValidator(500)],
-        help_text='Current weight in kilograms',
-        verbose_name='Current Weight (kg)'
+        help_text='現在の体重（キログラム）',
+        verbose_name='現在の体重 (kg)'
     )
     target_weight = models.DecimalField(
         max_digits=5,
@@ -94,20 +94,20 @@ class UserProfile(models.Model):
         validators=[MinValueValidator(20), MaxValueValidator(500)],
         blank=True,
         null=True,
-        help_text='Target weight in kilograms',
-        verbose_name='Target Weight (kg)'
+        help_text='目標体重（キログラム）',
+        verbose_name='目標体重 (kg)'
     )
     activity_level = models.CharField(
         max_length=20,
         choices=ACTIVITY_LEVEL_CHOICES,
         default='moderate',
-        verbose_name='Activity Level'
+        verbose_name='活動レベル'
     )
     fitness_goal = models.CharField(
         max_length=20,
         choices=FITNESS_GOAL_CHOICES,
         default='general_fitness',
-        verbose_name='Fitness Goal'
+        verbose_name='フィットネス目標'
     )
     body_fat_percentage = models.DecimalField(
         max_digits=4,
@@ -115,7 +115,7 @@ class UserProfile(models.Model):
         validators=[MinValueValidator(3), MaxValueValidator(60)],
         blank=True,
         null=True,
-        verbose_name='Body Fat Percentage'
+        verbose_name='体脂肪率'
     )
     
     # Body Measurements (optional)
@@ -124,50 +124,50 @@ class UserProfile(models.Model):
         decimal_places=1,
         blank=True,
         null=True,
-        verbose_name='Chest (cm)'
+        verbose_name='胸囲 (cm)'
     )
     waist = models.DecimalField(
         max_digits=5,
         decimal_places=1,
         blank=True,
         null=True,
-        verbose_name='Waist (cm)'
+        verbose_name='ウエスト (cm)'
     )
     hips = models.DecimalField(
         max_digits=5,
         decimal_places=1,
         blank=True,
         null=True,
-        verbose_name='Hips (cm)'
+        verbose_name='ヒップ (cm)'
     )
     arms = models.DecimalField(
         max_digits=5,
         decimal_places=1,
         blank=True,
         null=True,
-        verbose_name='Arms (cm)'
+        verbose_name='腕周り (cm)'
     )
     thighs = models.DecimalField(
         max_digits=5,
         decimal_places=1,
         blank=True,
         null=True,
-        verbose_name='Thighs (cm)'
+        verbose_name='太もも (cm)'
     )
     calves = models.DecimalField(
         max_digits=5,
         decimal_places=1,
         blank=True,
         null=True,
-        verbose_name='Calves (cm)'
+        verbose_name='ふくらはぎ (cm)'
     )
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        verbose_name = 'User Profile'
-        verbose_name_plural = 'User Profiles'
+        verbose_name = 'ユーザープロフィール'
+        verbose_name_plural = 'ユーザープロフィール'
     
     def __str__(self):
         return f"{self.user.get_full_name()}'s Profile"
@@ -265,13 +265,13 @@ class FoodPreference(models.Model):
     User's food preferences, allergies, and dietary restrictions
     """
     DIET_TYPE_CHOICES = [
-        ('omnivore', 'Omnivore'),
-        ('vegetarian', 'Vegetarian'),
-        ('vegan', 'Vegan'),
-        ('pescatarian', 'Pescatarian'),
-        ('keto', 'Ketogenic'),
-        ('paleo', 'Paleo'),
-        ('mediterranean', 'Mediterranean'),
+        ('omnivore', '雑食'),
+        ('vegetarian', 'ベジタリアン'),
+        ('vegan', 'ビーガン'),
+        ('pescatarian', 'ペスカタリアン'),
+        ('keto', 'ケトジェニック'),
+        ('paleo', 'パレオ'),
+        ('mediterranean', '地中海式'),
     ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='food_preferences')
@@ -279,34 +279,34 @@ class FoodPreference(models.Model):
         max_length=20,
         choices=DIET_TYPE_CHOICES,
         default='omnivore',
-        verbose_name='Diet Type'
+        verbose_name='食事タイプ'
     )
     allergies = models.TextField(
         blank=True,
-        help_text='List any food allergies (comma-separated)',
-        verbose_name='Allergies'
+        help_text='食物アレルギーをリスト（カンマ区切り）',
+        verbose_name='アレルギー'
     )
     dislikes = models.TextField(
         blank=True,
-        help_text='Foods you dislike (comma-separated)',
-        verbose_name='Dislikes'
+        help_text='嫌いな食べ物（カンマ区切り）',
+        verbose_name='嫌いな食べ物'
     )
     preferred_foods = models.TextField(
         blank=True,
-        help_text='Your favorite foods (comma-separated)',
-        verbose_name='Preferred Foods'
+        help_text='好きな食べ物（カンマ区切り）',
+        verbose_name='好きな食べ物'
     )
     avoid_ingredients = models.TextField(
         blank=True,
-        help_text='Ingredients to avoid (comma-separated)',
-        verbose_name='Avoid Ingredients'
+        help_text='避けたい食材（カンマ区切り）',
+        verbose_name='避けたい食材'
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        verbose_name = 'Food Preference'
-        verbose_name_plural = 'Food Preferences'
+        verbose_name = '食品の好み'
+        verbose_name_plural = '食品の好み'
     
     def __str__(self):
         return f"{self.user.get_full_name()}'s Food Preferences"

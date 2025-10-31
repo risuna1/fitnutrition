@@ -71,8 +71,8 @@ const Dashboard = () => {
     <Box>
       {/* Header */}
       <Box mb={8}>
-        <Heading size="lg" mb={2}>Dashboard</Heading>
-        <Text color="gray.600">Welcome back! Here's your fitness overview.</Text>
+        <Heading size="lg" mb={2}>ダッシュボード</Heading>
+        <Text color="gray.600">おかえりなさい！フィットネスの概要です。</Text>
       </Box>
 
       {/* Stats Cards */}
@@ -81,13 +81,13 @@ const Dashboard = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Current Weight</StatLabel>
+              <StatLabel>現在の体重</StatLabel>
               <StatNumber>{latestMeasurement?.weight || 'N/A'} kg</StatNumber>
               <StatHelpText>
                 {dashboardData?.weight_change && (
                   <>
                     <StatArrow type={dashboardData.weight_change > 0 ? 'increase' : 'decrease'} />
-                    {Math.abs(dashboardData.weight_change).toFixed(1)} kg this month
+                    今月 {Math.abs(dashboardData.weight_change).toFixed(1)} kg
                   </>
                 )}
               </StatHelpText>
@@ -104,7 +104,7 @@ const Dashboard = () => {
               <StatHelpText>
                 {bmi && (
                   <Badge colorScheme={bmi < 18.5 ? 'yellow' : bmi < 25 ? 'green' : bmi < 30 ? 'orange' : 'red'}>
-                    {bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese'}
+                    {bmi < 18.5 ? '低体重' : bmi < 25 ? '標準' : bmi < 30 ? '過体重' : '肥満'}
                   </Badge>
                 )}
               </StatHelpText>
@@ -116,10 +116,10 @@ const Dashboard = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Today's Calories</StatLabel>
+              <StatLabel>今日のカロリー</StatLabel>
               <StatNumber>{dashboardData?.today_calories || 0}</StatNumber>
               <StatHelpText>
-                Target: {dashboardData?.target_calories || 2000} kcal
+                目標: {dashboardData?.target_calories || 2000} kcal
               </StatHelpText>
             </Stat>
           </CardBody>
@@ -129,10 +129,10 @@ const Dashboard = () => {
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardBody>
             <Stat>
-              <StatLabel>Workouts This Week</StatLabel>
+              <StatLabel>今週のワークアウト</StatLabel>
               <StatNumber>{dashboardData?.workouts_this_week || 0}</StatNumber>
               <StatHelpText>
-                Goal: {dashboardData?.workout_goal || 5} per week
+                目標: 週{dashboardData?.workout_goal || 5}回
               </StatHelpText>
             </Stat>
           </CardBody>
@@ -144,7 +144,7 @@ const Dashboard = () => {
         {/* Recent Activity */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Recent Activity</Heading>
+            <Heading size="md">最近のアクティビティ</Heading>
           </CardHeader>
           <CardBody>
             <VStack align="stretch" spacing={4}>
@@ -163,9 +163,9 @@ const Dashboard = () => {
                 <Center py={8}>
                   <VStack>
                     <Icon as={FiActivity} boxSize={12} color="gray.400" />
-                    <Text color="gray.500">No recent activity</Text>
+                    <Text color="gray.500">最近のアクティビティはありません</Text>
                     <Button colorScheme="brand" size="sm" onClick={() => navigate('/workouts')}>
-                      Log Your First Workout
+                      最初のワークアウトを記録
                     </Button>
                   </VStack>
                 </Center>
@@ -177,7 +177,7 @@ const Dashboard = () => {
         {/* Quick Actions */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Quick Actions</Heading>
+            <Heading size="md">クイックアクション</Heading>
           </CardHeader>
           <CardBody>
             <VStack spacing={3}>
@@ -187,7 +187,7 @@ const Dashboard = () => {
                 colorScheme="brand"
                 onClick={() => navigate('/measurements')}
               >
-                Log Measurement
+                測定値を記録
               </Button>
               <Button
                 w="full"
@@ -196,7 +196,7 @@ const Dashboard = () => {
                 colorScheme="brand"
                 onClick={() => navigate('/workouts')}
               >
-                Log Workout
+                ワークアウトを記録
               </Button>
               <Button
                 w="full"
@@ -205,7 +205,7 @@ const Dashboard = () => {
                 colorScheme="brand"
                 onClick={() => navigate('/nutrition')}
               >
-                Log Meal
+                食事を記録
               </Button>
               <Button
                 w="full"
@@ -214,7 +214,7 @@ const Dashboard = () => {
                 colorScheme="brand"
                 onClick={() => navigate('/progress')}
               >
-                View Progress
+                進捗を表示
               </Button>
             </VStack>
           </CardBody>
@@ -224,37 +224,37 @@ const Dashboard = () => {
       {/* Goals Section */}
       <Card bg={bgColor} borderWidth="1px" borderColor={borderColor} mt={6}>
         <CardHeader>
-          <Heading size="md">Your Goals</Heading>
+          <Heading size="md">あなたの目標</Heading>
         </CardHeader>
         <CardBody>
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
             <Box>
-              <Text fontWeight="medium" mb={2}>Weight Goal</Text>
+              <Text fontWeight="medium" mb={2}>体重目標</Text>
               <Text fontSize="2xl" fontWeight="bold" color="brand.500">
-                {dashboardData?.weight_goal || 'Not set'} kg
+                {dashboardData?.weight_goal || '未設定'} kg
               </Text>
               <Text fontSize="sm" color="gray.600">
                 {dashboardData?.weight_goal && latestMeasurement?.weight
-                  ? `${Math.abs(latestMeasurement.weight - dashboardData.weight_goal).toFixed(1)} kg to go`
-                  : 'Set your goal in settings'}
+                  ? `あと${Math.abs(latestMeasurement.weight - dashboardData.weight_goal).toFixed(1)} kg`
+                  : '設定で目標を設定してください'}
               </Text>
             </Box>
             <Box>
-              <Text fontWeight="medium" mb={2}>Daily Calories</Text>
+              <Text fontWeight="medium" mb={2}>1日のカロリー</Text>
               <Text fontSize="2xl" fontWeight="bold" color="green.500">
                 {dashboardData?.target_calories || 2000} kcal
               </Text>
               <Text fontSize="sm" color="gray.600">
-                Based on your activity level
+                活動レベルに基づく
               </Text>
             </Box>
             <Box>
-              <Text fontWeight="medium" mb={2}>Weekly Workouts</Text>
+              <Text fontWeight="medium" mb={2}>週間ワークアウト</Text>
               <Text fontSize="2xl" fontWeight="bold" color="purple.500">
-                {dashboardData?.workout_goal || 5} sessions
+                {dashboardData?.workout_goal || 5} セッション
               </Text>
               <Text fontSize="sm" color="gray.600">
-                {dashboardData?.workouts_this_week || 0} completed this week
+                今週{dashboardData?.workouts_this_week || 0}回完了
               </Text>
             </Box>
           </SimpleGrid>

@@ -6,28 +6,28 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class Exercise(models.Model):
     """Exercise database with details"""
     EXERCISE_TYPES = [
-        ('strength', 'Strength Training'),
-        ('cardio', 'Cardio'),
-        ('flexibility', 'Flexibility'),
-        ('balance', 'Balance'),
-        ('sports', 'Sports'),
+        ('strength', '筋力トレーニング'),
+        ('cardio', '有酸素運動'),
+        ('flexibility', '柔軟性'),
+        ('balance', 'バランス'),
+        ('sports', 'スポーツ'),
     ]
 
     DIFFICULTY_LEVELS = [
-        ('beginner', 'Beginner'),
-        ('intermediate', 'Intermediate'),
-        ('advanced', 'Advanced'),
+        ('beginner', '初級'),
+        ('intermediate', '中級'),
+        ('advanced', '上級'),
     ]
 
     EQUIPMENT_CHOICES = [
-        ('none', 'No Equipment'),
-        ('dumbbells', 'Dumbbells'),
-        ('barbell', 'Barbell'),
-        ('machine', 'Machine'),
-        ('bodyweight', 'Bodyweight'),
-        ('resistance_band', 'Resistance Band'),
-        ('kettlebell', 'Kettlebell'),
-        ('other', 'Other'),
+        ('none', '器具なし'),
+        ('dumbbells', 'ダンベル'),
+        ('barbell', 'バーベル'),
+        ('machine', 'マシン'),
+        ('bodyweight', '自重'),
+        ('resistance_band', 'レジスタンスバンド'),
+        ('kettlebell', 'ケトルベル'),
+        ('other', 'その他'),
     ]
 
     name = models.CharField(max_length=200)
@@ -83,11 +83,11 @@ class Exercise(models.Model):
 class WorkoutPlan(models.Model):
     """Pre-defined workout plans"""
     GOAL_CHOICES = [
-        ('weight_loss', 'Weight Loss'),
-        ('muscle_gain', 'Muscle Gain'),
-        ('strength', 'Strength Building'),
-        ('endurance', 'Endurance'),
-        ('general_fitness', 'General Fitness'),
+        ('weight_loss', '減量'),
+        ('muscle_gain', '筋肉増強'),
+        ('strength', '筋力向上'),
+        ('endurance', '持久力'),
+        ('general_fitness', '総合的なフィットネス'),
     ]
 
     name = models.CharField(max_length=200)

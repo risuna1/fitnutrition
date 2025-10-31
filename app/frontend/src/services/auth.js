@@ -8,8 +8,13 @@ export const authService = {
   },
 
   // Login user
-  login: async (email, password) => {
-    const response = await api.post('/auth/login/', { email, password })
+  login: async (credentials) => {
+    // Support both object and separate parameters
+    const loginData = typeof credentials === 'object' 
+      ? credentials 
+      : { email: credentials, password: arguments[1] }
+    
+    const response = await api.post('/auth/login/', loginData)
     return response.data
   },
 

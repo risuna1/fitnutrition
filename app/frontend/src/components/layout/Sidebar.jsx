@@ -22,13 +22,13 @@ import {
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 const LinkItems = [
-  { name: 'Dashboard', icon: FiHome, path: '/dashboard' },
-  { name: 'Measurements', icon: FiActivity, path: '/measurements' },
-  { name: 'Nutrition', icon: FiHeart, path: '/nutrition' },
-  { name: 'Workouts', icon: FiCalendar, path: '/workouts' },
-  { name: 'Progress', icon: FiTrendingUp, path: '/progress' },
-  { name: 'Recommendations', icon: FiAward, path: '/recommendations' },
-  { name: 'Settings', icon: FiSettings, path: '/settings' },
+  { name: 'ダッシュボード', icon: FiHome, path: '/dashboard' },
+  { name: '測定値', icon: FiActivity, path: '/measurements' },
+  { name: '栄養', icon: FiHeart, path: '/nutrition' },
+  { name: 'ワークアウト', icon: FiCalendar, path: '/workouts' },
+  { name: '進捗', icon: FiTrendingUp, path: '/progress' },
+  { name: 'おすすめ', icon: FiAward, path: '/recommendations' },
+  { name: '設定', icon: FiSettings, path: '/settings' },
 ];
 
 const SidebarContent = ({ onClose, ...rest }) => {

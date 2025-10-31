@@ -67,8 +67,8 @@ const Profile = () => {
       });
     } catch (error) {
       toast({
-        title: 'Error loading profile',
-        description: error.response?.data?.detail || 'Failed to load profile',
+        title: 'プロフィール読み込みエラー',
+        description: error.response?.data?.detail || 'プロフィールの読み込みに失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -93,7 +93,7 @@ const Profile = () => {
       const response = await usersService.updateProfile(formData);
       updateUser(response.data);
       toast({
-        title: 'Profile updated',
+        title: 'プロフィールを更新しました',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -101,8 +101,8 @@ const Profile = () => {
       loadProfile();
     } catch (error) {
       toast({
-        title: 'Error updating profile',
-        description: error.response?.data?.detail || 'Failed to update profile',
+        title: 'プロフィール更新エラー',
+        description: error.response?.data?.detail || 'プロフィールの更新に失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -124,8 +124,8 @@ const Profile = () => {
     <Box>
       {/* Header */}
       <Box mb={8}>
-        <Heading size="lg" mb={2}>Profile Settings</Heading>
-        <Text color="gray.600">Manage your personal information and preferences</Text>
+        <Heading size="lg" mb={2}>プロフィール設定</Heading>
+        <Text color="gray.600">個人情報と設定を管理</Text>
       </Box>
 
       <Grid templateColumns={{ base: '1fr', lg: '300px 1fr' }} gap={6}>
@@ -145,21 +145,21 @@ const Profile = () => {
               <Divider />
               <VStack align="stretch" w="full" spacing={2}>
                 <HStack justify="space-between">
-                  <Text fontSize="sm" color="gray.600">Member Since</Text>
+                  <Text fontSize="sm" color="gray.600">登録日</Text>
                   <Text fontSize="sm" fontWeight="medium">
-                    {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'}
+                    {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : '未設定'}
                   </Text>
                 </HStack>
                 <HStack justify="space-between">
-                  <Text fontSize="sm" color="gray.600">Activity Level</Text>
+                  <Text fontSize="sm" color="gray.600">活動レベル</Text>
                   <Text fontSize="sm" fontWeight="medium">
-                    {ACTIVITY_LEVELS.find(l => l.value === formData.activity_level)?.label || 'Not set'}
+                    {ACTIVITY_LEVELS.find(l => l.value === formData.activity_level)?.label || '未設定'}
                   </Text>
                 </HStack>
                 <HStack justify="space-between">
-                  <Text fontSize="sm" color="gray.600">Fitness Goal</Text>
+                  <Text fontSize="sm" color="gray.600">フィットネス目標</Text>
                   <Text fontSize="sm" fontWeight="medium">
-                    {FITNESS_GOALS.find(g => g.value === formData.fitness_goal)?.label || 'Not set'}
+                    {FITNESS_GOALS.find(g => g.value === formData.fitness_goal)?.label || '未設定'}
                   </Text>
                 </HStack>
               </VStack>
@@ -170,48 +170,48 @@ const Profile = () => {
         {/* Profile Form */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Personal Information</Heading>
+            <Heading size="md">個人情報</Heading>
           </CardHeader>
           <CardBody>
             <form onSubmit={handleSubmit}>
               <VStack spacing={6} align="stretch">
                 {/* Basic Information */}
                 <Box>
-                  <Heading size="sm" mb={4}>Basic Information</Heading>
+                  <Heading size="sm" mb={4}>基本情報</Heading>
                   <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
                     <FormControl isRequired>
-                      <FormLabel>First Name</FormLabel>
+                      <FormLabel>名</FormLabel>
                       <Input
                         name="first_name"
                         value={formData.first_name}
                         onChange={handleChange}
-                        placeholder="John"
+                        placeholder="太郎"
                       />
                     </FormControl>
 
                     <FormControl isRequired>
-                      <FormLabel>Last Name</FormLabel>
+                      <FormLabel>姓</FormLabel>
                       <Input
                         name="last_name"
                         value={formData.last_name}
                         onChange={handleChange}
-                        placeholder="Doe"
+                        placeholder="山田"
                       />
                     </FormControl>
 
                     <FormControl isRequired>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>メールアドレス</FormLabel>
                       <Input
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="john@example.com"
+                        placeholder="example@email.com"
                       />
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel>Date of Birth</FormLabel>
+                      <FormLabel>生年月日</FormLabel>
                       <Input
                         type="date"
                         name="date_of_birth"
@@ -221,21 +221,21 @@ const Profile = () => {
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel>Gender</FormLabel>
+                      <FormLabel>性別</FormLabel>
                       <Select
                         name="gender"
                         value={formData.gender}
                         onChange={handleChange}
-                        placeholder="Select gender"
+                        placeholder="性別を選択"
                       >
-                        <option value="M">Male</option>
-                        <option value="F">Female</option>
-                        <option value="O">Other</option>
+                        <option value="M">男性</option>
+                        <option value="F">女性</option>
+                        <option value="O">その他</option>
                       </Select>
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel>Height (cm)</FormLabel>
+                      <FormLabel>身長 (cm)</FormLabel>
                       <Input
                         type="number"
                         name="height"
@@ -251,15 +251,15 @@ const Profile = () => {
 
                 {/* Fitness Information */}
                 <Box>
-                  <Heading size="sm" mb={4}>Fitness Information</Heading>
+                  <Heading size="sm" mb={4}>フィットネス情報</Heading>
                   <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
                     <FormControl>
-                      <FormLabel>Activity Level</FormLabel>
+                      <FormLabel>活動レベル</FormLabel>
                       <Select
                         name="activity_level"
                         value={formData.activity_level}
                         onChange={handleChange}
-                        placeholder="Select activity level"
+                        placeholder="活動レベルを選択"
                       >
                         {ACTIVITY_LEVELS.map((level) => (
                           <option key={level.value} value={level.value}>
@@ -270,12 +270,12 @@ const Profile = () => {
                     </FormControl>
 
                     <FormControl>
-                      <FormLabel>Fitness Goal</FormLabel>
+                      <FormLabel>フィットネス目標</FormLabel>
                       <Select
                         name="fitness_goal"
                         value={formData.fitness_goal}
                         onChange={handleChange}
-                        placeholder="Select fitness goal"
+                        placeholder="目標を選択"
                       >
                         {FITNESS_GOALS.map((goal) => (
                           <option key={goal.value} value={goal.value}>
@@ -292,7 +292,7 @@ const Profile = () => {
                 {/* Action Buttons */}
                 <HStack justify="flex-end" spacing={4}>
                   <Button variant="outline" onClick={loadProfile}>
-                    Cancel
+                    キャンセル
                   </Button>
                   <Button
                     type="submit"
@@ -300,7 +300,7 @@ const Profile = () => {
                     leftIcon={<FiSave />}
                     isLoading={submitting}
                   >
-                    Save Changes
+                    変更を保存
                   </Button>
                 </HStack>
               </VStack>
@@ -312,7 +312,7 @@ const Profile = () => {
       {/* Account Statistics */}
       <Card bg={bgColor} borderWidth="1px" borderColor={borderColor} mt={6}>
         <CardHeader>
-          <Heading size="md">Account Statistics</Heading>
+          <Heading size="md">アカウント統計</Heading>
         </CardHeader>
         <CardBody>
           <Grid templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }} gap={6}>
@@ -320,25 +320,25 @@ const Profile = () => {
               <Text fontSize="3xl" fontWeight="bold" color="brand.500">
                 {profile?.total_measurements || 0}
               </Text>
-              <Text fontSize="sm" color="gray.600">Measurements Logged</Text>
+              <Text fontSize="sm" color="gray.600">記録した測定値</Text>
             </Box>
             <Box textAlign="center">
               <Text fontSize="3xl" fontWeight="bold" color="green.500">
                 {profile?.total_meals || 0}
               </Text>
-              <Text fontSize="sm" color="gray.600">Meals Logged</Text>
+              <Text fontSize="sm" color="gray.600">記録した食事</Text>
             </Box>
             <Box textAlign="center">
               <Text fontSize="3xl" fontWeight="bold" color="purple.500">
                 {profile?.total_workouts || 0}
               </Text>
-              <Text fontSize="sm" color="gray.600">Workouts Completed</Text>
+              <Text fontSize="sm" color="gray.600">完了したワークアウト</Text>
             </Box>
             <Box textAlign="center">
               <Text fontSize="3xl" fontWeight="bold" color="orange.500">
                 {profile?.days_active || 0}
               </Text>
-              <Text fontSize="sm" color="gray.600">Days Active</Text>
+              <Text fontSize="sm" color="gray.600">アクティブ日数</Text>
             </Box>
           </Grid>
         </CardBody>

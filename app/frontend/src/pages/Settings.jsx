@@ -87,15 +87,15 @@ const Settings = () => {
     try {
       await usersService.updatePreferences(preferences);
       toast({
-        title: 'Preferences saved',
+        title: '設定を保存しました',
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
     } catch (error) {
       toast({
-        title: 'Error saving preferences',
-        description: error.response?.data?.detail || 'Failed to save preferences',
+        title: '設定保存エラー',
+        description: error.response?.data?.detail || '設定の保存に失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -117,7 +117,7 @@ const Settings = () => {
     
     if (passwordData.new_password !== passwordData.confirm_password) {
       toast({
-        title: 'Passwords do not match',
+        title: 'パスワードが一致しません',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -132,7 +132,7 @@ const Settings = () => {
         new_password: passwordData.new_password,
       });
       toast({
-        title: 'Password changed successfully',
+        title: 'パスワードを変更しました',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -144,8 +144,8 @@ const Settings = () => {
       });
     } catch (error) {
       toast({
-        title: 'Error changing password',
-        description: error.response?.data?.detail || 'Failed to change password',
+        title: 'パスワード変更エラー',
+        description: error.response?.data?.detail || 'パスワードの変更に失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -159,8 +159,8 @@ const Settings = () => {
     try {
       await usersService.deleteAccount();
       toast({
-        title: 'Account deleted',
-        description: 'Your account has been permanently deleted',
+        title: 'アカウントを削除しました',
+        description: 'アカウントは完全に削除されました',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -169,8 +169,8 @@ const Settings = () => {
       navigate('/login');
     } catch (error) {
       toast({
-        title: 'Error deleting account',
-        description: error.response?.data?.detail || 'Failed to delete account',
+        title: 'アカウント削除エラー',
+        description: error.response?.data?.detail || 'アカウントの削除に失敗しました',
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -191,22 +191,22 @@ const Settings = () => {
     <Box>
       {/* Header */}
       <Box mb={8}>
-        <Heading size="lg" mb={2}>Settings</Heading>
-        <Text color="gray.600">Manage your account settings and preferences</Text>
+        <Heading size="lg" mb={2}>設定</Heading>
+        <Text color="gray.600">アカウント設定と環境設定を管理</Text>
       </Box>
 
       <VStack spacing={6} align="stretch">
         {/* Notification Preferences */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Notification Preferences</Heading>
+            <Heading size="md">通知設定</Heading>
           </CardHeader>
           <CardBody>
             <VStack spacing={4} align="stretch">
               <FormControl display="flex" alignItems="center" justifyContent="space-between">
                 <Box>
-                  <FormLabel mb={0} fontWeight="medium">Email Notifications</FormLabel>
-                  <Text fontSize="sm" color="gray.600">Receive email updates about your account</Text>
+                  <FormLabel mb={0} fontWeight="medium">メール通知</FormLabel>
+                  <Text fontSize="sm" color="gray.600">アカウントに関するメール更新を受信</Text>
                 </Box>
                 <Switch
                   isChecked={preferences.email_notifications}
@@ -219,8 +219,8 @@ const Settings = () => {
 
               <FormControl display="flex" alignItems="center" justifyContent="space-between">
                 <Box>
-                  <FormLabel mb={0} fontWeight="medium">Workout Reminders</FormLabel>
-                  <Text fontSize="sm" color="gray.600">Get reminded about scheduled workouts</Text>
+                  <FormLabel mb={0} fontWeight="medium">ワークアウトリマインダー</FormLabel>
+                  <Text fontSize="sm" color="gray.600">予定されたワークアウトのリマインダーを受信</Text>
                 </Box>
                 <Switch
                   isChecked={preferences.workout_reminders}
@@ -233,8 +233,8 @@ const Settings = () => {
 
               <FormControl display="flex" alignItems="center" justifyContent="space-between">
                 <Box>
-                  <FormLabel mb={0} fontWeight="medium">Meal Reminders</FormLabel>
-                  <Text fontSize="sm" color="gray.600">Get reminded to log your meals</Text>
+                  <FormLabel mb={0} fontWeight="medium">食事リマインダー</FormLabel>
+                  <Text fontSize="sm" color="gray.600">食事記録のリマインダーを受信</Text>
                 </Box>
                 <Switch
                   isChecked={preferences.meal_reminders}
@@ -247,8 +247,8 @@ const Settings = () => {
 
               <FormControl display="flex" alignItems="center" justifyContent="space-between">
                 <Box>
-                  <FormLabel mb={0} fontWeight="medium">Progress Updates</FormLabel>
-                  <Text fontSize="sm" color="gray.600">Receive updates about your progress</Text>
+                  <FormLabel mb={0} fontWeight="medium">進捗更新</FormLabel>
+                  <Text fontSize="sm" color="gray.600">進捗に関する更新を受信</Text>
                 </Box>
                 <Switch
                   isChecked={preferences.progress_updates}
@@ -261,8 +261,8 @@ const Settings = () => {
 
               <FormControl display="flex" alignItems="center" justifyContent="space-between">
                 <Box>
-                  <FormLabel mb={0} fontWeight="medium">Weekly Summary</FormLabel>
-                  <Text fontSize="sm" color="gray.600">Get a weekly summary of your activities</Text>
+                  <FormLabel mb={0} fontWeight="medium">週間サマリー</FormLabel>
+                  <Text fontSize="sm" color="gray.600">活動の週間サマリーを受信</Text>
                 </Box>
                 <Switch
                   isChecked={preferences.weekly_summary}
@@ -278,7 +278,7 @@ const Settings = () => {
                   onClick={handleSavePreferences}
                   isLoading={submitting}
                 >
-                  Save Preferences
+                  設定を保存
                 </Button>
               </HStack>
             </VStack>
@@ -288,41 +288,41 @@ const Settings = () => {
         {/* Change Password */}
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
           <CardHeader>
-            <Heading size="md">Change Password</Heading>
+            <Heading size="md">パスワード変更</Heading>
           </CardHeader>
           <CardBody>
             <form onSubmit={handleChangePassword}>
               <VStack spacing={4} align="stretch">
                 <FormControl isRequired>
-                  <FormLabel>Current Password</FormLabel>
+                  <FormLabel>現在のパスワード</FormLabel>
                   <Input
                     type="password"
                     name="current_password"
                     value={passwordData.current_password}
                     onChange={handlePasswordChange}
-                    placeholder="Enter current password"
+                    placeholder="現在のパスワードを入力"
                   />
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>新しいパスワード</FormLabel>
                   <Input
                     type="password"
                     name="new_password"
                     value={passwordData.new_password}
                     onChange={handlePasswordChange}
-                    placeholder="Enter new password"
+                    placeholder="新しいパスワードを入力"
                   />
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>Confirm New Password</FormLabel>
+                  <FormLabel>新しいパスワード（確認）</FormLabel>
                   <Input
                     type="password"
                     name="confirm_password"
                     value={passwordData.confirm_password}
                     onChange={handlePasswordChange}
-                    placeholder="Confirm new password"
+                    placeholder="新しいパスワードを再入力"
                   />
                 </FormControl>
 
@@ -333,7 +333,7 @@ const Settings = () => {
                     leftIcon={<FiLock />}
                     isLoading={submitting}
                   >
-                    Change Password
+                    パスワードを変更
                   </Button>
                 </HStack>
               </VStack>
@@ -344,15 +344,15 @@ const Settings = () => {
         {/* Danger Zone */}
         <Card bg={bgColor} borderWidth="1px" borderColor="red.500">
           <CardHeader>
-            <Heading size="md" color="red.500">Danger Zone</Heading>
+            <Heading size="md" color="red.500">危険な操作</Heading>
           </CardHeader>
           <CardBody>
             <Alert status="warning" mb={4}>
               <AlertIcon />
               <Box>
-                <AlertTitle>Delete Account</AlertTitle>
+                <AlertTitle>アカウント削除</AlertTitle>
                 <AlertDescription>
-                  Once you delete your account, there is no going back. All your data will be permanently deleted.
+                  アカウントを削除すると元に戻せません。すべてのデータが完全に削除されます。
                 </AlertDescription>
               </Box>
             </Alert>
@@ -361,7 +361,7 @@ const Settings = () => {
               leftIcon={<FiTrash2 />}
               onClick={onOpen}
             >
-              Delete Account
+              アカウントを削除
             </Button>
           </CardBody>
         </Card>
@@ -371,24 +371,24 @@ const Settings = () => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Delete Account</ModalHeader>
+          <ModalHeader>アカウント削除</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Alert status="error" mb={4}>
               <AlertIcon />
-              This action cannot be undone!
+              この操作は取り消せません！
             </Alert>
             <Text>
-              Are you sure you want to delete your account? All your data including measurements, meals, workouts, and progress will be permanently deleted.
+              本当にアカウントを削除しますか？測定値、食事、ワークアウト、進捗を含むすべてのデータが完全に削除されます。
             </Text>
           </ModalBody>
 
           <ModalFooter>
             <Button variant="ghost" mr={3} onClick={onClose}>
-              Cancel
+              キャンセル
             </Button>
             <Button colorScheme="red" onClick={handleDeleteAccount}>
-              Yes, Delete My Account
+              はい、アカウントを削除します
             </Button>
           </ModalFooter>
         </ModalContent>

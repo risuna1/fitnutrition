@@ -11,21 +11,21 @@ class Food(models.Model):
     Model for food items in the database
     """
     CATEGORY_CHOICES = [
-        ('protein', 'Protein'),
-        ('carbs', 'Carbohydrates'),
-        ('fats', 'Fats'),
-        ('vegetables', 'Vegetables'),
-        ('fruits', 'Fruits'),
-        ('dairy', 'Dairy'),
-        ('grains', 'Grains'),
-        ('snacks', 'Snacks'),
-        ('beverages', 'Beverages'),
-        ('other', 'Other'),
+        ('protein', 'タンパク質'),
+        ('carbs', '炭水化物'),
+        ('fats', '脂質'),
+        ('vegetables', '野菜'),
+        ('fruits', '果物'),
+        ('dairy', '乳製品'),
+        ('grains', '穀物'),
+        ('snacks', 'スナック'),
+        ('beverages', '飲料'),
+        ('other', 'その他'),
     ]
     
-    name = models.CharField(max_length=200, verbose_name='Food Name')
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, verbose_name='Category')
-    brand = models.CharField(max_length=100, blank=True, verbose_name='Brand')
+    name = models.CharField(max_length=200, verbose_name='食品名')
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, verbose_name='カテゴリー')
+    brand = models.CharField(max_length=100, blank=True, verbose_name='ブランド')
     
     # Nutritional information per 100g
     serving_size = models.DecimalField(
@@ -132,8 +132,8 @@ class Food(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        verbose_name = 'Food'
-        verbose_name_plural = 'Foods'
+        verbose_name = '食品'
+        verbose_name_plural = '食品'
         ordering = ['name']
         indexes = [
             models.Index(fields=['name']),
@@ -159,27 +159,27 @@ class Meal(models.Model):
     Model for user meals
     """
     MEAL_TYPE_CHOICES = [
-        ('breakfast', 'Breakfast'),
-        ('lunch', 'Lunch'),
-        ('dinner', 'Dinner'),
-        ('snack', 'Snack'),
+        ('breakfast', '朝食'),
+        ('lunch', '昼食'),
+        ('dinner', '夕食'),
+        ('snack', '間食'),
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='meals')
-    name = models.CharField(max_length=200, verbose_name='Meal Name')
-    meal_type = models.CharField(max_length=20, choices=MEAL_TYPE_CHOICES, verbose_name='Meal Type')
-    date = models.DateField(verbose_name='Date')
-    time = models.TimeField(blank=True, null=True, verbose_name='Time')
+    name = models.CharField(max_length=200, verbose_name='食事名')
+    meal_type = models.CharField(max_length=20, choices=MEAL_TYPE_CHOICES, verbose_name='食事タイプ')
+    date = models.DateField(verbose_name='日付')
+    time = models.TimeField(blank=True, null=True, verbose_name='時間')
     
-    notes = models.TextField(blank=True, verbose_name='Notes')
-    image = models.ImageField(upload_to='meal_images/', blank=True, null=True, verbose_name='Image')
+    notes = models.TextField(blank=True, verbose_name='メモ')
+    image = models.ImageField(upload_to='meal_images/', blank=True, null=True, verbose_name='画像')
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        verbose_name = 'Meal'
-        verbose_name_plural = 'Meals'
+        verbose_name = '食事'
+        verbose_name_plural = '食事'
         ordering = ['-date', '-time']
         indexes = [
             models.Index(fields=['user', 'date']),
@@ -241,8 +241,8 @@ class MealItem(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        verbose_name = 'Meal Item'
-        verbose_name_plural = 'Meal Items'
+        verbose_name = '食事項目'
+        verbose_name_plural = '食事項目'
     
     def __str__(self):
         return f"{self.food.name} - {self.serving_size}g"
@@ -266,12 +266,12 @@ class MealPlan(models.Model):
     goal = models.CharField(
         max_length=50,
         choices=[
-            ('weight_loss', 'Weight Loss'),
-            ('muscle_gain', 'Muscle Gain'),
-            ('maintenance', 'Maintenance'),
-            ('endurance', 'Endurance'),
+            ('weight_loss', '減量'),
+            ('muscle_gain', '筋肉増強'),
+            ('maintenance', '維持'),
+            ('endurance', '持久力'),
         ],
-        verbose_name='Goal'
+        verbose_name='目標'
     )
     daily_calories = models.IntegerField(verbose_name='Daily Calories Target')
     protein_percentage = models.IntegerField(
@@ -307,8 +307,8 @@ class MealPlan(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        verbose_name = 'Meal Plan'
-        verbose_name_plural = 'Meal Plans'
+        verbose_name = '食事プラン'
+        verbose_name_plural = '食事プラン'
         ordering = ['-created_at']
     
     def __str__(self):
@@ -324,8 +324,8 @@ class FavoriteFood(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        verbose_name = 'Favorite Food'
-        verbose_name_plural = 'Favorite Foods'
+        verbose_name = 'お気に入り食品'
+        verbose_name_plural = 'お気に入り食品'
         unique_together = ['user', 'food']
         ordering = ['-added_at']
     
@@ -338,20 +338,20 @@ class FavoriteMeal(models.Model):
     Model for user's favorite meals (templates)
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite_meals')
-    name = models.CharField(max_length=200, verbose_name='Meal Name')
+    name = models.CharField(max_length=200, verbose_name='食事名')
     meal_type = models.CharField(
         max_length=20,
         choices=Meal.MEAL_TYPE_CHOICES,
-        verbose_name='Meal Type'
+        verbose_name='食事タイプ'
     )
-    description = models.TextField(blank=True, verbose_name='Description')
+    description = models.TextField(blank=True, verbose_name='説明')
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        verbose_name = 'Favorite Meal'
-        verbose_name_plural = 'Favorite Meals'
+        verbose_name = 'お気に入り食事'
+        verbose_name_plural = 'お気に入り食事'
         ordering = ['-created_at']
     
     def __str__(self):
@@ -376,8 +376,8 @@ class FavoriteMealItem(models.Model):
     )
     
     class Meta:
-        verbose_name = 'Favorite Meal Item'
-        verbose_name_plural = 'Favorite Meal Items'
+        verbose_name = 'お気に入り食事項目'
+        verbose_name_plural = 'お気に入り食事項目'
     
     def __str__(self):
         return f"{self.food.name} - {self.serving_size}g"

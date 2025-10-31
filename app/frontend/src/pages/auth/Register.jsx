@@ -60,7 +60,7 @@ const Register = () => {
     
     if (formData.password !== formData.password2) {
       toast({
-        title: 'Passwords do not match',
+        title: 'パスワードが一致しません',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -71,11 +71,11 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await authService.register(formData);
+      const response = await authService.register(formData);
       
       toast({
-        title: 'Registration successful',
-        description: 'Please login with your credentials',
+        title: '登録成功',
+        description: '認証情報でログインしてください',
         status: 'success',
         duration: 5000,
         isClosable: true,
@@ -83,11 +83,26 @@ const Register = () => {
       
       navigate('/login');
     } catch (error) {
-      const errorMessage = error.response?.data?.email?.[0] || 
-                          error.response?.data?.detail || 
-                          'Registration failed. Please try again.';
+      // Handle various error formats
+      let errorMessage = '登録に失敗しました。もう一度お試しください。';
+      
+      if (error.response?.data) {
+        const data = error.response.data;
+        if (data.email) {
+          errorMessage = Array.isArray(data.email) ? data.email[0] : data.email;
+        } else if (data.username) {
+          errorMessage = Array.isArray(data.username) ? data.username[0] : data.username;
+        } else if (data.password) {
+          errorMessage = Array.isArray(data.password) ? data.password[0] : data.password;
+        } else if (data.detail) {
+          errorMessage = data.detail;
+        } else if (data.error) {
+          errorMessage = data.error;
+        }
+      }
+      
       toast({
-        title: 'Registration failed',
+        title: '登録失敗',
         description: errorMessage,
         status: 'error',
         duration: 5000,
@@ -119,39 +134,39 @@ const Register = () => {
             >
               FitNutrition
             </Heading>
-            <Text color="gray.600">Create your account</Text>
+            <Text color="gray.600">アカウントを作成</Text>
           </Box>
 
           {/* Registration Form */}
           <form onSubmit={handleSubmit}>
             <Stack spacing={4}>
               {/* Personal Information */}
-              <Heading size="md" color="gray.700">Personal Information</Heading>
+              <Heading size="md" color="gray.700">個人情報</Heading>
               
               <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
                 <FormControl isRequired>
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel>名</FormLabel>
                   <Input
                     name="first_name"
                     value={formData.first_name}
                     onChange={handleChange}
-                    placeholder="John"
+                    placeholder="太郎"
                   />
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel>姓</FormLabel>
                   <Input
                     name="last_name"
                     value={formData.last_name}
                     onChange={handleChange}
-                    placeholder="Doe"
+                    placeholder="山田"
                   />
                 </FormControl>
               </Grid>
 
               <FormControl isRequired>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>メールアドレス</FormLabel>
                 <Input
                   type="email"
                   name="email"
@@ -163,14 +178,14 @@ const Register = () => {
 
               <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
                 <FormControl isRequired>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>パスワード</FormLabel>
                   <InputGroup>
                     <Input
                       type={showPassword ? 'text' : 'password'}
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      placeholder="Min. 8 characters"
+                      placeholder="最低8文字"
                     />
                     <InputRightElement>
                       <IconButton
@@ -178,21 +193,21 @@ const Register = () => {
                         size="sm"
                         icon={showPassword ? <FiEyeOff /> : <FiEye />}
                         onClick={() => setShowPassword(!showPassword)}
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示'}
                       />
                     </InputRightElement>
                   </InputGroup>
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel>パスワード確認</FormLabel>
                   <InputGroup>
                     <Input
                       type={showPassword2 ? 'text' : 'password'}
                       name="password2"
                       value={formData.password2}
                       onChange={handleChange}
-                      placeholder="Confirm password"
+                      placeholder="パスワードを再入力"
                     />
                     <InputRightElement>
                       <IconButton
@@ -200,7 +215,7 @@ const Register = () => {
                         size="sm"
                         icon={showPassword2 ? <FiEyeOff /> : <FiEye />}
                         onClick={() => setShowPassword2(!showPassword2)}
-                        aria-label={showPassword2 ? 'Hide password' : 'Show password'}
+                        aria-label={showPassword2 ? 'パスワードを隠す' : 'パスワードを表示'}
                       />
                     </InputRightElement>
                   </InputGroup>
@@ -208,11 +223,11 @@ const Register = () => {
               </Grid>
 
               {/* Physical Information */}
-              <Heading size="md" color="gray.700" mt={4}>Physical Information</Heading>
+              <Heading size="md" color="gray.700" mt={4}>身体情報</Heading>
               
               <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
                 <FormControl isRequired>
-                  <FormLabel>Date of Birth</FormLabel>
+                  <FormLabel>生年月日</FormLabel>
                   <Input
                     type="date"
                     name="date_of_birth"
@@ -222,23 +237,23 @@ const Register = () => {
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>Gender</FormLabel>
+                  <FormLabel>性別</FormLabel>
                   <Select
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    placeholder="Select gender"
+                    placeholder="性別を選択"
                   >
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                    <option value="O">Other</option>
+                    <option value="M">男性</option>
+                    <option value="F">女性</option>
+                    <option value="O">その他</option>
                   </Select>
                 </FormControl>
               </Grid>
 
               <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
                 <FormControl isRequired>
-                  <FormLabel>Height (cm)</FormLabel>
+                  <FormLabel>身長 (cm)</FormLabel>
                   <Input
                     type="number"
                     name="height"
@@ -249,7 +264,7 @@ const Register = () => {
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>Weight (kg)</FormLabel>
+                  <FormLabel>体重 (kg)</FormLabel>
                   <Input
                     type="number"
                     step="0.1"
@@ -262,15 +277,15 @@ const Register = () => {
               </Grid>
 
               {/* Fitness Information */}
-              <Heading size="md" color="gray.700" mt={4}>Fitness Goals</Heading>
+              <Heading size="md" color="gray.700" mt={4}>フィットネス目標</Heading>
               
               <FormControl isRequired>
-                <FormLabel>Activity Level</FormLabel>
+                <FormLabel>活動レベル</FormLabel>
                 <Select
                   name="activity_level"
                   value={formData.activity_level}
                   onChange={handleChange}
-                  placeholder="Select activity level"
+                  placeholder="活動レベルを選択"
                 >
                   {ACTIVITY_LEVELS.map((level) => (
                     <option key={level.value} value={level.value}>
@@ -281,12 +296,12 @@ const Register = () => {
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel>Fitness Goal</FormLabel>
+                <FormLabel>フィットネス目標</FormLabel>
                 <Select
                   name="fitness_goal"
                   value={formData.fitness_goal}
                   onChange={handleChange}
-                  placeholder="Select fitness goal"
+                  placeholder="目標を選択"
                 >
                   {FITNESS_GOALS.map((goal) => (
                     <option key={goal.value} value={goal.value}>
@@ -302,10 +317,10 @@ const Register = () => {
                 size="lg"
                 fontSize="md"
                 isLoading={loading}
-                loadingText="Creating account..."
+                loadingText="アカウント作成中..."
                 mt={4}
               >
-                Create Account
+                アカウント作成
               </Button>
             </Stack>
           </form>
@@ -313,9 +328,9 @@ const Register = () => {
           {/* Links */}
           <Stack mt={6} spacing={2}>
             <Text textAlign="center" fontSize="sm">
-              Already have an account?{' '}
+              すでにアカウントをお持ちですか？{' '}
               <Link as={RouterLink} to="/login" color="brand.500" fontWeight="semibold">
-                Sign in
+                ログイン
               </Link>
             </Text>
           </Stack>

@@ -157,8 +157,12 @@ class WorkoutViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'notes']
     ordering_fields = ['date', 'duration_minutes', 'total_calories_burned', 'created_at']
     ordering = ['-date', '-created_at']
+    queryset = Workout.objects.all()  # Base queryset
 
     def get_queryset(self):
+        # Only filter for list/retrieve, not for create
+        if self.action in ['create']:
+            return Workout.objects.all()
         queryset = Workout.objects.filter(user=self.request.user)
         
         # Filter by date range
@@ -186,6 +190,18 @@ class WorkoutViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return WorkoutCreateSerializer
         return WorkoutSerializer
+    
+    def create(self, request, *args, **kwargs):
+        """Override create to ensure it works properly"""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    def perform_create(self, serializer):
+        """Save the workout with the current user"""
+        serializer.save(user=self.request.user)
 
     @action(detail=False, methods=['get'])
     def today(self, request):

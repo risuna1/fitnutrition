@@ -42,7 +42,7 @@ class UserRegistrationView(generics.CreateAPIView):
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             },
-            'message': 'User registered successfully'
+            'message': 'ユーザー登録が完了しました'
         }, status=status.HTTP_201_CREATED)
 
 
@@ -59,19 +59,11 @@ class UserLoginView(APIView):
         
         if not email or not password:
             return Response({
-                'error': 'Please provide both email and password'
+                'error': 'メールアドレスとパスワードの両方を入力してください'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # Authenticate user
-        user = authenticate(username=email, password=password)
-        
-        if user is None:
-            # Try with username field
-            try:
-                user_obj = User.objects.get(email=email)
-                user = authenticate(username=user_obj.username, password=password)
-            except User.DoesNotExist:
-                pass
+        # Authenticate user using custom backend (supports email or username)
+        user = authenticate(request=request, username=email, password=password)
         
         if user is not None:
             # Generate JWT tokens
@@ -83,11 +75,11 @@ class UserLoginView(APIView):
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
                 },
-                'message': 'Login successful'
+                'message': 'ログインに成功しました'
             }, status=status.HTTP_200_OK)
         
         return Response({
-            'error': 'Invalid credentials'
+            'error': 'メールアドレスまたはパスワードが正しくありません'
         }, status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -105,7 +97,7 @@ class UserLogoutView(APIView):
                 token = RefreshToken(refresh_token)
                 token.blacklist()
             return Response({
-                'message': 'Logout successful'
+                'message': 'ログアウトしました'
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({
@@ -181,7 +173,7 @@ class ChangePasswordView(APIView):
             # Check old password
             if not user.check_password(serializer.data.get('old_password')):
                 return Response({
-                    'error': 'Wrong password'
+                    'error': '現在のパスワードが正しくありません'
                 }, status=status.HTTP_400_BAD_REQUEST)
             
             # Set new password
@@ -189,7 +181,7 @@ class ChangePasswordView(APIView):
             user.save()
             
             return Response({
-                'message': 'Password changed successfully'
+                'message': 'パスワードが正常に変更されました'
             }, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -216,5 +208,5 @@ def get_user_stats(request):
         return Response(stats, status=status.HTTP_200_OK)
     except UserProfile.DoesNotExist:
         return Response({
-            'error': 'Profile not found. Please complete your profile first.'
+            'error': 'プロフィールが見つかりません。まずプロフィールを完成させてください。'
         }, status=status.HTTP_404_NOT_FOUND)

@@ -1,11 +1,11 @@
 // Email validation
 export const validateEmail = (email) => {
   if (!email) {
-    return 'Email is required';
+    return 'メールアドレスは必須です';
   }
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!re.test(email)) {
-    return 'Please enter a valid email address';
+    return '有効なメールアドレスを入力してください';
   }
   return null;
 };
@@ -13,19 +13,19 @@ export const validateEmail = (email) => {
 // Password validation
 export const validatePassword = (password) => {
   if (!password) {
-    return 'Password is required';
+    return 'パスワードは必須です';
   }
   if (password.length < 8) {
-    return 'Password must be at least 8 characters long';
+    return 'パスワードは8文字以上である必要があります';
   }
   if (!/[a-z]/.test(password)) {
-    return 'Password must contain at least one lowercase letter';
+    return 'パスワードには小文字を1文字以上含める必要があります';
   }
   if (!/[A-Z]/.test(password)) {
-    return 'Password must contain at least one uppercase letter';
+    return 'パスワードには大文字を1文字以上含める必要があります';
   }
   if (!/\d/.test(password)) {
-    return 'Password must contain at least one number';
+    return 'パスワードには数字を1文字以上含める必要があります';
   }
   return null;
 };
@@ -33,45 +33,45 @@ export const validatePassword = (password) => {
 // Confirm password validation
 export const validateConfirmPassword = (password, confirmPassword) => {
   if (!confirmPassword) {
-    return 'Please confirm your password';
+    return 'パスワードの確認を入力してください';
   }
   if (password !== confirmPassword) {
-    return 'Passwords do not match';
+    return 'パスワードが一致しません';
   }
   return null;
 };
 
 // Name validation
-export const validateName = (name, fieldName = 'Name') => {
+export const validateName = (name, fieldName = '名前') => {
   if (!name) {
-    return `${fieldName} is required`;
+    return `${fieldName}は必須です`;
   }
   if (name.length < 2) {
-    return `${fieldName} must be at least 2 characters long`;
+    return `${fieldName}は2文字以上である必要があります`;
   }
   if (name.length > 50) {
-    return `${fieldName} must not exceed 50 characters`;
+    return `${fieldName}は50文字以内である必要があります`;
   }
   return null;
 };
 
 // Number validation
-export const validateNumber = (value, fieldName = 'Value', min = null, max = null) => {
+export const validateNumber = (value, fieldName = '値', min = null, max = null) => {
   if (value === null || value === undefined || value === '') {
-    return `${fieldName} is required`;
+    return `${fieldName}は必須です`;
   }
   
   const num = Number(value);
   if (isNaN(num)) {
-    return `${fieldName} must be a valid number`;
+    return `${fieldName}は有効な数値である必要があります`;
   }
   
   if (min !== null && num < min) {
-    return `${fieldName} must be at least ${min}`;
+    return `${fieldName}は${min}以上である必要があります`;
   }
   
   if (max !== null && num > max) {
-    return `${fieldName} must not exceed ${max}`;
+    return `${fieldName}は${max}以下である必要があります`;
   }
   
   return null;
@@ -79,64 +79,64 @@ export const validateNumber = (value, fieldName = 'Value', min = null, max = nul
 
 // Weight validation (kg)
 export const validateWeight = (weight) => {
-  return validateNumber(weight, 'Weight', 20, 300);
+  return validateNumber(weight, '体重', 20, 300);
 };
 
 // Height validation (cm)
 export const validateHeight = (height) => {
-  return validateNumber(height, 'Height', 100, 250);
+  return validateNumber(height, '身長', 100, 250);
 };
 
 // Age validation
 export const validateAge = (age) => {
-  return validateNumber(age, 'Age', 13, 120);
+  return validateNumber(age, '年齢', 13, 120);
 };
 
 // Body fat percentage validation
 export const validateBodyFat = (bodyFat) => {
   if (!bodyFat) return null; // Optional field
-  return validateNumber(bodyFat, 'Body fat percentage', 3, 60);
+  return validateNumber(bodyFat, '体脂肪率', 3, 60);
 };
 
 // Date validation
-export const validateDate = (date, fieldName = 'Date') => {
+export const validateDate = (date, fieldName = '日付') => {
   if (!date) {
-    return `${fieldName} is required`;
+    return `${fieldName}は必須です`;
   }
   
   const d = new Date(date);
   if (isNaN(d.getTime())) {
-    return `Please enter a valid ${fieldName.toLowerCase()}`;
+    return `有効な${fieldName}を入力してください`;
   }
   
   // Check if date is not in the future
   if (d > new Date()) {
-    return `${fieldName} cannot be in the future`;
+    return `${fieldName}は未来の日付にできません`;
   }
   
   return null;
 };
 
 // Required field validation
-export const validateRequired = (value, fieldName = 'Field') => {
+export const validateRequired = (value, fieldName = 'フィールド') => {
   if (value === null || value === undefined || value === '' || 
       (Array.isArray(value) && value.length === 0)) {
-    return `${fieldName} is required`;
+    return `${fieldName}は必須です`;
   }
   return null;
 };
 
 // Select validation
-export const validateSelect = (value, fieldName = 'Field') => {
+export const validateSelect = (value, fieldName = 'フィールド') => {
   if (!value || value === '') {
-    return `Please select a ${fieldName.toLowerCase()}`;
+    return `${fieldName}を選択してください`;
   }
   return null;
 };
 
 // Calories validation
 export const validateCalories = (calories) => {
-  return validateNumber(calories, 'Calories', 0, 10000);
+  return validateNumber(calories, 'カロリー', 0, 10000);
 };
 
 // Macros validation
@@ -146,23 +146,23 @@ export const validateMacros = (value, macroName) => {
 
 // Exercise sets validation
 export const validateSets = (sets) => {
-  return validateNumber(sets, 'Sets', 1, 20);
+  return validateNumber(sets, 'セット数', 1, 20);
 };
 
 // Exercise reps validation
 export const validateReps = (reps) => {
-  return validateNumber(reps, 'Reps', 1, 100);
+  return validateNumber(reps, '回数', 1, 100);
 };
 
 // Exercise weight validation
 export const validateExerciseWeight = (weight) => {
   if (!weight) return null; // Optional for bodyweight exercises
-  return validateNumber(weight, 'Weight', 0, 500);
+  return validateNumber(weight, '重量', 0, 500);
 };
 
 // Duration validation (minutes)
 export const validateDuration = (duration) => {
-  return validateNumber(duration, 'Duration', 1, 480);
+  return validateNumber(duration, '時間', 1, 480);
 };
 
 // URL validation
@@ -173,7 +173,7 @@ export const validateURL = (url) => {
     new URL(url);
     return null;
   } catch {
-    return 'Please enter a valid URL';
+    return '有効なURLを入力してください';
   }
 };
 
@@ -183,11 +183,11 @@ export const validatePhone = (phone) => {
   
   const re = /^[\d\s\-\+\(\)]+$/;
   if (!re.test(phone)) {
-    return 'Please enter a valid phone number';
+    return '有効な電話番号を入力してください';
   }
   
   if (phone.replace(/\D/g, '').length < 10) {
-    return 'Phone number must be at least 10 digits';
+    return '電話番号は10桁以上である必要があります';
   }
   
   return null;

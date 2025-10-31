@@ -21,10 +21,10 @@ export const calculateBMI = (weight, height) => {
 // Get BMI category
 export const getBMICategory = (bmi) => {
   if (!bmi) return null;
-  if (bmi < 18.5) return { label: 'Underweight', color: 'blue' };
-  if (bmi < 25) return { label: 'Normal', color: 'green' };
-  if (bmi < 30) return { label: 'Overweight', color: 'yellow' };
-  return { label: 'Obese', color: 'red' };
+  if (bmi < 18.5) return { label: '低体重', color: 'blue' };
+  if (bmi < 25) return { label: '標準', color: 'green' };
+  if (bmi < 30) return { label: '過体重', color: 'yellow' };
+  return { label: '肥満', color: 'red' };
 };
 
 // Calculate BMR (Basal Metabolic Rate) using Mifflin-St Jeor Equation
@@ -93,7 +93,7 @@ export const calculateMacros = (calories, goal) => {
 export const formatDate = (date) => {
   if (!date) return '';
   const d = new Date(date);
-  return d.toLocaleDateString('en-US', { 
+  return d.toLocaleDateString('ja-JP', { 
     year: 'numeric', 
     month: 'short', 
     day: 'numeric' 
@@ -104,7 +104,7 @@ export const formatDate = (date) => {
 export const formatDateTime = (date) => {
   if (!date) return '';
   const d = new Date(date);
-  return d.toLocaleString('en-US', { 
+  return d.toLocaleString('ja-JP', { 
     year: 'numeric', 
     month: 'short', 
     day: 'numeric',
@@ -121,10 +121,10 @@ export const getRelativeTime = (date) => {
   const past = new Date(date);
   const diffInSeconds = Math.floor((now - past) / 1000);
   
-  if (diffInSeconds < 60) return 'just now';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  if (diffInSeconds < 60) return 'たった今';
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}分前`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}時間前`;
+  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}日前`;
   
   return formatDate(date);
 };
@@ -204,7 +204,7 @@ export const isValidEmail = (email) => {
 
 // Validate password strength
 export const getPasswordStrength = (password) => {
-  if (!password) return { strength: 0, label: 'None' };
+  if (!password) return { strength: 0, label: 'なし' };
   
   let strength = 0;
   if (password.length >= 8) strength++;
@@ -213,8 +213,8 @@ export const getPasswordStrength = (password) => {
   if (/\d/.test(password)) strength++;
   if (/[^a-zA-Z0-9]/.test(password)) strength++;
   
-  const labels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-  return { strength, label: labels[strength - 1] || 'Weak' };
+  const labels = ['弱い', '普通', '良い', '強い', '非常に強い'];
+  return { strength, label: labels[strength - 1] || '弱い' };
 };
 
 // Calculate percentage
@@ -325,5 +325,5 @@ export const getErrorMessage = (error) => {
   if (error.message) {
     return error.message;
   }
-  return 'An unexpected error occurred';
+  return '予期しないエラーが発生しました';
 };
