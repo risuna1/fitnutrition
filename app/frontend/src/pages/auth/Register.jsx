@@ -22,7 +22,7 @@ import {
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import authService from '../../services/auth';
-import { ACTIVITY_LEVELS, FITNESS_GOALS } from '../../utils/constants';
+import { ACTIVITY_LEVELS, FITNESS_GOALS, GENDER_OPTIONS } from '../../utils/constants';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -71,7 +71,24 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await authService.register(formData);
+      // Normalize payload to backend-expected field values
+      const payload = { ...formData };
+
+      // Ensure username exists (backend also derives it, but include to be explicit)
+      if (!payload.username && payload.email) {
+        payload.username = payload.email.split('@')[0];
+      }
+
+      // (No mapping needed: constants now match backend choices)
+
+      // Convert numeric strings to numbers and remove empty values so backend doesn't try to create an incomplete profile
+      if (payload.height === '') delete payload.height;
+      else if (payload.height != null) payload.height = Number(payload.height);
+
+      if (payload.weight === '') delete payload.weight;
+      else if (payload.weight != null) payload.weight = Number(payload.weight);
+
+      const response = await authService.register(payload);
       
       toast({
         title: '登録成功',
@@ -244,9 +261,11 @@ const Register = () => {
                     onChange={handleChange}
                     placeholder="性別を選択"
                   >
-                    <option value="M">男性</option>
-                    <option value="F">女性</option>
-                    <option value="O">その他</option>
+                    {GENDER_OPTIONS.map((g) => (
+                      <option key={g.value} value={g.value}>
+                        {g.label}
+                      </option>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>

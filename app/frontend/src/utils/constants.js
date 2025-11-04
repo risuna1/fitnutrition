@@ -6,8 +6,8 @@ export const ACTIVITY_LEVELS = [
   { value: 'sedentary', label: '座りがち', description: 'ほとんど運動しない' },
   { value: 'light', label: '軽い活動', description: '週1-3日の軽い運動' },
   { value: 'moderate', label: '中程度の活動', description: '週3-5日の中程度の運動' },
-  { value: 'active', label: '活発', description: '週6-7日の激しい運動' },
-  { value: 'very_active', label: '非常に活発', description: '非常に激しい運動と肉体労働' },
+  { value: 'very', label: '活発', description: '週6-7日の激しい運動' },
+  { value: 'extra', label: '非常に活発', description: '非常に激しい運動と肉体労働' },
 ];
 
 // Fitness Goals
