@@ -1,3 +1,0 @@
-"""
-FitNutrition Django Configuration Package
-"""
