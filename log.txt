@@ -1,3 +1,8 @@
 v1.2
-measurement all error done
+measurement all fixed
 
+v1.3
+delete acc done
+
+v.14
+setting all fixed
