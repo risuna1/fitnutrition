@@ -7,3 +7,5 @@ delete acc done
 v1.4
 setting all fixed
 
+v1.5
+profile all fixed (profile image change button exclude)
