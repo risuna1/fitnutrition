@@ -12,3 +12,6 @@ profile all fixed (profile image change button exclude)
 
 v1.6
 dashboard halfway
+
+v1.7
+dashboard done, nutrition pages halfway (食品データベース ongoing)
