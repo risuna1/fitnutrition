@@ -56,6 +56,7 @@ import { FaCookieBite } from 'react-icons/fa';
 import nutritionService from '../services/nutrition';
 import { formatDate } from '../utils/helpers';
 import { MEAL_TYPES } from '../utils/constants';
+import { useDebounce } from '../hooks/useDebounce';
 
 const Nutrition = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -70,7 +71,14 @@ const Nutrition = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [modalSearchTerm, setModalSearchTerm] = useState('');
   const [recipeSearchTerm, setRecipeSearchTerm] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [modalSearchLoading, setModalSearchLoading] = useState(false);
+  
+  // Debounce search terms
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const debouncedModalSearchTerm = useDebounce(modalSearchTerm, 500);
   const [selectedFoods, setSelectedFoods] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -84,9 +92,10 @@ const Nutrition = () => {
   });
   const [newFoodData, setNewFoodData] = useState({
     name: '',
+    category: 'other',
     calories: '',
     protein: '',
-    carbs: '',
+    carbohydrates: '',
     fats: '',
     serving_size: '100',
     unit: 'g',
@@ -119,17 +128,32 @@ const Nutrition = () => {
     loadData();
   }, []);
 
+  // Effect for Food Database tab search
+  useEffect(() => {
+    if (activeTab === 1) {
+      searchFoods(debouncedSearchTerm);
+    }
+  }, [debouncedSearchTerm, activeTab]);
+
+  // Effect for Modal search
+  useEffect(() => {
+    if (isOpen) {
+      searchFoodsForModal(debouncedModalSearchTerm);
+    }
+  }, [debouncedModalSearchTerm, isOpen]);
+
   const loadData = async () => {
     try {
       setLoading(true);
-      const [mealsResponse, foodsResponse, favoritesResponse] = await Promise.all([
+      const [mealsResponse, favoritesResponse] = await Promise.all([
         nutritionService.meals.getAll(),
-        nutritionService.foods.getAll(),
         nutritionService.favorites.getAll(),
       ]);
       setMeals(mealsResponse.results || mealsResponse);
-      setFoods(foodsResponse.results || foodsResponse);
       setFavorites(favoritesResponse.results || favoritesResponse);
+      
+      // Load initial foods
+      await searchFoods('');
     } catch (error) {
       toast({
         title: 'データ読み込みエラー',
@@ -140,6 +164,37 @@ const Nutrition = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const searchFoods = async (query) => {
+    try {
+      setSearchLoading(true);
+      const response = await nutritionService.foods.search(query);
+      setFoods(response.results || response);
+    } catch (error) {
+      console.error('Food search error:', error);
+      toast({
+        title: '検索エラー',
+        description: '食品の検索に失敗しました',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const searchFoodsForModal = async (query) => {
+    try {
+      setModalSearchLoading(true);
+      const response = await nutritionService.foods.search(query);
+      setFoods(response.results || response);
+    } catch (error) {
+      console.error('Modal food search error:', error);
+    } finally {
+      setModalSearchLoading(false);
     }
   };
 
@@ -290,12 +345,12 @@ const Nutrition = () => {
     try {
       await nutritionService.foods.create({
         name: newFoodData.name,
+        category: newFoodData.category,
         calories: parseFloat(newFoodData.calories),
         protein: parseFloat(newFoodData.protein),
-        carbs: parseFloat(newFoodData.carbs),
+        carbohydrates: parseFloat(newFoodData.carbohydrates),
         fats: parseFloat(newFoodData.fats),
         serving_size: parseFloat(newFoodData.serving_size),
-        unit: newFoodData.unit,
       });
 
       toast({
@@ -309,9 +364,10 @@ const Nutrition = () => {
       loadData();
       setNewFoodData({
         name: '',
+        category: 'other',
         calories: '',
         protein: '',
-        carbs: '',
+        carbohydrates: '',
         fats: '',
         serving_size: '100',
         unit: 'g',
@@ -429,10 +485,6 @@ const Nutrition = () => {
 
   const filteredRecipes = sampleRecipes.filter(recipe =>
     recipe.name.toLowerCase().includes(recipeSearchTerm.toLowerCase())
-  );
-
-  const filteredFoods = foods.filter(food =>
-    food.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const selectedDateStr = selectedDate.toISOString().split('T')[0];
@@ -601,7 +653,7 @@ const Nutrition = () => {
                       </Text>
                       <Text fontSize="xs" color="gray.600">
                         P: {Math.round((foodItem.food?.protein || 0) * foodItem.quantity / 100)}g
-                        {' '}C: {Math.round((foodItem.food?.carbs || 0) * foodItem.quantity / 100)}g
+                        {' '}C: {Math.round((foodItem.food?.carbohydrates || 0) * foodItem.quantity / 100)}g
                         {' '}F: {Math.round((foodItem.food?.fats || 0) * foodItem.quantity / 100)}g
                       </Text>
                     </Box>
@@ -808,41 +860,71 @@ const Nutrition = () => {
                     placeholder="食品を検索..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    leftElement={<Icon as={FiSearch} color="gray.400" ml={3} />}
                   />
                 </FormControl>
-                <VStack spacing={2} align="stretch">
-                  {filteredFoods.slice(0, 20).map((food) => (
-                    <Flex
-                      key={food.id}
-                      p={3}
-                      borderWidth="1px"
-                      borderRadius="md"
-                      justify="space-between"
-                      align="center"
-                      _hover={{ bg: hoverBg }}
-                    >
-                      <Box>
-                        <Text fontWeight="medium">{food.name}</Text>
-                        <Text fontSize="sm" color="gray.600">
-                          {food.calories} kcal • P: {food.protein}g • C: {food.carbs}g • F: {food.fats}g
-                        </Text>
-                      </Box>
-                      <HStack>
-                        <IconButton
-                          icon={<FiHeart />}
-                          size="sm"
-                          variant="ghost"
-                          colorScheme={favorites.some(f => f.food.id === food.id) ? 'red' : 'gray'}
-                          onClick={() => toggleFavorite(food.id)}
-                          aria-label="お気に入り"
-                        />
-                        <Button size="sm" colorScheme="brand" onClick={() => handleFoodSelect(food)}>
-                          追加
-                        </Button>
-                      </HStack>
-                    </Flex>
-                  ))}
-                </VStack>
+                
+                {searchLoading ? (
+                  <Center py={8}>
+                    <VStack spacing={3}>
+                      <Spinner size="lg" color="brand.500" />
+                      <Text color="gray.600">検索中...</Text>
+                    </VStack>
+                  </Center>
+                ) : foods.length === 0 ? (
+                  <Center py={8}>
+                    <VStack spacing={3}>
+                      <Icon as={FiSearch} boxSize={12} color="gray.300" />
+                      <Text color="gray.600" fontWeight="medium">
+                        {searchTerm ? '検索結果が見つかりません' : '食品がありません'}
+                      </Text>
+                      <Text fontSize="sm" color="gray.500" textAlign="center">
+                        {searchTerm 
+                          ? '別のキーワードで検索してみてください' 
+                          : '「新しい食品を作成」ボタンから食品を追加してください'}
+                      </Text>
+                    </VStack>
+                  </Center>
+                ) : (
+                  <VStack spacing={2} align="stretch">
+                    {foods.slice(0, 20).map((food) => (
+                      <Flex
+                        key={food.id}
+                        p={3}
+                        borderWidth="1px"
+                        borderRadius="md"
+                        justify="space-between"
+                        align="center"
+                        _hover={{ bg: hoverBg }}
+                      >
+                        <Box>
+                          <Text fontWeight="medium">{food.name}</Text>
+                          <Text fontSize="sm" color="gray.600">
+                            {food.calories} kcal • P: {food.protein}g • C: {food.carbohydrates}g • F: {food.fats}g
+                          </Text>
+                        </Box>
+                        <HStack>
+                          <IconButton
+                            icon={<FiHeart />}
+                            size="sm"
+                            variant="ghost"
+                            colorScheme={favorites.some(f => f.food.id === food.id) ? 'red' : 'gray'}
+                            onClick={() => toggleFavorite(food.id)}
+                            aria-label="お気に入り"
+                          />
+                          <Button size="sm" colorScheme="brand" onClick={() => handleFoodSelect(food)}>
+                            追加
+                          </Button>
+                        </HStack>
+                      </Flex>
+                    ))}
+                    {foods.length > 20 && (
+                      <Text fontSize="sm" color="gray.500" textAlign="center" mt={2}>
+                        最初の20件を表示しています
+                      </Text>
+                    )}
+                  </VStack>
+                )}
               </CardBody>
             </Card>
           )}
@@ -1218,34 +1300,48 @@ const Nutrition = () => {
                     <FormLabel>食品を検索</FormLabel>
                     <Input
                       placeholder="食品を検索..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      value={modalSearchTerm}
+                      onChange={(e) => setModalSearchTerm(e.target.value)}
                     />
                   </FormControl>
 
-                  <Box maxH="300px" overflowY="auto">
-                    <VStack spacing={2} align="stretch">
-                      {filteredFoods.slice(0, 10).map((food) => (
-                        <HStack
-                          key={food.id}
-                          p={3}
-                          borderWidth="1px"
-                          borderRadius="md"
-                          cursor="pointer"
-                          _hover={{ bg: 'gray.50' }}
-                          onClick={() => handleFoodSelect(food)}
-                        >
-                          <Box flex="1">
-                            <Text fontSize="sm" fontWeight="medium">{food.name}</Text>
-                            <Text fontSize="xs" color="gray.600">
-                              {food.calories} kcal • P: {food.protein}g • C: {food.carbs}g • F: {food.fats}g
-                            </Text>
-                          </Box>
-                          <Icon as={FiPlus} color="brand.500" />
-                        </HStack>
-                      ))}
-                    </VStack>
-                  </Box>
+                  {modalSearchLoading ? (
+                    <Center py={4}>
+                      <Spinner size="md" color="brand.500" />
+                    </Center>
+                  ) : (
+                    <Box maxH="300px" overflowY="auto">
+                      {foods.length === 0 ? (
+                        <Center py={4}>
+                          <Text fontSize="sm" color="gray.500">
+                            {modalSearchTerm ? '検索結果が見つかりません' : '食品を検索してください'}
+                          </Text>
+                        </Center>
+                      ) : (
+                        <VStack spacing={2} align="stretch">
+                          {foods.slice(0, 10).map((food) => (
+                            <HStack
+                              key={food.id}
+                              p={3}
+                              borderWidth="1px"
+                              borderRadius="md"
+                              cursor="pointer"
+                              _hover={{ bg: 'gray.50' }}
+                              onClick={() => handleFoodSelect(food)}
+                            >
+                              <Box flex="1">
+                                <Text fontSize="sm" fontWeight="medium">{food.name}</Text>
+                                <Text fontSize="xs" color="gray.600">
+                                  {food.calories} kcal • P: {food.protein}g • C: {food.carbohydrates}g • F: {food.fats}g
+                                </Text>
+                              </Box>
+                              <Icon as={FiPlus} color="brand.500" />
+                            </HStack>
+                          ))}
+                        </VStack>
+                      )}
+                    </Box>
+                  )}
                 </Box>
               </Grid>
             </ModalBody>
@@ -1281,6 +1377,26 @@ const Nutrition = () => {
                   />
                 </FormControl>
 
+                <FormControl isRequired>
+                  <FormLabel>カテゴリー</FormLabel>
+                  <Select
+                    name="category"
+                    value={newFoodData.category}
+                    onChange={handleNewFoodChange}
+                  >
+                    <option value="protein">タンパク質</option>
+                    <option value="carbs">炭水化物</option>
+                    <option value="fats">脂質</option>
+                    <option value="vegetables">野菜</option>
+                    <option value="fruits">果物</option>
+                    <option value="dairy">乳製品</option>
+                    <option value="grains">穀物</option>
+                    <option value="snacks">スナック</option>
+                    <option value="beverages">飲料</option>
+                    <option value="other">その他</option>
+                  </Select>
+                </FormControl>
+
                 <Grid templateColumns="repeat(2, 1fr)" gap={4} w="full">
                   <FormControl isRequired>
                     <FormLabel>カロリー (kcal)</FormLabel>
@@ -1310,8 +1426,8 @@ const Nutrition = () => {
                     <FormLabel>炭水化物 (g)</FormLabel>
                     <Input
                       type="number"
-                      name="carbs"
-                      value={newFoodData.carbs}
+                      name="carbohydrates"
+                      value={newFoodData.carbohydrates}
                       onChange={handleNewFoodChange}
                       placeholder="30"
                       step="0.1"

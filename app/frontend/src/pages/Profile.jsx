@@ -43,6 +43,7 @@ const Profile = () => {
     date_of_birth: '',
     gender: '',
     height: '',
+    target_weight: '',
     activity_level: '',
     fitness_goal: '',
   });
@@ -93,6 +94,7 @@ const Profile = () => {
         date_of_birth: userData.date_of_birth || '',
         gender: userProfile.gender || '',
         height: userProfile.height || '',
+        target_weight: userProfile.target_weight || '',
         activity_level: userProfile.activity_level || '',
         fitness_goal: userProfile.fitness_goal || '',
       };
@@ -135,6 +137,7 @@ const Profile = () => {
       const profileData = {
         gender: formData.gender || null,
         height: formData.height ? parseFloat(formData.height) : null,
+        target_weight: formData.target_weight ? parseFloat(formData.target_weight) : null,
         activity_level: formData.activity_level || null,
         fitness_goal: formData.fitness_goal || null,
       };
@@ -222,6 +225,12 @@ const Profile = () => {
                   </Text>
                 </HStack>
                 <HStack justify="space-between">
+                  <Text fontSize="sm" color="gray.600">目標体重</Text>
+                  <Text fontSize="sm" fontWeight="medium">
+                    {formData.target_weight ? `${formData.target_weight} kg` : '未設定'}
+                  </Text>
+                </HStack>
+                <HStack justify="space-between">
                   <Text fontSize="sm" color="gray.600">活動レベル</Text>
                   <Text fontSize="sm" fontWeight="medium">
                     {ACTIVITY_LEVELS.find(l => l.value === formData.activity_level)?.label || '未設定'}
@@ -302,6 +311,34 @@ const Profile = () => {
                 <Box>
                   <Heading size="sm" mb={4}>フィットネス情報</Heading>
                   <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
+                    {/* <FormControl>
+                      <FormLabel>身長 (cm)</FormLabel>
+                      <Input
+                        type="number"
+                        name="height"
+                        value={formData.height}
+                        onChange={handleChange}
+                        placeholder="170"
+                        step="0.1"
+                        min="50"
+                        max="300"
+                      />
+                    </FormControl> */}
+
+                    <FormControl>
+                      <FormLabel>目標体重 (kg)</FormLabel>
+                      <Input
+                        type="number"
+                        name="target_weight"
+                        value={formData.target_weight}
+                        onChange={handleChange}
+                        placeholder="70"
+                        step="0.1"
+                        min="20"
+                        max="500"
+                      />
+                    </FormControl>
+
                     <FormControl>
                       <FormLabel>活動レベル</FormLabel>
                       <Select

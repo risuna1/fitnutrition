@@ -37,6 +37,8 @@ import {
   Badge,
   IconButton,
   HStack,
+  Icon,
+  Flex,
   AlertDialog,
   AlertDialogBody,
   AlertDialogFooter,
@@ -45,6 +47,7 @@ import {
   AlertDialogOverlay,
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
+import { FiActivity, FiPercent, FiZap, FiTrendingUp } from 'react-icons/fi';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import measurementsService from '../services/measurements';
 import { formatDate, calculateBMI, calculateBMR, calculateTDEE } from '../utils/helpers';
@@ -276,47 +279,131 @@ const Measurements = () => {
       {/* Stats Cards */}
       {latestMeasurement && (
         <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6} mb={8}>
-          <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
+          {/* Card 1: Current Weight */}
+          <Card 
+            bg={bgColor} 
+            borderWidth="1px" 
+            borderColor={borderColor}
+            borderLeftWidth="4px"
+            borderLeftColor="blue.500"
+            position="relative"
+            overflow="hidden"
+          >
             <CardBody>
-              <Stat>
-                <StatLabel>現在の体重</StatLabel>
-                <StatNumber>{latestMeasurement.weight} kg</StatNumber>
-                <StatHelpText>{formatDate(latestMeasurement.date)}</StatHelpText>
-              </Stat>
+              <Flex justify="space-between" align="flex-start">
+                <Box flex="1">
+                  <Text fontSize="sm" color="gray.600" mb={2}>現在の体重</Text>
+                  <Text fontSize="3xl" fontWeight="bold" mb={1}>
+                    {latestMeasurement.weight} kg
+                  </Text>
+                  <Text fontSize="sm" color="gray.500">
+                    {formatDate(latestMeasurement.date)}
+                  </Text>
+                </Box>
+                <Box
+                  bg="blue.100"
+                  p={3}
+                  borderRadius="lg"
+                >
+                  <Icon as={FiActivity} boxSize={6} color="blue.600" />
+                </Box>
+              </Flex>
             </CardBody>
           </Card>
 
-          <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
+          {/* Card 2: BMI */}
+          <Card 
+            bg={bgColor} 
+            borderWidth="1px" 
+            borderColor={borderColor}
+            borderLeftWidth="4px"
+            borderLeftColor="green.500"
+            position="relative"
+            overflow="hidden"
+          >
             <CardBody>
-              <Stat>
-                <StatLabel>BMI</StatLabel>
-                <StatNumber>{bmi ? bmi.toFixed(1) : '-'}</StatNumber>
-                <StatHelpText>
+              <Flex justify="space-between" align="flex-start">
+                <Box flex="1">
+                  <Text fontSize="sm" color="gray.600" mb={2}>BMI</Text>
+                  <Text fontSize="3xl" fontWeight="bold" mb={1}>
+                    {bmi ? bmi.toFixed(1) : '-'}
+                  </Text>
                   <Badge colorScheme={bmi < 18.5 ? 'yellow' : bmi < 25 ? 'green' : bmi < 30 ? 'orange' : 'red'}>
                     {bmi < 18.5 ? '低体重' : bmi < 25 ? '標準' : bmi < 30 ? '過体重' : '肥満'}
                   </Badge>
-                </StatHelpText>
-              </Stat>
+                </Box>
+                <Box
+                  bg="green.100"
+                  p={3}
+                  borderRadius="lg"
+                >
+                  <Icon as={FiTrendingUp} boxSize={6} color="green.600" />
+                </Box>
+              </Flex>
             </CardBody>
           </Card>
 
-          <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
+          {/* Card 3: BMR */}
+          <Card 
+            bg={bgColor} 
+            borderWidth="1px" 
+            borderColor={borderColor}
+            borderLeftWidth="4px"
+            borderLeftColor="purple.500"
+            position="relative"
+            overflow="hidden"
+          >
             <CardBody>
-              <Stat>
-                <StatLabel>基礎代謝量</StatLabel>
-                <StatNumber>{bmr ? bmr.toFixed(0) : '-'} kcal</StatNumber>
-                <StatHelpText>BMR</StatHelpText>
-              </Stat>
+              <Flex justify="space-between" align="flex-start">
+                <Box flex="1">
+                  <Text fontSize="sm" color="gray.600" mb={2}>基礎代謝量</Text>
+                  <Text fontSize="3xl" fontWeight="bold" mb={1}>
+                    {bmr ? bmr.toFixed(0) : '-'}
+                  </Text>
+                  <Text fontSize="sm" color="gray.500">
+                    BMR (kcal)
+                  </Text>
+                </Box>
+                <Box
+                  bg="purple.100"
+                  p={3}
+                  borderRadius="lg"
+                >
+                  <Icon as={FiZap} boxSize={6} color="purple.600" />
+                </Box>
+              </Flex>
             </CardBody>
           </Card>
 
-          <Card bg={bgColor} borderWidth="1px" borderColor={borderColor}>
+          {/* Card 4: TDEE */}
+          <Card 
+            bg={bgColor} 
+            borderWidth="1px" 
+            borderColor={borderColor}
+            borderLeftWidth="4px"
+            borderLeftColor="orange.500"
+            position="relative"
+            overflow="hidden"
+          >
             <CardBody>
-              <Stat>
-                <StatLabel>1日の消費カロリー</StatLabel>
-                <StatNumber>{tdee ? tdee.toFixed(0) : '-'} kcal</StatNumber>
-                <StatHelpText>TDEE</StatHelpText>
-              </Stat>
+              <Flex justify="space-between" align="flex-start">
+                <Box flex="1">
+                  <Text fontSize="sm" color="gray.600" mb={2}>1日の消費カロリー</Text>
+                  <Text fontSize="3xl" fontWeight="bold" mb={1}>
+                    {tdee ? tdee.toFixed(0) : '-'}
+                  </Text>
+                  <Text fontSize="sm" color="gray.500">
+                    TDEE (kcal)
+                  </Text>
+                </Box>
+                <Box
+                  bg="orange.100"
+                  p={3}
+                  borderRadius="lg"
+                >
+                  <Icon as={FiPercent} boxSize={6} color="orange.600" />
+                </Box>
+              </Flex>
             </CardBody>
           </Card>
         </SimpleGrid>

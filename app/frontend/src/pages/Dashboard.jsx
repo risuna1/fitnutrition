@@ -28,7 +28,7 @@ import {
   AlertDescription,
   Flex,
 } from '@chakra-ui/react';
-import { FiActivity, FiTrendingDown, FiTarget, FiCalendar, FiZap, FiPercent } from 'react-icons/fi';
+import { FiActivity, FiTrendingDown, FiTrendingUp, FiTarget, FiCalendar, FiZap, FiPercent } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import analyticsService from '../services/analytics';
 import measurementsService from '../services/measurements';
@@ -224,8 +224,12 @@ const Dashboard = () => {
                   {latestMeasurement?.weight || dashboardData?.goal_progress?.current_weight || 'N/A'} kg
                 </Text>
                 {monthlyWeightChange !== null && (
-                  <HStack spacing={1} color="green.500" fontSize="sm">
-                    <Icon as={FiTrendingDown} />
+                  <HStack 
+                    spacing={1} 
+                    color={monthlyWeightChange < 0 ? "green.500" : "red.500"} 
+                    fontSize="sm"
+                  >
+                    <Icon as={monthlyWeightChange < 0 ? FiTrendingDown : FiTrendingUp} />
                     <Text>今月 {monthlyWeightChange > 0 ? '+' : ''}{monthlyWeightChange.toFixed(1)} kg</Text>
                   </HStack>
                 )}
@@ -324,8 +328,12 @@ const Dashboard = () => {
                   {latestMeasurement?.body_fat_percentage ? `${latestMeasurement.body_fat_percentage}%` : 'N/A'}
                 </Text>
                 {monthlyBodyFatChange !== null && (
-                  <HStack spacing={1} color="green.500" fontSize="sm">
-                    <Icon as={FiTrendingDown} />
+                  <HStack 
+                    spacing={1} 
+                    color={monthlyBodyFatChange < 0 ? "green.500" : "red.500"} 
+                    fontSize="sm"
+                  >
+                    <Icon as={monthlyBodyFatChange < 0 ? FiTrendingDown : FiTrendingUp} />
                     <Text>今月 {monthlyBodyFatChange > 0 ? '+' : ''}{monthlyBodyFatChange}%</Text>
                   </HStack>
                 )}

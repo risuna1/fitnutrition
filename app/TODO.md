@@ -1,35 +1,50 @@
-# Fix: Height and Weight Not Showing in Measurements Page
+# Nutrition Page Fix - TODO List
 
-## Problem
-When registering a new account with height (身長) and weight (体重), the data is saved to UserProfile but doesn't appear on the measurements page because it only displays BodyMeasurement records.
+## Issues to Fix:
+1. ✅ Search functionality in "食品データベース" (Food Database) not working
+2. ✅ Food items not appearing in the list
 
-## Solution Plan
-- [x] Analyze the issue
-- [x] Update backend/apps/users/signals.py - Add signal to create initial BodyMeasurement
-- [x] Create migration script for existing users
-- [x] Create comprehensive documentation
-- [ ] Test the fix with new user registration (Ready for testing)
+## Implementation Steps:
 
-## Files Edited
-1. ✅ backend/apps/users/signals.py - Added post_save signal for UserProfile to create initial BodyMeasurement
-2. ✅ backend/backfill_measurements.py - Created migration script for existing users
+### Phase 1: Add Debounced Search Functionality
+- [x] Import useDebounce hook
+- [x] Add debounced search state
+- [x] Create searchFoods function that calls API with search parameter
+- [x] Add loading state for search operations
 
-## Changes Made
+### Phase 2: Fix Food Database Tab
+- [x] Update search input to use debounced search
+- [x] Modify food loading to use search results
+- [x] Add proper empty states (no foods vs no search results)
+- [x] Add loading spinner during search
 
-### 1. Signal for Automatic Measurement Creation (signals.py)
-- Added `create_initial_measurement` signal that triggers when a UserProfile is created
-- Automatically creates a BodyMeasurement record with the registration data (height, weight, and other body measurements if provided)
-- Only creates the measurement if the user doesn't already have any measurements
-- This ensures new users will see their registration data on the measurements page
+### Phase 3: Fix Meal Creation Modal Search
+- [x] Apply same debounced search to modal food search
+- [x] Update modal to show search results
+- [x] Add loading state in modal
 
-### 2. Backfill Script for Existing Users (backfill_measurements.py)
-- Created a script to backfill measurements for users who registered before this fix
-- Finds all users with profile data (height/weight) but no measurements
-- Creates initial BodyMeasurement records for them
-- Run with: `python backend/backfill_measurements.py`
+### Phase 4: Testing
+- [ ] Test search in Food Database tab
+- [ ] Test search in meal creation modal
+- [ ] Test with empty database
+- [ ] Test with Japanese characters
+- [ ] Verify foods display correctly
 
-## Testing Instructions
-1. Register a new user with height and weight data
-2. Login and navigate to the measurements page
-3. Verify that the initial measurement appears with the registration data
-4. For existing users, run the backfill script: `python backend/backfill_measurements.py`
+## Files Modified:
+- frontend/src/pages/Nutrition.jsx
+
+## Changes Made:
+1. Added `useDebounce` hook import
+2. Added separate search states for Food Database tab and Modal
+3. Created `searchFoods()` and `searchFoodsForModal()` functions that call the API
+4. Added debounced search with 500ms delay
+5. Added loading states (`searchLoading`, `modalSearchLoading`)
+6. Updated Food Database tab to show:
+   - Loading spinner during search
+   - Empty state when no foods exist
+   - Different message for no search results vs no foods
+   - Display message for showing first 20 results
+7. Updated Modal search to use separate search term and loading state
+8. Both searches now trigger API calls instead of client-side filtering
+
+## Status: ✅ COMPLETE - Ready for Testing
