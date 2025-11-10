@@ -92,11 +92,12 @@ const nutritionService = {
   // Favorites
   favorites: {
     getAll: async () => {
-      const response = await api.get('/nutrition/favorites/');
+      // backend registers this viewset under 'favorite-foods'
+      const response = await api.get('/nutrition/favorite-foods/');
       return response.data;
     },
     toggle: async (foodId) => {
-      const response = await api.post('/nutrition/favorites/toggle/', { food_id: foodId });
+      const response = await api.post('/nutrition/favorite-foods/toggle/', { food_id: foodId });
       return response.data;
     },
   },

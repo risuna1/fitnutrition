@@ -10,6 +10,7 @@ import {
   Grid,
   useDisclosure,
   Modal,
+  Tooltip,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -64,6 +65,7 @@ const Nutrition = () => {
   const { isOpen: isCreatePlanOpen, onOpen: onCreatePlanOpen, onClose: onCreatePlanClose } = useDisclosure();
   const { isOpen: isCreateRecipeOpen, onOpen: onCreateRecipeOpen, onClose: onCreateRecipeClose } = useDisclosure();
   const { isOpen: isRecipeDetailOpen, onOpen: onRecipeDetailOpen, onClose: onRecipeDetailClose } = useDisclosure();
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
   const toast = useToast();
   const [meals, setMeals] = useState([]);
   const [foods, setFoods] = useState([]);
@@ -75,6 +77,7 @@ const Nutrition = () => {
   const [recipeSearchTerm, setRecipeSearchTerm] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
   const [modalSearchLoading, setModalSearchLoading] = useState(false);
+  const [foodToDelete, setFoodToDelete] = useState(null);
   
   // Debounce search terms
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -235,28 +238,38 @@ const Nutrition = () => {
     setSubmitting(true);
 
     try {
+      // Construct meal data matching backend MealCreateSerializer format
       const mealData = {
-        ...formData,
-        foods: selectedFoods.map(food => ({
-          food: food.id,
-          quantity: food.quantity,
+        name: `${formData.meal_type} - ${new Date(formData.date).toLocaleDateString('ja-JP')}`,
+        meal_type: formData.meal_type,
+        date: formData.date,
+        items: selectedFoods.map(food => ({
+          food_id: food.id,
+          serving_size: food.quantity,
         })),
       };
 
       await nutritionService.meals.create(mealData);
+      
+      // Reload data first before closing modal
+      await loadData();
+      
       toast({
         title: '食事を追加しました',
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
-      onClose();
-      loadData();
+      
+      // Reset form state
       setSelectedFoods([]);
       setFormData({
         meal_type: 'breakfast',
         date: new Date().toISOString().split('T')[0],
       });
+      
+      // Close modal after everything is done
+      onClose();
     } catch (error) {
       toast({
         title: '食事追加エラー',
@@ -291,23 +304,69 @@ const Nutrition = () => {
     }
   };
 
-  const toggleFavorite = async (foodId) => {
+  const toggleFavorite = async (food) => {
+    const already = favorites.some(f => f.food.id === food.id);
     try {
-      await nutritionService.favorites.toggle(foodId);
-      loadData();
+      setSubmitting(true);
+      await nutritionService.favorites.toggle(food.id);
+      // Refresh only the favorites to update the sidebar quickly
+      const favs = await nutritionService.favorites.getAll();
+      setFavorites(favs.results || favs);
+
       toast({
-        title: 'お気に入りを更新しました',
-        status: 'success',
+        title: already ? 'お気に入りから削除しました' : 'お気に入りに追加しました',
+        status: already ? 'info' : 'success',
         duration: 2000,
         isClosable: true,
       });
     } catch (error) {
       toast({
         title: 'お気に入り更新エラー',
+        description: error.response?.data?.detail || 'お気に入りの更新に失敗しました',
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Open delete confirmation modal for a food
+  const handleDeleteFood = (food) => {
+    setFoodToDelete(food);
+    onDeleteOpen();
+  };
+
+  // Perform the deletion after confirmation in modal
+  const performDeleteFood = async () => {
+    if (!foodToDelete) return;
+    try {
+      setSubmitting(true);
+      await nutritionService.foods.delete(foodToDelete.id);
+      toast({
+        title: '食品を削除しました',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      // Refresh foods and favorites
+      await searchFoods(searchTerm);
+      const favs = await nutritionService.favorites.getAll();
+      setFavorites(favs.results || favs);
+    } catch (error) {
+      toast({
+        title: '削除エラー',
+        description: error.response?.data?.detail || '食品の削除に失敗しました',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setSubmitting(false);
+      // Always reset selection and close modal so it doesn't get stuck
+      setFoodToDelete(null);
+      onDeleteClose();
     }
   };
 
@@ -616,7 +675,7 @@ const Nutrition = () => {
           <VStack spacing={2} align="stretch">
             {meals.map((meal) => (
               <Box key={meal.id}>
-                {meal.foods && meal.foods.map((foodItem, idx) => (
+                {meal.items && meal.items.map((foodItem, idx) => (
                   <Flex
                     key={idx}
                     align="center"
@@ -627,34 +686,23 @@ const Nutrition = () => {
                     mb={2}
                   >
                     <HStack spacing={3} flex="1">
-                      <Box
-                        w="48px"
-                        h="48px"
-                        bg="gray.200"
-                        borderRadius="lg"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                      >
-                        <Icon as={FiCoffee} color="gray.500" />
-                      </Box>
                       <Box>
                         <Text fontWeight="medium" fontSize="sm">
                           {foodItem.food?.name || '食品'}
                         </Text>
                         <Text fontSize="xs" color="gray.600">
-                          {foodItem.quantity}g
+                          {foodItem.serving_size}g
                         </Text>
                       </Box>
                     </HStack>
                     <Box textAlign="right" mr={4}>
                       <Text fontWeight="semibold" fontSize="sm">
-                        {Math.round((foodItem.food?.calories || 0) * foodItem.quantity / 100)} kcal
+                        {Math.round(foodItem.calories)} kcal
                       </Text>
                       <Text fontSize="xs" color="gray.600">
-                        P: {Math.round((foodItem.food?.protein || 0) * foodItem.quantity / 100)}g
-                        {' '}C: {Math.round((foodItem.food?.carbohydrates || 0) * foodItem.quantity / 100)}g
-                        {' '}F: {Math.round((foodItem.food?.fats || 0) * foodItem.quantity / 100)}g
+                        P: {Math.round(foodItem.protein)}g
+                        {' '}C: {Math.round(foodItem.carbohydrates)}g
+                        {' '}F: {Math.round(foodItem.fats)}g
                       </Text>
                     </Box>
                     <IconButton
@@ -671,7 +719,7 @@ const Nutrition = () => {
             ))}
             <Box textAlign="right" mt={2}>
               <Text fontSize="sm" fontWeight="semibold">
-                合計: {mealTotal} kcal
+                合計: {Math.round(mealTotal)} kcal
               </Text>
             </Box>
           </VStack>
@@ -904,17 +952,36 @@ const Nutrition = () => {
                           </Text>
                         </Box>
                         <HStack>
-                          <IconButton
-                            icon={<FiHeart />}
+                          <Tooltip label="お気に入り" placement="top">
+                            <IconButton
+                              aria-label="お気に入り"
+                              icon={<FiHeart />}
+                              size="sm"
+                              variant="ghost"
+                              colorScheme={favorites.some(f => f.food.id === food.id) ? 'red' : 'gray'}
+                              onClick={() => toggleFavorite(food)}
+                            />
+                          </Tooltip>
+                          {/* <IconButton
+                            aria-label="追加"
+                            icon={<FiPlus />}
                             size="sm"
                             variant="ghost"
-                            colorScheme={favorites.some(f => f.food.id === food.id) ? 'red' : 'gray'}
-                            onClick={() => toggleFavorite(food.id)}
-                            aria-label="お気に入り"
-                          />
-                          <Button size="sm" colorScheme="brand" onClick={() => handleFoodSelect(food)}>
-                            追加
-                          </Button>
+                            colorScheme="brand"
+                            onClick={() => handleFoodSelect(food)}
+                          /> */}
+                          {food.is_custom && (
+                            <Tooltip label="削除" placement="top">
+                              <IconButton
+                                aria-label="削除"
+                                icon={<FiTrash2 />}
+                                size="sm"
+                                variant="ghost"
+                                colorScheme="red"
+                                onClick={() => handleDeleteFood(food)}
+                              />
+                            </Tooltip>
+                          )}
                         </HStack>
                       </Flex>
                     ))}
@@ -1357,6 +1424,28 @@ const Nutrition = () => {
           </form>
         </ModalContent>
       </Modal>
+
+        {/* Delete Food Confirmation Modal */}
+        <Modal isOpen={isDeleteOpen} onClose={() => { setFoodToDelete(null); onDeleteClose(); }} isCentered>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>食品を削除</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Text>
+                {foodToDelete ? `${foodToDelete.name} を本当に削除しますか？` : 'この食品を削除してもよいですか？'}
+              </Text>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="ghost" mr={3} onClick={() => { setFoodToDelete(null); onDeleteClose(); }}>
+                キャンセル
+              </Button>
+              <Button colorScheme="red" onClick={performDeleteFood} isLoading={submitting}>
+                削除
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
 
       {/* Create Food Modal */}
       <Modal isOpen={isCreateFoodOpen} onClose={onCreateFoodClose} size="xl">
