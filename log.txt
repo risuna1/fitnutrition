@@ -18,3 +18,6 @@ dashboard done, nutrition pages halfway (食品データベース ongoing)
 
 v1.8
 nutrition pages (食品データベース, 食事カレンダー done)
+
+v1.9
+nutrition pages done
