@@ -10,14 +10,14 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from .models import (
     Food, Meal, MealItem, MealPlan,
-    FavoriteFood, FavoriteMeal, FavoriteMealItem
+    FavoriteFood, FavoriteMeal, FavoriteMealItem, Recipe
 )
 from .serializers import (
     FoodSerializer, FoodCreateSerializer,
     MealSerializer, MealCreateSerializer, MealItemSerializer,
     MealPlanSerializer, FavoriteFoodSerializer,
     FavoriteMealSerializer, FavoriteMealCreateSerializer,
-    DailyNutritionSummarySerializer
+    DailyNutritionSummarySerializer, RecipeSerializer
 )
 
 
@@ -223,12 +223,11 @@ class MealViewSet(viewsets.ModelViewSet):
             )
 
 
-class MealPlanViewSet(viewsets.ReadOnlyModelViewSet):
+class MealPlanViewSet(viewsets.ModelViewSet):
     """
     ViewSet for MealPlan model
-    Read-only access to meal plans
+    Provides CRUD operations for meal plans
     """
-    queryset = MealPlan.objects.filter(is_active=True)
     serializer_class = MealPlanSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.OrderingFilter]
@@ -236,14 +235,37 @@ class MealPlanViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ['name']
     
     def get_queryset(self):
-        """Filter meal plans by goal if provided"""
-        queryset = super().get_queryset()
-        goal = self.request.query_params.get('goal')
+        """Return meal plans for the current user"""
+        # Show both user's custom plans and global active plans
+        queryset = MealPlan.objects.filter(
+            Q(created_by=self.request.user) | Q(is_active=True, created_by__isnull=True)
+        )
         
+        # Filter by goal if provided
+        goal = self.request.query_params.get('goal')
         if goal:
             queryset = queryset.filter(goal=goal)
         
         return queryset
+    
+    def create(self, request, *args, **kwargs):
+        """Override create to add detailed logging"""
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Received meal plan creation request with data: {request.data}")
+        
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            logger.error(f"Validation errors: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    def perform_create(self, serializer):
+        """Assign meal plan to current user"""
+        serializer.save(created_by=self.request.user)
     
     @action(detail=False, methods=['get'])
     def goals(self, request):
@@ -345,3 +367,24 @@ class FavoriteMealViewSet(viewsets.ModelViewSet):
         
         serializer = MealSerializer(meal)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for Recipe model
+    Provides CRUD operations for recipes
+    """
+    serializer_class = RecipeSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description']
+    ordering_fields = ['name', 'created_at']
+    ordering = ['-created_at']
+    
+    def get_queryset(self):
+        """Return recipes for the current user"""
+        return Recipe.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        """Assign recipe to current user"""
+        serializer.save(user=self.request.user)

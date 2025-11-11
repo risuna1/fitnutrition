@@ -28,7 +28,7 @@ import {
   AlertDescription,
   Flex,
 } from '@chakra-ui/react';
-import { FiActivity, FiTrendingDown, FiTrendingUp, FiTarget, FiCalendar, FiZap, FiPercent } from 'react-icons/fi';
+import { FiActivity, FiTrendingDown, FiTrendingUp, FiTarget, FiCalendar, FiZap, FiPercent, FiMinus } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import analyticsService from '../services/analytics';
 import measurementsService from '../services/measurements';
@@ -165,13 +165,14 @@ const Dashboard = () => {
   const getMonthlyWeightChange = () => {
     if (!dashboardData?.recent_progress?.weight_progress) return null;
     const change = dashboardData.recent_progress.weight_progress.weight_change;
-    return change ? change * 4 : null; // Approximate monthly from weekly
+    return change !== undefined && change !== null ? change * 4 : null; // Approximate monthly from weekly
   };
 
   // Calculate monthly body fat change
   const getMonthlyBodyFatChange = () => {
-    if (!dashboardData?.recent_progress?.body_composition?.body_fat_change) return null;
-    return dashboardData.recent_progress.body_composition.body_fat_change;
+    if (!dashboardData?.recent_progress?.body_composition) return null;
+    const change = dashboardData.recent_progress.body_composition.body_fat_change;
+    return change !== undefined && change !== null ? change : null;
   };
 
   const todayCaloriesTotal = calculateTodayCalories();
@@ -226,10 +227,22 @@ const Dashboard = () => {
                 {monthlyWeightChange !== null && (
                   <HStack 
                     spacing={1} 
-                    color={monthlyWeightChange < 0 ? "green.500" : "red.500"} 
+                    color={
+                      monthlyWeightChange === 0 
+                        ? "gray.400" 
+                        : monthlyWeightChange < 0 
+                          ? "green.500" 
+                          : "red.500"
+                    } 
                     fontSize="sm"
                   >
-                    <Icon as={monthlyWeightChange < 0 ? FiTrendingDown : FiTrendingUp} />
+                    <Icon as={
+                      monthlyWeightChange === 0 
+                        ? FiMinus 
+                        : monthlyWeightChange < 0 
+                          ? FiTrendingDown 
+                          : FiTrendingUp
+                    } />
                     <Text>今月 {monthlyWeightChange > 0 ? '+' : ''}{monthlyWeightChange.toFixed(1)} kg</Text>
                   </HStack>
                 )}
@@ -330,10 +343,22 @@ const Dashboard = () => {
                 {monthlyBodyFatChange !== null && (
                   <HStack 
                     spacing={1} 
-                    color={monthlyBodyFatChange < 0 ? "green.500" : "red.500"} 
+                    color={
+                      monthlyBodyFatChange === 0 
+                        ? "gray.400" 
+                        : monthlyBodyFatChange < 0 
+                          ? "green.500" 
+                          : "red.500"
+                    } 
                     fontSize="sm"
                   >
-                    <Icon as={monthlyBodyFatChange < 0 ? FiTrendingDown : FiTrendingUp} />
+                    <Icon as={
+                      monthlyBodyFatChange === 0 
+                        ? FiMinus 
+                        : monthlyBodyFatChange < 0 
+                          ? FiTrendingDown 
+                          : FiTrendingUp
+                    } />
                     <Text>今月 {monthlyBodyFatChange > 0 ? '+' : ''}{monthlyBodyFatChange}%</Text>
                   </HStack>
                 )}
@@ -374,7 +399,7 @@ const Dashboard = () => {
                     </Text>
                   </Box>
                   
-                  {dashboardData.recent_progress.body_composition?.body_fat_change && (
+                  {dashboardData.recent_progress.body_composition?.body_fat_change !== undefined && dashboardData.recent_progress.body_composition?.body_fat_change !== null && (
                     <Box p={4} bg={useColorModeValue('green.50', 'green.900')} borderRadius="md">
                       <HStack justify="space-between" mb={2}>
                         <Text fontWeight="medium">体脂肪率の変化</Text>

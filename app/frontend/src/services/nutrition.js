@@ -75,6 +75,10 @@ const nutritionService = {
       const response = await api.post('/nutrition/meal-plans/', data);
       return response.data;
     },
+    delete: async (id) => {
+      const response = await api.delete(`/nutrition/meal-plans/${id}/`);
+      return response.data;
+    },
   },
 
   // Food Preferences
@@ -98,6 +102,42 @@ const nutritionService = {
     },
     toggle: async (foodId) => {
       const response = await api.post('/nutrition/favorite-foods/toggle/', { food_id: foodId });
+      return response.data;
+    },
+  },
+
+  // Recipes
+  recipes: {
+    getAll: async (params = {}) => {
+      const response = await api.get('/nutrition/recipes/', { params });
+      return response.data;
+    },
+    getById: async (id) => {
+      const response = await api.get(`/nutrition/recipes/${id}/`);
+      return response.data;
+    },
+    create: async (data) => {
+      const response = await api.post('/nutrition/recipes/', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    },
+    update: async (id, data) => {
+      const response = await api.put(`/nutrition/recipes/${id}/`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    },
+    delete: async (id) => {
+      const response = await api.delete(`/nutrition/recipes/${id}/`);
+      return response.data;
+    },
+    search: async (query) => {
+      const response = await api.get('/nutrition/recipes/', { params: { search: query } });
       return response.data;
     },
   },

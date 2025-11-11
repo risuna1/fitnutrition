@@ -4,7 +4,7 @@ Admin configuration for Nutrition app
 from django.contrib import admin
 from .models import (
     Food, Meal, MealItem, MealPlan,
-    FavoriteFood, FavoriteMeal, FavoriteMealItem
+    FavoriteFood, FavoriteMeal, FavoriteMealItem, Recipe
 )
 
 
@@ -157,3 +157,25 @@ class FavoriteMealItemAdmin(admin.ModelAdmin):
     """Admin configuration for FavoriteMealItem model"""
     list_display = ['favorite_meal', 'food', 'serving_size']
     search_fields = ['favorite_meal__name', 'food__name']
+
+
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    """Admin configuration for Recipe model"""
+    list_display = ['user', 'name', 'calories', 'time', 'servings', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['user__email', 'user__username', 'name', 'description']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    fieldsets = (
+        ('User & Basic Info', {
+            'fields': ('user', 'name', 'description', 'time', 'servings', 'image')
+        }),
+        ('Nutrition Information', {
+            'fields': ('calories', 'protein', 'carbs', 'fats')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )

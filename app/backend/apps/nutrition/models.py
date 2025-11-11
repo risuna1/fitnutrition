@@ -262,7 +262,7 @@ class MealPlan(models.Model):
     Model for pre-defined meal plans
     """
     name = models.CharField(max_length=200, verbose_name='Plan Name')
-    description = models.TextField(verbose_name='Description')
+    description = models.TextField(blank=True, default='', verbose_name='Description')
     goal = models.CharField(
         max_length=50,
         choices=[
@@ -271,6 +271,8 @@ class MealPlan(models.Model):
             ('maintenance', '維持'),
             ('endurance', '持久力'),
         ],
+        blank=True,
+        default='maintenance',
         verbose_name='目標'
     )
     daily_calories = models.IntegerField(verbose_name='Daily Calories Target')
@@ -381,3 +383,57 @@ class FavoriteMealItem(models.Model):
     
     def __str__(self):
         return f"{self.food.name} - {self.serving_size}g"
+
+
+class Recipe(models.Model):
+    """
+    Model for user recipes
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes')
+    name = models.CharField(max_length=200, verbose_name='レシピ名')
+    description = models.TextField(verbose_name='説明')
+    
+    # Nutritional information
+    calories = models.DecimalField(
+        max_digits=6,
+        decimal_places=1,
+        validators=[MinValueValidator(0)],
+        verbose_name='Calories (kcal)'
+    )
+    protein = models.DecimalField(
+        max_digits=5,
+        decimal_places=1,
+        validators=[MinValueValidator(0)],
+        verbose_name='Protein (g)'
+    )
+    carbs = models.DecimalField(
+        max_digits=5,
+        decimal_places=1,
+        validators=[MinValueValidator(0)],
+        verbose_name='Carbs (g)'
+    )
+    fats = models.DecimalField(
+        max_digits=5,
+        decimal_places=1,
+        validators=[MinValueValidator(0)],
+        verbose_name='Fats (g)'
+    )
+    
+    # Additional info
+    time = models.CharField(max_length=50, verbose_name='調理時間')
+    servings = models.CharField(max_length=50, verbose_name='人数')
+    image = models.ImageField(upload_to='recipe_images/', blank=True, null=True, verbose_name='画像')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'レシピ'
+        verbose_name_plural = 'レシピ'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.name}"

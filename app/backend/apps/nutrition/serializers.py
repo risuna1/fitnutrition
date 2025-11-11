@@ -4,7 +4,7 @@ Serializers for Nutrition models
 from rest_framework import serializers
 from .models import (
     Food, Meal, MealItem, MealPlan, 
-    FavoriteFood, FavoriteMeal, FavoriteMealItem
+    FavoriteFood, FavoriteMeal, FavoriteMealItem, Recipe
 )
 
 
@@ -99,11 +99,18 @@ class MealCreateSerializer(serializers.ModelSerializer):
 
 
 class MealPlanSerializer(serializers.ModelSerializer):
-    """Serializer for MealPlan model"""
+    """Serializer for MealPlan model with flexible input/output"""
     created_by_name = serializers.CharField(
         source='created_by.get_full_name',
-        read_only=True
+        read_only=True,
+        allow_null=True
     )
+    
+    # Accept both formats: grams (for frontend) or percentages (for backend)
+    target_protein = serializers.FloatField(write_only=True, required=False, allow_null=True)
+    target_carbs = serializers.FloatField(write_only=True, required=False, allow_null=True)
+    target_fats = serializers.FloatField(write_only=True, required=False, allow_null=True)
+    target_calories = serializers.IntegerField(write_only=True, required=False)
     
     class Meta:
         model = MealPlan
@@ -111,9 +118,68 @@ class MealPlanSerializer(serializers.ModelSerializer):
             'id', 'name', 'description', 'goal', 'daily_calories',
             'protein_percentage', 'carbs_percentage', 'fats_percentage',
             'duration_days', 'is_active', 'created_by', 'created_by_name',
-            'created_at', 'updated_at'
+            'created_at', 'updated_at',
+            'target_protein', 'target_carbs', 'target_fats', 'target_calories'
         ]
         read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']
+        extra_kwargs = {
+            'daily_calories': {'required': False},
+            'protein_percentage': {'required': False},
+            'carbs_percentage': {'required': False},
+            'fats_percentage': {'required': False},
+        }
+    
+    def validate(self, data):
+        """Validate and convert frontend format to backend format"""
+        # Extract frontend format fields
+        target_protein = data.pop('target_protein', None)
+        target_carbs = data.pop('target_carbs', None)
+        target_fats = data.pop('target_fats', None)
+        target_calories = data.pop('target_calories', None)
+        
+        # If target_calories provided, use it as daily_calories
+        if target_calories:
+            data['daily_calories'] = target_calories
+        
+        # Ensure we have daily_calories
+        daily_calories = data.get('daily_calories')
+        if not daily_calories:
+            raise serializers.ValidationError({
+                'target_calories': 'Target calories is required'
+            })
+        
+        # Calculate percentages from grams if provided
+        if daily_calories > 0:
+            if target_protein is not None:
+                # Protein: 4 calories per gram
+                protein_calories = target_protein * 4
+                data['protein_percentage'] = int((protein_calories / daily_calories) * 100)
+            else:
+                data['protein_percentage'] = data.get('protein_percentage', 30)
+            
+            if target_carbs is not None:
+                # Carbs: 4 calories per gram
+                carbs_calories = target_carbs * 4
+                data['carbs_percentage'] = int((carbs_calories / daily_calories) * 100)
+            else:
+                data['carbs_percentage'] = data.get('carbs_percentage', 40)
+            
+            if target_fats is not None:
+                # Fats: 9 calories per gram
+                fats_calories = target_fats * 9
+                data['fats_percentage'] = int((fats_calories / daily_calories) * 100)
+            else:
+                data['fats_percentage'] = data.get('fats_percentage', 30)
+        else:
+            # Set default percentages if daily_calories is invalid
+            data.setdefault('protein_percentage', 30)
+            data.setdefault('carbs_percentage', 40)
+            data.setdefault('fats_percentage', 30)
+        
+        # Set default goal if not provided
+        data.setdefault('goal', 'maintenance')
+        
+        return data
 
 
 class FavoriteFoodSerializer(serializers.ModelSerializer):
@@ -173,6 +239,21 @@ class FavoriteMealCreateSerializer(serializers.ModelSerializer):
             )
         
         return favorite_meal
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+    """Serializer for Recipe model"""
+    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    
+    class Meta:
+        model = Recipe
+        fields = [
+            'id', 'user', 'user_name', 'name', 'description',
+            'calories', 'protein', 'carbs', 'fats',
+            'time', 'servings', 'image',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at']
 
 
 class DailyNutritionSummarySerializer(serializers.Serializer):

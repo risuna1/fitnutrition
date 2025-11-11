@@ -20,6 +20,8 @@ import {
   FormControl,
   FormLabel,
   Input,
+  InputGroup,
+  InputLeftElement,
   Select,
   useToast,
   Spinner,
@@ -52,6 +54,8 @@ import {
   FiSun,
   FiMoon,
   FiStar,
+  FiClock,
+  FiEdit,
 } from 'react-icons/fi';
 import { FaCookieBite } from 'react-icons/fa';
 import nutritionService from '../services/nutrition';
@@ -64,20 +68,26 @@ const Nutrition = () => {
   const { isOpen: isCreateFoodOpen, onOpen: onCreateFoodOpen, onClose: onCreateFoodClose } = useDisclosure();
   const { isOpen: isCreatePlanOpen, onOpen: onCreatePlanOpen, onClose: onCreatePlanClose } = useDisclosure();
   const { isOpen: isCreateRecipeOpen, onOpen: onCreateRecipeOpen, onClose: onCreateRecipeClose } = useDisclosure();
+  const { isOpen: isEditRecipeOpen, onOpen: onEditRecipeOpen, onClose: onEditRecipeClose } = useDisclosure();
   const { isOpen: isRecipeDetailOpen, onOpen: onRecipeDetailOpen, onClose: onRecipeDetailClose } = useDisclosure();
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+  const { isOpen: isDeletePlanOpen, onOpen: onDeletePlanOpen, onClose: onDeletePlanClose } = useDisclosure();
   const toast = useToast();
   const [meals, setMeals] = useState([]);
   const [foods, setFoods] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [mealPlans, setMealPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [modalSearchTerm, setModalSearchTerm] = useState('');
   const [recipeSearchTerm, setRecipeSearchTerm] = useState('');
+  const [planSearchTerm, setPlanSearchTerm] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
   const [modalSearchLoading, setModalSearchLoading] = useState(false);
   const [foodToDelete, setFoodToDelete] = useState(null);
+  const [planToDelete, setPlanToDelete] = useState(null);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   
   // Debounce search terms
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -88,7 +98,12 @@ const Nutrition = () => {
   const [currentWeekStart, setCurrentWeekStart] = useState(getWeekStart(new Date()));
   const [selectedMealType, setSelectedMealType] = useState('breakfast');
   const [selectedRecipe, setSelectedRecipe] = useState(null);
-  const [recipeFavorites, setRecipeFavorites] = useState([2]); // サーモンとキヌアがお気に入り
+  const [editingRecipe, setEditingRecipe] = useState(null);
+  const [recipeFavorites, setRecipeFavorites] = useState(() => {
+    const saved = localStorage.getItem('recipeFavorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [customRecipes, setCustomRecipes] = useState([]);
   const [formData, setFormData] = useState({
     meal_type: 'breakfast',
     date: new Date().toISOString().split('T')[0],
@@ -103,6 +118,27 @@ const Nutrition = () => {
     serving_size: '100',
     unit: 'g',
   });
+  const [newPlanData, setNewPlanData] = useState({
+    name: '',
+    description: '',
+    target_calories: '',
+    target_protein: '',
+    target_carbs: '',
+    target_fats: '',
+    duration_days: '7',
+  });
+  const [newRecipeData, setNewRecipeData] = useState({
+    name: '',
+    description: '',
+    calories: '',
+    protein: '',
+    carbs: '',
+    fats: '',
+    time: '',
+    servings: '',
+    image: null,
+  });
+  const [recipeImagePreview, setRecipeImagePreview] = useState(null);
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
@@ -131,6 +167,11 @@ const Nutrition = () => {
     loadData();
   }, []);
 
+  // Save recipe favorites to localStorage
+  useEffect(() => {
+    localStorage.setItem('recipeFavorites', JSON.stringify(recipeFavorites));
+  }, [recipeFavorites]);
+
   // Effect for Food Database tab search
   useEffect(() => {
     if (activeTab === 1) {
@@ -148,16 +189,21 @@ const Nutrition = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [mealsResponse, favoritesResponse] = await Promise.all([
+      const [mealsResponse, favoritesResponse, mealPlansResponse, recipesResponse] = await Promise.all([
         nutritionService.meals.getAll(),
         nutritionService.favorites.getAll(),
+        nutritionService.mealPlans.getAll(),
+        nutritionService.recipes.getAll(),
       ]);
       setMeals(mealsResponse.results || mealsResponse);
       setFavorites(favoritesResponse.results || favoritesResponse);
+      setMealPlans(mealPlansResponse.results || mealPlansResponse);
+      setCustomRecipes(recipesResponse.results || recipesResponse);
       
       // Load initial foods
       await searchFoods('');
     } catch (error) {
+      console.error('Load data error:', error);
       toast({
         title: 'データ読み込みエラー',
         description: error.response?.data?.detail || '栄養データの読み込みに失敗しました',
@@ -446,25 +492,25 @@ const Nutrition = () => {
 
   // Recipe handlers
   const toggleRecipeFavorite = (recipeId) => {
-    setRecipeFavorites(prev => {
-      if (prev.includes(recipeId)) {
-        toast({
-          title: 'お気に入りから削除しました',
-          status: 'info',
-          duration: 2000,
-          isClosable: true,
-        });
-        return prev.filter(id => id !== recipeId);
-      } else {
-        toast({
-          title: 'お気に入りに追加しました',
-          status: 'success',
-          duration: 2000,
-          isClosable: true,
-        });
-        return [...prev, recipeId];
-      }
-    });
+    const isAlreadyFavorite = recipeFavorites.includes(recipeId);
+    
+    if (isAlreadyFavorite) {
+      setRecipeFavorites(prev => prev.filter(id => id !== recipeId));
+      toast({
+        title: 'お気に入りから削除しました',
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+      });
+    } else {
+      setRecipeFavorites(prev => [...prev, recipeId]);
+      toast({
+        title: 'お気に入りに追加しました',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+    }
   };
 
   const openRecipeDetail = (recipe) => {
@@ -476,75 +522,371 @@ const Nutrition = () => {
     onCreatePlanOpen();
   };
 
+  const handleNewPlanChange = (e) => {
+    setNewPlanData({
+      ...newPlanData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmitPlan = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const planData = {
+        name: newPlanData.name,
+        description: newPlanData.description || '',
+        target_calories: newPlanData.target_calories ? parseFloat(newPlanData.target_calories) : undefined,
+        target_protein: newPlanData.target_protein ? parseFloat(newPlanData.target_protein) : undefined,
+        target_carbs: newPlanData.target_carbs ? parseFloat(newPlanData.target_carbs) : undefined,
+        target_fats: newPlanData.target_fats ? parseFloat(newPlanData.target_fats) : undefined,
+        duration_days: newPlanData.duration_days ? parseInt(newPlanData.duration_days) : undefined,
+      };
+
+      console.log('Sending meal plan data:', planData);
+      const createdPlan = await nutritionService.mealPlans.create(planData);
+
+      toast({
+        title: '食事プランを作成しました',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+
+      onCreatePlanClose();
+      await loadData();
+      
+      // Reset form
+      setNewPlanData({
+        name: '',
+        description: '',
+        target_calories: '',
+        target_protein: '',
+        target_carbs: '',
+        target_fats: '',
+        duration_days: '7',
+      });
+    } catch (error) {
+      console.error('Meal plan creation error:', error.response?.data);
+      
+      // Format error messages
+      let errorMessage = '食事プランの作成に失敗しました';
+      if (error.response?.data) {
+        const errors = error.response.data;
+        if (typeof errors === 'object' && !errors.detail) {
+          // Display field-specific errors
+          errorMessage = Object.entries(errors)
+            .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+            .join('\n');
+        } else {
+          errorMessage = errors.detail || JSON.stringify(errors);
+        }
+      }
+      
+      toast({
+        title: '食事プラン作成エラー',
+        description: errorMessage,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleCreateRecipe = () => {
+    setEditingRecipe(null);
+    setNewRecipeData({
+      name: '',
+      description: '',
+      calories: '',
+      protein: '',
+      carbs: '',
+      fats: '',
+      time: '',
+      servings: '',
+      image: null,
+    });
+    setRecipeImagePreview(null);
     onCreateRecipeOpen();
   };
 
-  const handlePlanClick = (planName) => {
+  const handleEditRecipe = (recipe) => {
+    setEditingRecipe(recipe);
+    setNewRecipeData({
+      name: recipe.name,
+      description: recipe.description,
+      calories: recipe.calories.toString(),
+      protein: recipe.protein.toString(),
+      carbs: recipe.carbs.toString(),
+      fats: recipe.fats.toString(),
+      time: recipe.time,
+      servings: recipe.servings,
+      image: null, // Will keep existing image unless changed
+    });
+    setRecipeImagePreview(recipe.image || null);
+    onEditRecipeOpen();
+  };
+
+  const handleNewRecipeChange = (e) => {
+    setNewRecipeData({
+      ...newRecipeData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleRecipeImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewRecipeData({
+        ...newRecipeData,
+        image: file,
+      });
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setRecipeImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeRecipeImage = () => {
+    setNewRecipeData({
+      ...newRecipeData,
+      image: null,
+    });
+    setRecipeImagePreview(null);
+  };
+
+  const handleSubmitRecipe = async (e) => {
+    e.preventDefault();
+    
+    // Validate required fields
+    if (!newRecipeData.name || !newRecipeData.description || !newRecipeData.calories || 
+        !newRecipeData.protein || !newRecipeData.carbs || !newRecipeData.fats || 
+        !newRecipeData.time || !newRecipeData.servings) {
+      toast({
+        title: '入力エラー',
+        description: 'すべての必須項目を入力してください',
+        status: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+    
+    setSubmitting(true);
+    
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('name', newRecipeData.name);
+      formData.append('description', newRecipeData.description);
+      formData.append('calories', parseFloat(newRecipeData.calories));
+      formData.append('protein', parseFloat(newRecipeData.protein));
+      formData.append('carbs', parseFloat(newRecipeData.carbs));
+      formData.append('fats', parseFloat(newRecipeData.fats));
+      formData.append('time', newRecipeData.time);
+      formData.append('servings', newRecipeData.servings);
+      
+      // Add image if present
+      if (newRecipeData.image) {
+        formData.append('image', newRecipeData.image);
+      }
+      
+      console.log('Creating recipe with data:', Object.fromEntries(formData));
+      
+      // Send to backend
+      const createdRecipe = await nutritionService.recipes.create(formData);
+      
+      console.log('Recipe created:', createdRecipe);
+      
+      // Add to local state
+      setCustomRecipes(prevRecipes => [createdRecipe, ...prevRecipes]);
+      
+      toast({
+        title: 'レシピを追加しました',
+        description: `${newRecipeData.name}を作成しました`,
+        status: 'success',
+        duration: 3000,
+      });
+      
+      // Reset form
+      setNewRecipeData({
+        name: '',
+        description: '',
+        calories: '',
+        protein: '',
+        carbs: '',
+        fats: '',
+        time: '',
+        servings: '',
+        image: null,
+      });
+      setRecipeImagePreview(null);
+      
+      onCreateRecipeClose();
+    } catch (error) {
+      console.error('Error adding recipe:', error);
+      toast({
+        title: 'エラー',
+        description: error.response?.data?.detail || 'レシピの追加に失敗しました',
+        status: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleUpdateRecipe = async (e) => {
+    e.preventDefault();
+    
+    // Validate required fields
+    if (!newRecipeData.name || !newRecipeData.description || !newRecipeData.calories || 
+        !newRecipeData.protein || !newRecipeData.carbs || !newRecipeData.fats || 
+        !newRecipeData.time || !newRecipeData.servings) {
+      toast({
+        title: '入力エラー',
+        description: 'すべての必須項目を入力してください',
+        status: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+    
+    setSubmitting(true);
+    
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('name', newRecipeData.name);
+      formData.append('description', newRecipeData.description);
+      formData.append('calories', parseFloat(newRecipeData.calories));
+      formData.append('protein', parseFloat(newRecipeData.protein));
+      formData.append('carbs', parseFloat(newRecipeData.carbs));
+      formData.append('fats', parseFloat(newRecipeData.fats));
+      formData.append('time', newRecipeData.time);
+      formData.append('servings', newRecipeData.servings);
+      
+      // Add image only if a new one was selected
+      if (newRecipeData.image) {
+        formData.append('image', newRecipeData.image);
+      }
+      
+      console.log('Updating recipe with data:', Object.fromEntries(formData));
+      
+      // Send to backend
+      const updatedRecipe = await nutritionService.recipes.update(editingRecipe.id, formData);
+      
+      console.log('Recipe updated:', updatedRecipe);
+      
+      // Update local state
+      setCustomRecipes(prevRecipes => 
+        prevRecipes.map(recipe => 
+          recipe.id === editingRecipe.id ? updatedRecipe : recipe
+        )
+      );
+      
+      toast({
+        title: 'レシピを更新しました',
+        description: `${newRecipeData.name}を更新しました`,
+        status: 'success',
+        duration: 3000,
+      });
+      
+      // Reset form
+      setNewRecipeData({
+        name: '',
+        description: '',
+        calories: '',
+        protein: '',
+        carbs: '',
+        fats: '',
+        time: '',
+        servings: '',
+        image: null,
+      });
+      setRecipeImagePreview(null);
+      setEditingRecipe(null);
+      
+      onEditRecipeClose();
+    } catch (error) {
+      console.error('Error updating recipe:', error);
+      toast({
+        title: 'エラー',
+        description: error.response?.data?.detail || 'レシピの更新に失敗しました',
+        status: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handlePlanClick = (plan) => {
+    setSelectedPlan(plan);
     toast({
-      title: `${planName}を選択しました`,
-      description: 'プランの詳細を表示します',
-      status: 'info',
+      title: `${plan.name}を選択しました`,
+      description: 'サイドバーの目標値が更新されました',
+      status: 'success',
       duration: 3000,
       isClosable: true,
     });
   };
 
-  // Sample recipes data
-  const sampleRecipes = [
-    {
-      id: 1,
-      name: 'グリルチキンサラダ',
-      description: '高タンパク質、低カロリーの健康的なサラダ',
-      calories: 450,
-      protein: 45,
-      carbs: 30,
-      fats: 15,
-      time: '20分',
-      servings: '2人分',
-      icon: FiCoffee,
-    },
-    {
-      id: 2,
-      name: 'サーモンとキヌア',
-      description: 'オメガ3豊富な栄養バランス食',
-      calories: 520,
-      protein: 35,
-      carbs: 45,
-      fats: 18,
-      time: '30分',
-      servings: '2人分',
-      icon: FiSun,
-    },
-    {
-      id: 3,
-      name: 'プロテインスムージー',
-      description: '朝食やスナックに最適な高タンパク質ドリンク',
-      calories: 280,
-      protein: 30,
-      carbs: 25,
-      fats: 8,
-      time: '5分',
-      servings: '1人分',
-      icon: FiMoon,
-    },
-    {
-      id: 4,
-      name: '野菜炒め',
-      description: 'ビタミン豊富な簡単ヘルシー料理',
-      calories: 180,
-      protein: 8,
-      carbs: 25,
-      fats: 6,
-      time: '15分',
-      servings: '2人分',
-      icon: FaCookieBite,
-    },
-  ];
+  const handleDeletePlan = (plan) => {
+    setPlanToDelete(plan);
+    onDeletePlanOpen();
+  };
 
-  const filteredRecipes = sampleRecipes.filter(recipe =>
-    recipe.name.toLowerCase().includes(recipeSearchTerm.toLowerCase())
+  const performDeletePlan = async () => {
+    if (!planToDelete) return;
+    try {
+      setSubmitting(true);
+      await nutritionService.mealPlans.delete(planToDelete.id);
+      toast({
+        title: '食事プランを削除しました',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      // Refresh meal plans
+      await loadData();
+    } catch (error) {
+      toast({
+        title: '削除エラー',
+        description: error.response?.data?.detail || '食事プランの削除に失敗しました',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setSubmitting(false);
+      setPlanToDelete(null);
+      onDeletePlanClose();
+    }
+  };
+
+  // Only use custom recipes (no sample data)
+  const allRecipes = customRecipes;
+
+  const filteredRecipes = allRecipes.filter(recipe =>
+    recipe.name.toLowerCase().includes(recipeSearchTerm.toLowerCase()) ||
+    recipe.description.toLowerCase().includes(recipeSearchTerm.toLowerCase())
   );
+
+  const filteredMealPlans = mealPlans.filter(plan => {
+    const searchLower = planSearchTerm.toLowerCase();
+    return (
+      plan.name.toLowerCase().includes(searchLower) ||
+      (plan.description && plan.description.toLowerCase().includes(searchLower)) ||
+      plan.daily_calories.toString().includes(searchLower)
+    );
+  });
 
   const selectedDateStr = selectedDate.toISOString().split('T')[0];
   const selectedDateMeals = meals.filter(meal => meal.date === selectedDateStr);
@@ -561,10 +903,21 @@ const Nutrition = () => {
   const todayCarbs = selectedDateMeals.reduce((total, meal) => total + meal.total_carbs, 0);
   const todayFats = selectedDateMeals.reduce((total, meal) => total + meal.total_fats, 0);
 
-  const targetCalories = 2200;
-  const targetProtein = 150;
-  const targetCarbs = 220;
-  const targetFats = 70;
+  // Use selected plan targets or default values
+  const targetCalories = selectedPlan?.daily_calories || 2200;
+  
+  // Calculate macros from percentages or use defaults
+  const targetProtein = selectedPlan?.protein_percentage 
+    ? Math.round((targetCalories * selectedPlan.protein_percentage / 100) / 4) // 4 cal/g for protein
+    : 150;
+  
+  const targetCarbs = selectedPlan?.carbs_percentage
+    ? Math.round((targetCalories * selectedPlan.carbs_percentage / 100) / 4) // 4 cal/g for carbs
+    : 220;
+  
+  const targetFats = selectedPlan?.fats_percentage
+    ? Math.round((targetCalories * selectedPlan.fats_percentage / 100) / 9) // 9 cal/g for fats
+    : 70;
 
   const caloriesPercent = (todayCalories / targetCalories) * 100;
   const proteinPercent = (todayProtein / targetProtein) * 100;
@@ -999,59 +1352,56 @@ const Nutrition = () => {
           {activeTab === 2 && (
             <Card bg={bgColor}>
               <CardHeader>
-                <Flex justify="space-between" align="center">
-                  <Heading size="md">食事プラン</Heading>
-                  <Button size="sm" colorScheme="brand" onClick={handleCreatePlan}>
-                    <Icon as={FiPlus} mr={2} />
-                    新しいプランを作成
-                  </Button>
-                </Flex>
+                <VStack spacing={3} align="stretch">
+                  <Flex justify="space-between" align="center">
+                    <Heading size="md">食事プラン</Heading>
+                    <Button 
+                      size={{ base: "xs", md: "sm" }} 
+                      colorScheme="brand" 
+                      onClick={handleCreatePlan}
+                      leftIcon={<Icon as={FiPlus} />}
+                    >
+                      <Text display={{ base: "none", sm: "inline" }}>新しいプランを作成</Text>
+                      <Text display={{ base: "inline", sm: "none" }}>作成</Text>
+                    </Button>
+                  </Flex>
+                  
+                  <InputGroup size="sm">
+                    <InputLeftElement pointerEvents="none">
+                      <Icon as={FiSearch} color="gray.400" />
+                    </InputLeftElement>
+                    <Input
+                      placeholder="プランを検索..."
+                      value={planSearchTerm}
+                      onChange={(e) => setPlanSearchTerm(e.target.value)}
+                    />
+                  </InputGroup>
+                </VStack>
+                {planSearchTerm && filteredMealPlans.length > 0 && (
+                  <Flex justify="space-between" align="center" flexWrap="wrap" gap={2}>
+                    <Text fontSize={{ base: "xs", md: "sm" }} color="gray.600">
+                      検索結果: {filteredMealPlans.length}件
+                    </Text>
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      colorScheme="gray"
+                      onClick={() => setPlanSearchTerm('')}
+                    >
+                      クリア
+                    </Button>
+                  </Flex>
+                )}
               </CardHeader>
               <CardBody>
-                <VStack spacing={4} align="stretch">
-                  {/* Sample Meal Plans */}
-                  <Box p={4} borderWidth="1px" borderRadius="lg" _hover={{ bg: hoverBg }} cursor="pointer" onClick={() => handlePlanClick('減量プラン')}>
-                    <Flex justify="space-between" align="center" mb={2}>
-                      <Heading size="sm">減量プラン</Heading>
-                      <Badge colorScheme="green">アクティブ</Badge>
-                    </Flex>
-                    <Text fontSize="sm" color="gray.600" mb={2}>
-                      1日1,800kcal • 高タンパク質 • 低炭水化物
-                    </Text>
-                    <HStack spacing={2}>
-                      <Badge>月-金</Badge>
-                      <Badge>7日間</Badge>
-                    </HStack>
-                  </Box>
-
-                  <Box p={4} borderWidth="1px" borderRadius="lg" _hover={{ bg: hoverBg }} cursor="pointer" onClick={() => handlePlanClick('筋肉増強プラン')}>
-                    <Flex justify="space-between" align="center" mb={2}>
-                      <Heading size="sm">筋肉増強プラン</Heading>
-                      <Badge colorScheme="blue">保存済み</Badge>
-                    </Flex>
-                    <Text fontSize="sm" color="gray.600" mb={2}>
-                      1日2,500kcal • 超高タンパク質 • 中炭水化物
-                    </Text>
-                    <HStack spacing={2}>
-                      <Badge>毎日</Badge>
-                      <Badge>14日間</Badge>
-                    </HStack>
-                  </Box>
-
-                  <Box p={4} borderWidth="1px" borderRadius="lg" _hover={{ bg: hoverBg }} cursor="pointer" onClick={() => handlePlanClick('バランス維持プラン')}>
-                    <Flex justify="space-between" align="center" mb={2}>
-                      <Heading size="sm">バランス維持プラン</Heading>
-                      <Badge>保存済み</Badge>
-                    </Flex>
-                    <Text fontSize="sm" color="gray.600" mb={2}>
-                      1日2,200kcal • バランス型 • 全マクロ均等
-                    </Text>
-                    <HStack spacing={2}>
-                      <Badge>毎日</Badge>
-                      <Badge>30日間</Badge>
-                    </HStack>
-                  </Box>
-
+                {loading ? (
+                  <Center py={8}>
+                    <VStack spacing={3}>
+                      <Spinner size="lg" color="brand.500" />
+                      <Text color="gray.600">読み込み中...</Text>
+                    </VStack>
+                  </Center>
+                ) : filteredMealPlans.length === 0 ? (
                   <Box
                     p={8}
                     borderWidth="2px"
@@ -1059,19 +1409,149 @@ const Nutrition = () => {
                     borderColor={borderColor}
                     borderRadius="lg"
                     textAlign="center"
-                    cursor="pointer"
-                    _hover={{ bg: hoverBg }}
-                    onClick={handleCreatePlan}
                   >
-                    <Icon as={FiPlus} boxSize={8} color="gray.400" mb={2} />
-                    <Text color="gray.600" fontWeight="medium">
-                      新しい食事プランを作成
-                    </Text>
-                    <Text fontSize="sm" color="gray.500" mt={1}>
-                      カスタムプランで目標を達成
-                    </Text>
+                    {planSearchTerm ? (
+                      <>
+                        <Icon as={FiSearch} boxSize={12} color="gray.400" mb={3} />
+                        <Text color="gray.600" fontWeight="medium" fontSize="lg" mb={2}>
+                          検索結果が見つかりません
+                        </Text>
+                        <Text fontSize="sm" color="gray.500" mb={4}>
+                          「{planSearchTerm}」に一致するプランはありません
+                        </Text>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          colorScheme="brand"
+                          onClick={() => setPlanSearchTerm('')}
+                        >
+                          検索をクリア
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Icon as={FiPlus} boxSize={12} color="gray.400" mb={3} />
+                        <Text color="gray.600" fontWeight="medium" fontSize="lg" mb={2}>
+                          食事プランがまだありません
+                        </Text>
+                        <Text fontSize="sm" color="gray.500" mb={4}>
+                          新しい食事プランを作成して、目標達成をサポートしましょう
+                        </Text>
+                        <Button colorScheme="brand" onClick={handleCreatePlan}>
+                          <Icon as={FiPlus} mr={2} />
+                          最初のプランを作成
+                        </Button>
+                      </>
+                    )}
                   </Box>
-                </VStack>
+                ) : (
+                  <VStack spacing={4} align="stretch">
+                    {/* Display Real Meal Plans */}
+                    {filteredMealPlans.map((plan) => (
+                      <Box 
+                        key={plan.id} 
+                        p={{ base: 3, md: 4 }}
+                        borderWidth="2px" 
+                        borderColor={selectedPlan?.id === plan.id ? 'brand.500' : borderColor}
+                        borderRadius="lg" 
+                        _hover={{ bg: hoverBg, shadow: 'md' }}
+                        position="relative"
+                        bg={selectedPlan?.id === plan.id ? 'brand.50' : bgColor}
+                        transition="all 0.2s"
+                      >
+                        <Flex direction={{ base: "column", sm: "row" }} gap={2}>
+                          <Box 
+                            flex="1" 
+                            cursor="pointer" 
+                            onClick={() => handlePlanClick(plan)}
+                          >
+                            <Flex justify="space-between" align="center" mb={2} flexWrap="wrap" gap={2}>
+                              <HStack>
+                                {selectedPlan?.id === plan.id && (
+                                  <Icon as={FiStar} color="brand.500" boxSize={4} />
+                                )}
+                                <Heading size={{ base: "xs", md: "sm" }}>{plan.name}</Heading>
+                              </HStack>
+                              <Badge 
+                                colorScheme={selectedPlan?.id === plan.id ? "green" : "blue"}
+                                fontSize={{ base: "2xs", md: "xs" }}
+                              >
+                                {selectedPlan?.id === plan.id ? "アクティブ" : "ノンアクティブ"}
+                              </Badge>
+                            </Flex>
+                            {plan.description && (
+                              <Text fontSize={{ base: "xs", md: "sm" }} color="gray.600" mb={2}>
+                                {plan.description}
+                              </Text>
+                            )}
+                            <Flex wrap="wrap" gap={1} mb={2}>
+                              <Badge colorScheme="blue" fontSize={{ base: "2xs", md: "xs" }}>
+                                {plan.daily_calories || plan.target_calories || 0} kcal/日
+                              </Badge>
+                              {(plan.protein_percentage !== null && plan.protein_percentage !== undefined) && (
+                                <Badge fontSize={{ base: "2xs", md: "xs" }}>P: {plan.protein_percentage}%</Badge>
+                              )}
+                              {(plan.carbs_percentage !== null && plan.carbs_percentage !== undefined) && (
+                                <Badge fontSize={{ base: "2xs", md: "xs" }}>C: {plan.carbs_percentage}%</Badge>
+                              )}
+                              {(plan.fats_percentage !== null && plan.fats_percentage !== undefined) && (
+                                <Badge fontSize={{ base: "2xs", md: "xs" }}>F: {plan.fats_percentage}%</Badge>
+                              )}
+                            </Flex>
+                            <Flex 
+                              wrap="wrap" 
+                              gap={2} 
+                              fontSize={{ base: "2xs", md: "xs" }} 
+                              color="gray.500"
+                            >
+                              {plan.duration_days && (
+                                <Text>📅 {plan.duration_days}日間</Text>
+                              )}
+                              {plan.created_at && (
+                                <Text display={{ base: "none", sm: "inline" }}>
+                                  作成日: {new Date(plan.created_at).toLocaleDateString('ja-JP')}
+                                </Text>
+                              )}
+                            </Flex>
+                          </Box>
+                          <IconButton
+                            icon={<FiTrash2 />}
+                            size={{ base: "xs", md: "sm" }}
+                            colorScheme="red"
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeletePlan(plan);
+                            }}
+                            aria-label="削除"
+                            alignSelf={{ base: "flex-end", sm: "flex-start" }}
+                          />
+                        </Flex>
+                      </Box>
+                    ))}
+
+                    {/* Add new plan button */}
+                    <Box
+                      p={6}
+                      borderWidth="2px"
+                      borderStyle="dashed"
+                      borderColor={borderColor}
+                      borderRadius="lg"
+                      textAlign="center"
+                      cursor="pointer"
+                      _hover={{ bg: hoverBg }}
+                      onClick={handleCreatePlan}
+                    >
+                      <Icon as={FiPlus} boxSize={8} color="gray.400" mb={2} />
+                      <Text color="gray.600" fontWeight="medium">
+                        新しい食事プランを作成
+                      </Text>
+                      <Text fontSize="sm" color="gray.500" mt={1}>
+                        カスタムプランで目標を達成
+                      </Text>
+                    </Box>
+                  </VStack>
+                )}
               </CardBody>
             </Card>
           )}
@@ -1097,46 +1577,226 @@ const Nutrition = () => {
                 </Flex>
               </CardHeader>
               <CardBody>
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-                  {/* Sample Recipes */}
+                {filteredRecipes.length === 0 ? (
+                  <Center py={12}>
+                    <VStack spacing={4}>
+                      <Icon as={FiPlus} boxSize={16} color="gray.300" />
+                      <Heading size="md" color="gray.600">
+                        {recipeSearchTerm ? 'レシピが見つかりません' : 'レシピがまだありません'}
+                      </Heading>
+                      <Text color="gray.500" textAlign="center">
+                        {recipeSearchTerm 
+                          ? '別のキーワードで検索してみてください' 
+                          : '「レシピを追加」ボタンから最初のレシピを作成しましょう'}
+                      </Text>
+                      {!recipeSearchTerm && (
+                        <Button colorScheme="brand" onClick={handleCreateRecipe} size="lg" mt={2}>
+                          <Icon as={FiPlus} mr={2} />
+                          最初のレシピを作成
+                        </Button>
+                      )}
+                    </VStack>
+                  </Center>
+                ) : (
+                  <SimpleGrid columns={{ base: 1, md: 2, lg: 2, xl: 3 }} spacing={4}>
+                  {/* All Recipes */}
                   {filteredRecipes.map((recipe) => (
-                    <Box key={recipe.id} borderWidth="1px" borderRadius="lg" overflow="hidden" _hover={{ shadow: 'md' }} cursor="pointer">
-                      <Box h="150px" bg="gray.200" display="flex" alignItems="center" justifyContent="center" onClick={() => openRecipeDetail(recipe)}>
-                        <Icon as={recipe.icon} boxSize={12} color="gray.400" />
+                    <Card 
+                      key={recipe.id} 
+                      overflow="hidden" 
+                      variant="outline"
+                      _hover={{ shadow: 'lg', transform: 'translateY(-2px)' }}
+                      transition="all 0.2s"
+                      position="relative"
+                      bg={bgColor}
+                    >
+                      {/* Recipe Image or Icon */}
+                      <Box 
+                        h={{ base: "200px", sm: "220px", md: "240px" }}
+                        bg="gray.200" 
+                        display="flex" 
+                        alignItems="center" 
+                        justifyContent="center" 
+                        onClick={() => openRecipeDetail(recipe)}
+                        cursor="pointer"
+                        position="relative"
+                      >
+                        {recipe.image ? (
+                          <Image
+                            src={recipe.image}
+                            alt={recipe.name}
+                            w="full"
+                            h="full"
+                            objectFit="cover"
+                          />
+                        ) : (
+                          <Icon as={recipe.icon || FiCoffee} boxSize={12} color="gray.400" />
+                        )}
                       </Box>
-                      <Box p={4}>
-                        <Flex justify="space-between" align="center" mb={2}>
-                          <Heading size="sm" onClick={() => openRecipeDetail(recipe)} cursor="pointer">
+                      
+                      <CardBody p={{ base: 4, md: 5 }}>
+                        <VStack align="stretch" spacing={{ base: 2, md: 3 }}>
+                          {/* Title */}
+                          <Heading 
+                            size={{ base: "md", md: "md" }}
+                            onClick={() => openRecipeDetail(recipe)} 
+                            cursor="pointer"
+                            noOfLines={2}
+                            _hover={{ color: 'brand.500' }}
+                            fontWeight="bold"
+                            mb={1}
+                          >
                             {recipe.name}
                           </Heading>
-                          <Icon
-                            as={FiHeart}
-                            color={recipeFavorites.includes(recipe.id) ? 'red.500' : 'gray.400'}
-                            cursor="pointer"
-                            _hover={{ color: 'red.500' }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleRecipeFavorite(recipe.id);
-                            }}
-                          />
-                        </Flex>
-                        <Text fontSize="sm" color="gray.600" mb={2}>
-                          {recipe.description}
-                        </Text>
-                        <HStack spacing={2} mb={2}>
-                          <Badge colorScheme="green">{recipe.calories} kcal</Badge>
-                          <Badge>P: {recipe.protein}g</Badge>
-                          <Badge>C: {recipe.carbs}g</Badge>
-                          <Badge>F: {recipe.fats}g</Badge>
-                        </HStack>
-                        <HStack spacing={2} fontSize="xs" color="gray.500">
-                          <Text>⏱️ {recipe.time}</Text>
-                          <Text>👤 {recipe.servings}</Text>
-                        </HStack>
-                      </Box>
-                    </Box>
+                          
+                          {/* Description */}
+                          <Text 
+                            fontSize={{ base: "sm", md: "sm" }}
+                            color="gray.600" 
+                            noOfLines={2}
+                            minH={{ base: "40px", md: "44px" }}
+                            mb={2}
+                          >
+                            {recipe.description}
+                          </Text>
+                          
+                          {/* Nutrition Info - Large Style */}
+                          <Box 
+                            bg="gray.50" 
+                            p={{ base: 3, md: 4 }}
+                            borderRadius="lg"
+                            mb={2}
+                          >
+                            <Text 
+                              fontSize={{ base: "xs", md: "sm" }}
+                              color="gray.600" 
+                              mb={2} 
+                              fontWeight="semibold"
+                            >
+                              栄養成分
+                            </Text>
+                            <Grid templateColumns="repeat(2, 1fr)" gap={2}>
+                              <Box>
+                                <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold" color="green.600">
+                                  {recipe.calories}
+                                </Text>
+                                <Text fontSize={{ base: "xs", md: "sm" }} color="gray.600">
+                                  KCAL
+                                </Text>
+                              </Box>
+                              <VStack align="flex-start" spacing={1}>
+                                <HStack>
+                                  <Text fontSize={{ base: "xs", md: "sm" }} fontWeight="semibold">
+                                    P:
+                                  </Text>
+                                  <Text fontSize={{ base: "xs", md: "sm" }}>
+                                    {recipe.protein}G
+                                  </Text>
+                                </HStack>
+                                <HStack>
+                                  <Text fontSize={{ base: "xs", md: "sm" }} fontWeight="semibold">
+                                    C:
+                                  </Text>
+                                  <Text fontSize={{ base: "xs", md: "sm" }}>
+                                    {recipe.carbs}G
+                                  </Text>
+                                </HStack>
+                                <HStack>
+                                  <Text fontSize={{ base: "xs", md: "sm" }} fontWeight="semibold">
+                                    F:
+                                  </Text>
+                                  <Text fontSize={{ base: "xs", md: "sm" }}>
+                                    {recipe.fats}G
+                                  </Text>
+                                </HStack>
+                              </VStack>
+                            </Grid>
+                          </Box>
+                          
+                          {/* Time and Servings */}
+                          <HStack 
+                            spacing={4} 
+                            fontSize={{ base: "sm", md: "sm" }}
+                            color="gray.600"
+                            py={2}
+                          >
+                            <HStack spacing={1}>
+                              <Icon as={FiClock} boxSize={{ base: 4, md: 5 }} />
+                              <Text fontWeight="medium">{recipe.time}分</Text>
+                            </HStack>
+                            <HStack spacing={1}>
+                              <Text fontSize={{ base: "md", md: "lg" }}>👤</Text>
+                              <Text fontWeight="medium">{recipe.servings}人前</Text>
+                            </HStack>
+                          </HStack>
+
+                          {/* Action Buttons */}
+                          <HStack 
+                            spacing={2} 
+                            pt={2}
+                            borderTop="1px"
+                            borderColor={borderColor}
+                          >
+                            <IconButton
+                              icon={<FiHeart />}
+                              size="md"
+                              variant="ghost"
+                              colorScheme={recipeFavorites.includes(recipe.id) ? 'red' : 'gray'}
+                              color={recipeFavorites.includes(recipe.id) ? 'red.500' : 'gray.400'}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleRecipeFavorite(recipe.id);
+                              }}
+                              aria-label="お気に入り"
+                              flex="1"
+                            />
+                            <IconButton
+                              icon={<FiEdit />}
+                              size="md"
+                              variant="ghost"
+                              colorScheme="blue"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditRecipe(recipe);
+                              }}
+                              aria-label="レシピを編集"
+                              flex="1"
+                            />
+                            <IconButton
+                              icon={<FiTrash2 />}
+                              size="md"
+                              variant="ghost"
+                              colorScheme="red"
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                try {
+                                  await nutritionService.recipes.delete(recipe.id);
+                                  setCustomRecipes(customRecipes.filter(r => r.id !== recipe.id));
+                                  toast({
+                                    title: 'レシピを削除しました',
+                                    status: 'success',
+                                    duration: 2000,
+                                  });
+                                } catch (error) {
+                                  console.error('Delete recipe error:', error);
+                                  toast({
+                                    title: '削除エラー',
+                                    description: 'レシピの削除に失敗しました',
+                                    status: 'error',
+                                    duration: 3000,
+                                  });
+                                }
+                              }}
+                              aria-label="レシピを削除"
+                              flex="1"
+                            />
+                          </HStack>
+                        </VStack>
+                      </CardBody>
+                    </Card>
                   ))}
                 </SimpleGrid>
+                )}
               </CardBody>
             </Card>
           )}
@@ -1147,7 +1807,30 @@ const Nutrition = () => {
           {/* Daily Summary */}
           <Card bg={bgColor}>
             <CardHeader>
-              <Heading size="md">1日の概要</Heading>
+              <Flex justify="space-between" align="center">
+                <Heading size="md">1日の概要</Heading>
+                {selectedPlan && (
+                  <IconButton
+                    icon={<FiTrash2 />}
+                    size="xs"
+                    variant="ghost"
+                    colorScheme="gray"
+                    onClick={() => setSelectedPlan(null)}
+                    aria-label="プラン選択解除"
+                    title="プラン選択解除"
+                  />
+                )}
+              </Flex>
+              {selectedPlan && (
+                <Box mt={2} p={2} bg="brand.50" borderRadius="md">
+                  <HStack spacing={2}>
+                    <Icon as={FiStar} color="brand.500" boxSize={3} />
+                    <Text fontSize="xs" fontWeight="semibold" color="brand.700">
+                      {selectedPlan.name}
+                    </Text>
+                  </HStack>
+                </Box>
+              )}
             </CardHeader>
             <CardBody>
               {/* Calories */}
@@ -1226,35 +1909,94 @@ const Nutrition = () => {
               <Heading size="md">お気に入りをクイック追加</Heading>
             </CardHeader>
             <CardBody>
-              {favorites.length > 0 ? (
-                <VStack spacing={2} align="stretch">
-                  {favorites.slice(0, 5).map((favorite) => (
-                    <Button
-                      key={favorite.id}
-                      variant="ghost"
-                      justifyContent="space-between"
-                      onClick={() => quickAddFavorite(favorite)}
-                      p={3}
-                      h="auto"
-                      _hover={{ bg: hoverBg }}
-                    >
-                      <HStack>
-                        <Icon as={FiStar} color="yellow.500" />
-                        <Text fontSize="sm" fontWeight="medium">
-                          {favorite.food.name}
-                        </Text>
-                      </HStack>
-                      <Text fontSize="xs" color="gray.600">
-                        {favorite.food.calories} kcal
-                      </Text>
-                    </Button>
-                  ))}
-                </VStack>
-              ) : (
-                <Text fontSize="sm" color="gray.500" textAlign="center">
-                  お気に入りの食品はまだありません
-                </Text>
-              )}
+              <VStack spacing={3} align="stretch">
+                {/* Favorite Recipes */}
+                {customRecipes.filter(recipe => recipeFavorites.includes(recipe.id)).length > 0 && (
+                  <Box>
+                    <Text fontSize="xs" fontWeight="bold" color="gray.500" mb={2} textTransform="uppercase">
+                      レシピ
+                    </Text>
+                    <VStack spacing={2} align="stretch">
+                      {customRecipes
+                        .filter(recipe => recipeFavorites.includes(recipe.id))
+                        .slice(0, 3)
+                        .map((recipe) => (
+                          <Button
+                            key={`recipe-${recipe.id}`}
+                            variant="ghost"
+                            justifyContent="space-between"
+                            onClick={() => openRecipeDetail(recipe)}
+                            p={3}
+                            h="auto"
+                            _hover={{ bg: hoverBg }}
+                          >
+                            <HStack spacing={3}>
+                              {recipe.image && (
+                                <Image
+                                  src={recipe.image}
+                                  alt={recipe.name}
+                                  boxSize="40px"
+                                  objectFit="cover"
+                                  borderRadius="md"
+                                />
+                              )}
+                              <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
+                                {recipe.name}
+                              </Text>
+                            </HStack>
+                            <HStack spacing={3}>
+                              <Text fontSize="xs" color="gray.600">
+                                {recipe.calories} kcal
+                              </Text>
+                              <Icon as={FiStar} color="yellow.500" boxSize={4} flexShrink={0} />
+                            </HStack>
+                          </Button>
+                        ))}
+                    </VStack>
+                  </Box>
+                )}
+
+                {/* Favorite Foods */}
+                {favorites.length > 0 && (
+                  <Box>
+                    <Text fontSize="xs" fontWeight="bold" color="gray.500" mb={2} textTransform="uppercase">
+                      食品
+                    </Text>
+                    <VStack spacing={2} align="stretch">
+                      {favorites.slice(0, 5).map((favorite) => (
+                        <Button
+                          key={favorite.id}
+                          variant="ghost"
+                          justifyContent="space-between"
+                          onClick={() => quickAddFavorite(favorite)}
+                          p={3}
+                          h="auto"
+                          _hover={{ bg: hoverBg }}
+                        >
+                          <HStack spacing={2}>
+                            <Text fontSize="sm" fontWeight="medium">
+                              {favorite.food.name}
+                            </Text>
+                          </HStack>
+                          <HStack spacing={3}>
+                            <Text fontSize="xs" color="gray.600">
+                              {favorite.food.calories} kcal
+                            </Text>
+                            <Icon as={FiStar} color="yellow.500" boxSize={4} flexShrink={0} />
+                          </HStack>
+                        </Button>
+                      ))}
+                    </VStack>
+                  </Box>
+                )}
+
+                {/* Empty State */}
+                {favorites.length === 0 && customRecipes.filter(recipe => recipeFavorites.includes(recipe.id)).length === 0 && (
+                  <Text fontSize="sm" color="gray.500" textAlign="center">
+                    お気に入りはまだありません
+                  </Text>
+                )}
+              </VStack>
             </CardBody>
           </Card>
 
@@ -1447,6 +2189,37 @@ const Nutrition = () => {
           </ModalContent>
         </Modal>
 
+      {/* Delete Meal Plan Confirmation Modal */}
+      <Modal isOpen={isDeletePlanOpen} onClose={() => { setPlanToDelete(null); onDeletePlanClose(); }} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>食事プランを削除</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <VStack spacing={3} align="stretch">
+              <Text>
+                {planToDelete ? `「${planToDelete.name}」を本当に削除しますか？` : 'この食事プランを削除してもよいですか？'}
+              </Text>
+              {planToDelete && (
+                <Box p={3} bg="red.50" borderRadius="md">
+                  <Text fontSize="sm" color="red.800">
+                    ⚠️ この操作は元に戻せません
+                  </Text>
+                </Box>
+              )}
+            </VStack>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={() => { setPlanToDelete(null); onDeletePlanClose(); }}>
+              キャンセル
+            </Button>
+            <Button colorScheme="red" onClick={performDeletePlan} isLoading={submitting}>
+              削除
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       {/* Create Food Modal */}
       <Modal isOpen={isCreateFoodOpen} onClose={onCreateFoodClose} size="xl">
         <ModalOverlay />
@@ -1597,8 +2370,26 @@ const Nutrition = () => {
           <ModalBody>
             {selectedRecipe && (
               <VStack spacing={4} align="stretch">
-                <Box h="200px" bg="gray.200" borderRadius="lg" display="flex" alignItems="center" justifyContent="center">
-                  <Icon as={selectedRecipe.icon} boxSize={20} color="gray.400" />
+                <Box 
+                  h="200px" 
+                  bg="gray.200" 
+                  borderRadius="lg" 
+                  display="flex" 
+                  alignItems="center" 
+                  justifyContent="center"
+                  overflow="hidden"
+                >
+                  {selectedRecipe.image ? (
+                    <Image
+                      src={selectedRecipe.image}
+                      alt={selectedRecipe.name}
+                      w="full"
+                      h="full"
+                      objectFit="cover"
+                    />
+                  ) : (
+                    <Icon as={selectedRecipe.icon} boxSize={20} color="gray.400" />
+                  )}
                 </Box>
                 
                 <Text color="gray.700">{selectedRecipe.description}</Text>
@@ -1631,7 +2422,7 @@ const Nutrition = () => {
                 
                 <HStack justify="space-between">
                   <HStack>
-                    <Icon as={FiCoffee} />
+                    <Icon as={FiClock} />
                     <Text fontSize="sm">調理時間: {selectedRecipe.time}</Text>
                   </HStack>
                   <HStack>
@@ -1663,69 +2454,117 @@ const Nutrition = () => {
       <Modal isOpen={isCreatePlanOpen} onClose={onCreatePlanClose} size="xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>新しい食事プランを作成</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack spacing={4}>
-              <FormControl isRequired>
-                <FormLabel>プラン名</FormLabel>
-                <Input placeholder="例: 私の減量プラン" />
-              </FormControl>
-              
-              <FormControl isRequired>
-                <FormLabel>目標カロリー (kcal/日)</FormLabel>
-                <Input type="number" placeholder="2000" />
-              </FormControl>
-              
-              <Grid templateColumns="repeat(3, 1fr)" gap={4} w="full">
+          <form onSubmit={handleSubmitPlan}>
+            <ModalHeader>新しい食事プランを作成</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <VStack spacing={4}>
                 <FormControl isRequired>
-                  <FormLabel>タンパク質 (g)</FormLabel>
-                  <Input type="number" placeholder="150" />
+                  <FormLabel>プラン名</FormLabel>
+                  <Input 
+                    name="name"
+                    value={newPlanData.name}
+                    onChange={handleNewPlanChange}
+                    placeholder="例: 私の減量プラン" 
+                  />
                 </FormControl>
+                
+                <FormControl>
+                  <FormLabel>説明 (オプション)</FormLabel>
+                  <Input 
+                    name="description"
+                    value={newPlanData.description}
+                    onChange={handleNewPlanChange}
+                    placeholder="例: 高タンパク質・低炭水化物" 
+                  />
+                </FormControl>
+                
                 <FormControl isRequired>
-                  <FormLabel>炭水化物 (g)</FormLabel>
-                  <Input type="number" placeholder="200" />
+                  <FormLabel>目標カロリー (kcal/日)</FormLabel>
+                  <Input 
+                    type="number" 
+                    name="target_calories"
+                    value={newPlanData.target_calories}
+                    onChange={handleNewPlanChange}
+                    placeholder="2000"
+                    step="1"
+                    min="0"
+                  />
                 </FormControl>
-                <FormControl isRequired>
-                  <FormLabel>脂質 (g)</FormLabel>
-                  <Input type="number" placeholder="60" />
+                
+                <Grid templateColumns="repeat(3, 1fr)" gap={4} w="full">
+                  <FormControl>
+                    <FormLabel>タンパク質 (g)</FormLabel>
+                    <Input 
+                      type="number" 
+                      name="target_protein"
+                      value={newPlanData.target_protein}
+                      onChange={handleNewPlanChange}
+                      placeholder="150"
+                      step="0.1"
+                      min="0"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>炭水化物 (g)</FormLabel>
+                    <Input 
+                      type="number" 
+                      name="target_carbs"
+                      value={newPlanData.target_carbs}
+                      onChange={handleNewPlanChange}
+                      placeholder="200"
+                      step="0.1"
+                      min="0"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>脂質 (g)</FormLabel>
+                    <Input 
+                      type="number" 
+                      name="target_fats"
+                      value={newPlanData.target_fats}
+                      onChange={handleNewPlanChange}
+                      placeholder="60"
+                      step="0.1"
+                      min="0"
+                    />
+                  </FormControl>
+                </Grid>
+                
+                <FormControl>
+                  <FormLabel>期間 (オプション)</FormLabel>
+                  <Select 
+                    name="duration_days"
+                    value={newPlanData.duration_days}
+                    onChange={handleNewPlanChange}
+                  >
+                    <option value="7">7日間</option>
+                    <option value="14">14日間</option>
+                    <option value="30">30日間</option>
+                    <option value="60">60日間</option>
+                    <option value="90">90日間</option>
+                  </Select>
                 </FormControl>
-              </Grid>
-              
-              <FormControl isRequired>
-                <FormLabel>期間</FormLabel>
-                <Select placeholder="期間を選択">
-                  <option value="7">7日間</option>
-                  <option value="14">14日間</option>
-                  <option value="30">30日間</option>
-                </Select>
-              </FormControl>
-              
-              <Box w="full" p={4} bg="purple.50" borderRadius="md">
-                <Text fontSize="sm" color="purple.800" fontWeight="semibold" mb={2}>
-                  💡 ヒント
-                </Text>
-                <Text fontSize="xs" color="purple.700">
-                  プランを作成すると、毎日の目標値が自動的に設定されます。
-                </Text>
-              </Box>
-            </VStack>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onCreatePlanClose}>
-              キャンセル
-            </Button>
-            <Button colorScheme="brand" onClick={() => {
-              toast({
-                title: 'プランを作成しました',
-                status: 'success',
-                duration: 3000,
-              });
-              onCreatePlanClose();
-            }}>
-              作成
-            </Button>
-          </ModalFooter>
+                
+                <Box w="full" p={4} bg="purple.50" borderRadius="md">
+                  <Text fontSize="sm" color="purple.800" fontWeight="semibold" mb={2}>
+                    💡 ヒント
+                  </Text>
+                  <Text fontSize="xs" color="purple.700">
+                    プランを作成すると、毎日の目標値が自動的に設定されます。タンパク質、炭水化物、脂質の目標値は任意です。
+                  </Text>
+                </Box>
+              </VStack>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="ghost" mr={3} onClick={onCreatePlanClose}>
+                キャンセル
+              </Button>
+              <Button colorScheme="brand" type="submit" isLoading={submitting}>
+                作成
+              </Button>
+            </ModalFooter>
+          </form>
         </ModalContent>
       </Modal>
 
@@ -1733,76 +2572,339 @@ const Nutrition = () => {
       <Modal isOpen={isCreateRecipeOpen} onClose={onCreateRecipeClose} size="xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>新しいレシピを追加</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack spacing={4}>
-              <FormControl isRequired>
-                <FormLabel>レシピ名</FormLabel>
-                <Input placeholder="例: ヘルシーチキンサラダ" />
-              </FormControl>
-              
-              <FormControl isRequired>
-                <FormLabel>説明</FormLabel>
-                <Input placeholder="レシピの簡単な説明" />
-              </FormControl>
-              
-              <Grid templateColumns="repeat(2, 1fr)" gap={4} w="full">
-                <FormControl isRequired>
-                  <FormLabel>カロリー (kcal)</FormLabel>
-                  <Input type="number" placeholder="400" />
+          <form onSubmit={handleSubmitRecipe}>
+            <ModalHeader>新しいレシピを追加</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <VStack spacing={4}>
+                {/* Image Upload Section */}
+                <FormControl>
+                  <FormLabel>レシピ画像</FormLabel>
+                  {recipeImagePreview ? (
+                    <Box position="relative">
+                      <Image
+                        src={recipeImagePreview}
+                        alt="Recipe preview"
+                        borderRadius="lg"
+                        maxH="250px"
+                        w="full"
+                        objectFit="cover"
+                      />
+                      <IconButton
+                        icon={<FiTrash2 />}
+                        position="absolute"
+                        top={2}
+                        right={2}
+                        colorScheme="red"
+                        size="sm"
+                        onClick={removeRecipeImage}
+                        aria-label="画像を削除"
+                      />
+                    </Box>
+                  ) : (
+                    <Box
+                      borderWidth="2px"
+                      borderStyle="dashed"
+                      borderColor={borderColor}
+                      borderRadius="lg"
+                      p={8}
+                      textAlign="center"
+                      cursor="pointer"
+                      _hover={{ bg: hoverBg }}
+                      onClick={() => document.getElementById('recipe-image-input').click()}
+                    >
+                      <Icon as={FiPlus} boxSize={10} color="gray.400" mb={2} />
+                      <Text color="gray.600" fontSize="sm" mb={1}>
+                        画像をアップロード
+                      </Text>
+                      <Text color="gray.500" fontSize="xs">
+                        クリックして画像を選択
+                      </Text>
+                    </Box>
+                  )}
+                  <Input
+                    id="recipe-image-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleRecipeImageChange}
+                    display="none"
+                  />
                 </FormControl>
+
                 <FormControl isRequired>
-                  <FormLabel>調理時間</FormLabel>
-                  <Input placeholder="例: 30分" />
+                  <FormLabel>レシピ名</FormLabel>
+                  <Input
+                    name="name"
+                    value={newRecipeData.name}
+                    onChange={handleNewRecipeChange}
+                    placeholder="例: ヘルシーチキンサラダ"
+                  />
                 </FormControl>
-              </Grid>
-              
-              <Grid templateColumns="repeat(3, 1fr)" gap={4} w="full">
+                
                 <FormControl isRequired>
-                  <FormLabel>タンパク質 (g)</FormLabel>
-                  <Input type="number" placeholder="40" />
+                  <FormLabel>説明</FormLabel>
+                  <Input
+                    name="description"
+                    value={newRecipeData.description}
+                    onChange={handleNewRecipeChange}
+                    placeholder="レシピの簡単な説明"
+                  />
                 </FormControl>
+                
+                <Grid templateColumns="repeat(2, 1fr)" gap={4} w="full">
+                  <FormControl isRequired>
+                    <FormLabel>カロリー (kcal)</FormLabel>
+                    <Input
+                      type="number"
+                      name="calories"
+                      value={newRecipeData.calories}
+                      onChange={handleNewRecipeChange}
+                      placeholder="400"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>調理時間</FormLabel>
+                    <Input
+                      name="time"
+                      value={newRecipeData.time}
+                      onChange={handleNewRecipeChange}
+                      placeholder="例: 30分"
+                    />
+                  </FormControl>
+                </Grid>
+                
+                <Grid templateColumns="repeat(3, 1fr)" gap={4} w="full">
+                  <FormControl isRequired>
+                    <FormLabel>タンパク質 (g)</FormLabel>
+                    <Input
+                      type="number"
+                      name="protein"
+                      value={newRecipeData.protein}
+                      onChange={handleNewRecipeChange}
+                      placeholder="40"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>炭水化物 (g)</FormLabel>
+                    <Input
+                      type="number"
+                      name="carbs"
+                      value={newRecipeData.carbs}
+                      onChange={handleNewRecipeChange}
+                      placeholder="30"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>脂質 (g)</FormLabel>
+                    <Input
+                      type="number"
+                      name="fats"
+                      value={newRecipeData.fats}
+                      onChange={handleNewRecipeChange}
+                      placeholder="15"
+                    />
+                  </FormControl>
+                </Grid>
+                
                 <FormControl isRequired>
-                  <FormLabel>炭水化物 (g)</FormLabel>
-                  <Input type="number" placeholder="30" />
+                  <FormLabel>人数</FormLabel>
+                  <Input
+                    name="servings"
+                    value={newRecipeData.servings}
+                    onChange={handleNewRecipeChange}
+                    placeholder="例: 2人分"
+                  />
                 </FormControl>
+                
+                <Box w="full" p={4} bg="green.50" borderRadius="md">
+                  <Text fontSize="sm" color="green.800" fontWeight="semibold" mb={2}>
+                    💡 ヒント
+                  </Text>
+                  <Text fontSize="xs" color="green.700">
+                    レシピを追加すると、食事計画に簡単に組み込むことができます。画像を追加すると、より魅力的なレシピカードになります。
+                  </Text>
+                </Box>
+              </VStack>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="ghost" mr={3} onClick={onCreateRecipeClose}>
+                キャンセル
+              </Button>
+              <Button colorScheme="brand" type="submit" isLoading={submitting}>
+                追加
+              </Button>
+            </ModalFooter>
+          </form>
+        </ModalContent>
+      </Modal>
+
+      {/* Edit Recipe Modal */}
+      <Modal isOpen={isEditRecipeOpen} onClose={onEditRecipeClose} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <form onSubmit={handleUpdateRecipe}>
+            <ModalHeader>レシピを編集</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <VStack spacing={4}>
+                {/* Image Upload Section */}
+                <FormControl>
+                  <FormLabel>レシピ画像</FormLabel>
+                  {recipeImagePreview ? (
+                    <Box position="relative">
+                      <Image
+                        src={recipeImagePreview}
+                        alt="Recipe preview"
+                        borderRadius="lg"
+                        maxH="250px"
+                        w="full"
+                        objectFit="cover"
+                      />
+                      <IconButton
+                        icon={<FiTrash2 />}
+                        position="absolute"
+                        top={2}
+                        right={2}
+                        colorScheme="red"
+                        size="sm"
+                        onClick={removeRecipeImage}
+                        aria-label="画像を削除"
+                      />
+                    </Box>
+                  ) : (
+                    <Box
+                      borderWidth="2px"
+                      borderStyle="dashed"
+                      borderColor={borderColor}
+                      borderRadius="lg"
+                      p={8}
+                      textAlign="center"
+                      cursor="pointer"
+                      _hover={{ bg: hoverBg }}
+                      onClick={() => document.getElementById('edit-recipe-image-input').click()}
+                    >
+                      <Icon as={FiPlus} boxSize={10} color="gray.400" mb={2} />
+                      <Text color="gray.600" fontSize="sm" mb={1}>
+                        画像をアップロード
+                      </Text>
+                      <Text color="gray.500" fontSize="xs">
+                        クリックして画像を選択
+                      </Text>
+                    </Box>
+                  )}
+                  <Input
+                    id="edit-recipe-image-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleRecipeImageChange}
+                    display="none"
+                  />
+                </FormControl>
+
                 <FormControl isRequired>
-                  <FormLabel>脂質 (g)</FormLabel>
-                  <Input type="number" placeholder="15" />
+                  <FormLabel>レシピ名</FormLabel>
+                  <Input
+                    name="name"
+                    value={newRecipeData.name}
+                    onChange={handleNewRecipeChange}
+                    placeholder="例: ヘルシーチキンサラダ"
+                  />
                 </FormControl>
-              </Grid>
-              
-              <FormControl isRequired>
-                <FormLabel>人数</FormLabel>
-                <Input placeholder="例: 2人分" />
-              </FormControl>
-              
-              <Box w="full" p={4} bg="green.50" borderRadius="md">
-                <Text fontSize="sm" color="green.800" fontWeight="semibold" mb={2}>
-                  💡 ヒント
-                </Text>
-                <Text fontSize="xs" color="green.700">
-                  レシピを追加すると、食事計画に簡単に組み込むことができます。
-                </Text>
-              </Box>
-            </VStack>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onCreateRecipeClose}>
-              キャンセル
-            </Button>
-            <Button colorScheme="brand" onClick={() => {
-              toast({
-                title: 'レシピを追加しました',
-                status: 'success',
-                duration: 3000,
-              });
-              onCreateRecipeClose();
-            }}>
-              追加
-            </Button>
-          </ModalFooter>
+                
+                <FormControl isRequired>
+                  <FormLabel>説明</FormLabel>
+                  <Input
+                    name="description"
+                    value={newRecipeData.description}
+                    onChange={handleNewRecipeChange}
+                    placeholder="レシピの簡単な説明"
+                  />
+                </FormControl>
+                
+                <Grid templateColumns="repeat(2, 1fr)" gap={4} w="full">
+                  <FormControl isRequired>
+                    <FormLabel>カロリー (kcal)</FormLabel>
+                    <Input
+                      type="number"
+                      name="calories"
+                      value={newRecipeData.calories}
+                      onChange={handleNewRecipeChange}
+                      placeholder="400"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>調理時間</FormLabel>
+                    <Input
+                      name="time"
+                      value={newRecipeData.time}
+                      onChange={handleNewRecipeChange}
+                      placeholder="例: 30分"
+                    />
+                  </FormControl>
+                </Grid>
+                
+                <Grid templateColumns="repeat(3, 1fr)" gap={4} w="full">
+                  <FormControl isRequired>
+                    <FormLabel>タンパク質 (g)</FormLabel>
+                    <Input
+                      type="number"
+                      name="protein"
+                      value={newRecipeData.protein}
+                      onChange={handleNewRecipeChange}
+                      placeholder="40"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>炭水化物 (g)</FormLabel>
+                    <Input
+                      type="number"
+                      name="carbs"
+                      value={newRecipeData.carbs}
+                      onChange={handleNewRecipeChange}
+                      placeholder="30"
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>脂質 (g)</FormLabel>
+                    <Input
+                      type="number"
+                      name="fats"
+                      value={newRecipeData.fats}
+                      onChange={handleNewRecipeChange}
+                      placeholder="15"
+                    />
+                  </FormControl>
+                </Grid>
+                
+                <FormControl isRequired>
+                  <FormLabel>人数</FormLabel>
+                  <Input
+                    name="servings"
+                    value={newRecipeData.servings}
+                    onChange={handleNewRecipeChange}
+                    placeholder="例: 2人分"
+                  />
+                </FormControl>
+                
+                <Box w="full" p={4} bg="blue.50" borderRadius="md">
+                  <Text fontSize="sm" color="blue.800" fontWeight="semibold" mb={2}>
+                    💡 ヒント
+                  </Text>
+                  <Text fontSize="xs" color="blue.700">
+                    画像を変更しない場合は、そのままにしておいてください。新しい画像を選択すると置き換えられます。
+                  </Text>
+                </Box>
+              </VStack>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="ghost" mr={3} onClick={onEditRecipeClose}>
+                キャンセル
+              </Button>
+              <Button colorScheme="brand" type="submit" isLoading={submitting}>
+                更新
+              </Button>
+            </ModalFooter>
+          </form>
         </ModalContent>
       </Modal>
     </Box>
