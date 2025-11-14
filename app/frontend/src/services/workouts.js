@@ -51,6 +51,14 @@ const workoutsService = {
       const response = await api.post('/workouts/workout-plans/', data);
       return response.data;
     },
+    update: async (id, data) => {
+      const response = await api.put(`/workouts/workout-plans/${id}/`, data);
+      return response.data;
+    },
+    delete: async (id) => {
+      const response = await api.delete(`/workouts/workout-plans/${id}/`);
+      return response.data;
+    },
     schedule: async (id, startDate) => {
       const response = await api.post(`/workouts/workout-plans/${id}/schedule/`, { start_date: startDate });
       return response.data;
@@ -127,6 +135,12 @@ const workoutsService = {
       const response = await api.post('/workouts/favorites/toggle/', { exercise_id: exerciseId });
       return response.data;
     },
+  },
+
+  // Exercise Media
+  deleteExerciseMedia: async (mediaId) => {
+    const response = await api.delete(`/workouts/exercise-media/${mediaId}/`);
+    return response.data;
   },
 };
 

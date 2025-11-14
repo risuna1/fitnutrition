@@ -2,15 +2,15 @@ from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.db.models import Q, Count, Sum, Avg
+from django.db.models import Q, Count, Sum, Avg, Max
 from django.utils import timezone
 from datetime import datetime, timedelta
 from .models import (
-    Exercise, WorkoutPlan, WorkoutPlanDay, WorkoutPlanExercise,
+    Exercise, ExerciseMedia, WorkoutPlan, WorkoutPlanDay, WorkoutPlanExercise,
     Workout, WorkoutExercise, WorkoutSchedule, FavoriteExercise
 )
 from .serializers import (
-    ExerciseSerializer, WorkoutPlanSerializer, WorkoutPlanDetailSerializer,
+    ExerciseSerializer, ExerciseMediaSerializer, WorkoutPlanSerializer, WorkoutPlanDetailSerializer,
     WorkoutPlanDaySerializer, WorkoutSerializer, WorkoutCreateSerializer,
     WorkoutScheduleSerializer, FavoriteExerciseSerializer,
     WorkoutStatsSerializer, WorkoutExerciseSerializer
@@ -24,6 +24,112 @@ class ExerciseViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'description', 'primary_muscles', 'secondary_muscles']
     ordering_fields = ['name', 'difficulty', 'calories_per_minute', 'created_at']
     ordering = ['name']
+
+    def create(self, request, *args, **kwargs):
+        """Override create to handle multiple media files"""
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        logger.info(f"Exercise create request content type: {request.content_type}")
+        logger.info(f"Exercise create request FILES: {request.FILES}")
+        
+        # Log each field in request.data
+        for key, value in request.data.items():
+            logger.info(f"Request data field '{key}': {value} (type: {type(value).__name__})")
+        
+        # Extract media files
+        images = request.FILES.getlist('images', [])
+        videos = request.FILES.getlist('videos', [])
+        
+        logger.info(f"Images count: {len(images)}")
+        logger.info(f"Videos count: {len(videos)}")
+        
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            logger.error(f"Serializer validation errors: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Create exercise
+        exercise = serializer.save()
+        
+        # Save media files
+        order = 0
+        for image in images:
+            ExerciseMedia.objects.create(
+                exercise=exercise,
+                media_type='image',
+                file=image,
+                order=order
+            )
+            order += 1
+        
+        for video in videos:
+            ExerciseMedia.objects.create(
+                exercise=exercise,
+                media_type='video',
+                file=video,
+                order=order
+            )
+            order += 1
+        
+        # Refresh serializer data to include media files
+        serializer = self.get_serializer(exercise)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    def update(self, request, *args, **kwargs):
+        """Override update to handle multiple media files"""
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        
+        # Extract media files
+        images = request.FILES.getlist('images', [])
+        videos = request.FILES.getlist('videos', [])
+        
+        logger.info(f"Update - Images count: {len(images)}")
+        logger.info(f"Update - Videos count: {len(videos)}")
+        
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if not serializer.is_valid():
+            logger.error(f"Serializer validation errors: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Update exercise
+        exercise = serializer.save()
+        
+        # Add new media files (don't delete existing ones)
+        if images or videos:
+            # Get current max order
+            current_max_order = ExerciseMedia.objects.filter(exercise=exercise).aggregate(
+                max_order=Max('order')
+            )['max_order'] or -1
+            
+            order = current_max_order + 1
+            
+            for image in images:
+                ExerciseMedia.objects.create(
+                    exercise=exercise,
+                    media_type='image',
+                    file=image,
+                    order=order
+                )
+                order += 1
+            
+            for video in videos:
+                ExerciseMedia.objects.create(
+                    exercise=exercise,
+                    media_type='video',
+                    file=video,
+                    order=order
+                )
+                order += 1
+        
+        # Refresh serializer data to include media files
+        serializer = self.get_serializer(exercise)
+        return Response(serializer.data)
 
     def get_queryset(self):
         queryset = Exercise.objects.all()
@@ -82,6 +188,40 @@ class ExerciseViewSet(viewsets.ModelViewSet):
             'glutes', 'calves', 'traps', 'lats'
         ]
         return Response(muscles)
+
+
+class ExerciseMediaViewSet(viewsets.ModelViewSet):
+    """ViewSet for ExerciseMedia model"""
+    permission_classes = [IsAuthenticated]
+    serializer_class = ExerciseMediaSerializer
+    
+    def get_queryset(self):
+        queryset = ExerciseMedia.objects.all()
+        
+        # Filter by exercise if provided
+        exercise_id = self.request.query_params.get('exercise')
+        if exercise_id:
+            queryset = queryset.filter(exercise_id=exercise_id)
+        
+        return queryset.order_by('exercise', 'order')
+    
+    def destroy(self, request, *args, **kwargs):
+        """Delete a media file"""
+        instance = self.get_object()
+        
+        # Check if user has permission to delete (must be creator of exercise or admin)
+        if instance.exercise.created_by != request.user and not request.user.is_staff:
+            return Response(
+                {'error': 'このメディアを削除する権限がありません'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Delete the file from storage
+        if instance.file:
+            instance.file.delete(save=False)
+        
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class WorkoutPlanViewSet(viewsets.ModelViewSet):
@@ -202,6 +342,47 @@ class WorkoutViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Save the workout with the current user"""
         serializer.save(user=self.request.user)
+    
+    def update(self, request, *args, **kwargs):
+        """Override update to handle exercises properly"""
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        
+        # Extract exercises data if provided
+        exercises_data = request.data.get('exercises', None)
+        
+        # Prepare data without exercises for workout update
+        workout_data = {k: v for k, v in request.data.items() if k != 'exercises'}
+        
+        # Map calories_burned to total_calories_burned if provided
+        if 'calories_burned' in workout_data:
+            workout_data['total_calories_burned'] = workout_data.pop('calories_burned')
+        
+        # Update workout fields
+        serializer = self.get_serializer(instance, data=workout_data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        
+        # Update exercises if provided
+        if exercises_data is not None:
+            # Delete existing exercises
+            instance.exercises.all().delete()
+            
+            # Create new exercises
+            for exercise_data in exercises_data:
+                WorkoutExercise.objects.create(
+                    workout=instance,
+                    exercise_id=exercise_data.get('exercise_id'),
+                    order=exercise_data.get('order', 1),
+                    planned_sets=exercise_data.get('planned_sets', 3),
+                    planned_reps=exercise_data.get('planned_reps', 10),
+                    planned_weight_kg=exercise_data.get('planned_weight_kg', 0)
+                )
+        
+        # Refresh instance to get updated exercises
+        instance.refresh_from_db()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def today(self, request):

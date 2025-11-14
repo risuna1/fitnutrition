@@ -1,21 +1,55 @@
 from rest_framework import serializers
+import json
 from .models import (
-    Exercise, WorkoutPlan, WorkoutPlanDay, WorkoutPlanExercise,
+    Exercise, ExerciseMedia, WorkoutPlan, WorkoutPlanDay, WorkoutPlanExercise,
     Workout, WorkoutExercise, WorkoutSchedule, FavoriteExercise
 )
+
+
+class JSONStringField(serializers.Field):
+    """Custom field to handle JSON string or list"""
+    
+    def to_internal_value(self, data):
+        if isinstance(data, list):
+            return data
+        if isinstance(data, str):
+            try:
+                parsed = json.loads(data)
+                if isinstance(parsed, list):
+                    return parsed
+                return [parsed] if parsed else []
+            except (json.JSONDecodeError, TypeError, ValueError):
+                raise serializers.ValidationError('Must be a valid JSON array or list')
+        return []
+    
+    def to_representation(self, value):
+        return value if isinstance(value, list) else []
+
+
+class ExerciseMediaSerializer(serializers.ModelSerializer):
+    """Serializer for ExerciseMedia model"""
+    
+    class Meta:
+        model = ExerciseMedia
+        fields = ['id', 'media_type', 'file', 'url', 'order', 'caption', 'created_at']
+        read_only_fields = ['id', 'created_at']
 
 
 class ExerciseSerializer(serializers.ModelSerializer):
     """Serializer for Exercise model"""
     is_favorited = serializers.SerializerMethodField()
+    image = serializers.ImageField(required=False, allow_null=True)
+    primary_muscles = JSONStringField(required=False)
+    secondary_muscles = JSONStringField(required=False)
+    media_files = ExerciseMediaSerializer(many=True, read_only=True)
 
     class Meta:
         model = Exercise
         fields = [
             'id', 'name', 'description', 'exercise_type', 'difficulty',
             'equipment', 'primary_muscles', 'secondary_muscles',
-            'instructions', 'tips', 'calories_per_minute',
-            'video_url', 'image_url', 'is_custom', 'created_by',
+            'instructions', 'tips', 'calories_per_minute', 'met_value',
+            'video_url', 'image_url', 'image', 'media_files', 'is_custom', 'created_by',
             'is_favorited', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by']
@@ -34,6 +68,12 @@ class ExerciseSerializer(serializers.ModelSerializer):
         validated_data['is_custom'] = True
         validated_data['created_by'] = request.user
         return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        # Ensure is_custom remains True for custom exercises
+        if instance.is_custom:
+            validated_data['is_custom'] = True
+        return super().update(instance, validated_data)
 
 
 class WorkoutPlanExerciseSerializer(serializers.ModelSerializer):
@@ -175,12 +215,19 @@ class WorkoutSerializer(serializers.ModelSerializer):
 class WorkoutCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating a workout with exercises"""
     exercises = WorkoutExerciseSerializer(many=True, write_only=True, required=False)
+    calories_burned = serializers.DecimalField(
+        max_digits=7,
+        decimal_places=2,
+        required=False,
+        allow_null=True,
+        source='total_calories_burned'
+    )
 
     class Meta:
         model = Workout
         fields = [
             'workout_plan', 'name', 'date', 'start_time', 'end_time',
-            'notes', 'exercises'
+            'duration_minutes', 'calories_burned', 'notes', 'exercises'
         ]
 
     def create(self, validated_data):

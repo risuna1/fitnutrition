@@ -1,8 +1,14 @@
 from django.contrib import admin
 from .models import (
-    Exercise, WorkoutPlan, WorkoutPlanDay, WorkoutPlanExercise,
+    Exercise, ExerciseMedia, WorkoutPlan, WorkoutPlanDay, WorkoutPlanExercise,
     Workout, WorkoutExercise, WorkoutSchedule, FavoriteExercise
 )
+
+
+class ExerciseMediaInline(admin.TabularInline):
+    model = ExerciseMedia
+    extra = 1
+    fields = ['media_type', 'file', 'url', 'order', 'caption']
 
 
 class WorkoutPlanExerciseInline(admin.TabularInline):
@@ -29,6 +35,7 @@ class ExerciseAdmin(admin.ModelAdmin):
     list_filter = ['exercise_type', 'difficulty', 'equipment', 'is_custom']
     search_fields = ['name', 'description', 'primary_muscles', 'secondary_muscles']
     readonly_fields = ['created_at', 'updated_at']
+    inlines = [ExerciseMediaInline]
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'description', 'exercise_type', 'difficulty', 'equipment')
@@ -43,7 +50,7 @@ class ExerciseAdmin(admin.ModelAdmin):
             'fields': ('calories_per_minute',)
         }),
         ('Media', {
-            'fields': ('video_url', 'image_url')
+            'fields': ('video_url', 'image_url', 'image')
         }),
         ('Metadata', {
             'fields': ('is_custom', 'created_by', 'created_at', 'updated_at')
@@ -138,3 +145,12 @@ class FavoriteExerciseAdmin(admin.ModelAdmin):
     list_filter = ['created_at']
     search_fields = ['user__email', 'exercise__name']
     autocomplete_fields = ['exercise']
+
+
+@admin.register(ExerciseMedia)
+class ExerciseMediaAdmin(admin.ModelAdmin):
+    list_display = ['exercise', 'media_type', 'order', 'caption', 'created_at']
+    list_filter = ['media_type', 'created_at']
+    search_fields = ['exercise__name', 'caption']
+    autocomplete_fields = ['exercise']
+    ordering = ['exercise', 'order']

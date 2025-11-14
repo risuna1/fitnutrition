@@ -51,10 +51,21 @@ class Exercise(models.Model):
         validators=[MinValueValidator(0)],
         help_text="Estimated calories burned per minute"
     )
+    met_value = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        validators=[MinValueValidator(0)],
+        null=True,
+        blank=True,
+        default=5.0,
+        help_text="Metabolic Equivalent of Task (MET) - energy cost of activity",
+        verbose_name="MET値"
+    )
     
     # Media
     video_url = models.URLField(blank=True, null=True)
     image_url = models.URLField(blank=True, null=True)
+    image = models.ImageField(upload_to='exercises/', blank=True, null=True)
     
     # Metadata
     is_custom = models.BooleanField(default=False)
@@ -78,6 +89,36 @@ class Exercise(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ExerciseMedia(models.Model):
+    """Media files (images/videos) for exercises"""
+    MEDIA_TYPES = [
+        ('image', '画像'),
+        ('video', '動画'),
+    ]
+    
+    exercise = models.ForeignKey(
+        Exercise,
+        on_delete=models.CASCADE,
+        related_name='media_files'
+    )
+    media_type = models.CharField(max_length=10, choices=MEDIA_TYPES)
+    file = models.FileField(
+        upload_to='exercises/media/',
+        help_text="Image or video file"
+    )
+    url = models.URLField(blank=True, null=True, help_text="External URL (optional)")
+    order = models.IntegerField(default=0, help_text="Display order")
+    caption = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['exercise', 'order', 'created_at']
+        verbose_name_plural = 'Exercise Media'
+
+    def __str__(self):
+        return f"{self.exercise.name} - {self.media_type} #{self.order}"
 
 
 class WorkoutPlan(models.Model):

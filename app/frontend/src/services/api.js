@@ -2,6 +2,18 @@ import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', '') : 'http://localhost:8000'
+
+// Helper function to get full image URL
+export const getImageUrl = (imagePath) => {
+  if (!imagePath) return null
+  // If already a full URL, return as is
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath
+  }
+  // If it's a relative path, construct full URL
+  return `${BASE_URL}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`
+}
 
 // Create axios instance
 const api = axios.create({
@@ -17,6 +29,10 @@ api.interceptors.request.use(
     const token = useAuthStore.getState().token
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
+    }
+    // If data is FormData, remove Content-Type header to let browser set it with boundary
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type']
     }
     return config
   },
