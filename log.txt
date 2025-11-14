@@ -21,3 +21,6 @@ nutrition pages (食品データベース, 食事カレンダー done)
 
 v1.9
 nutrition pages done
+
+v2.0
+workouts pages done
