@@ -16,6 +16,9 @@ import {
   IconButton,
   Flex,
   useColorModeValue,
+  Alert,
+  AlertIcon,
+  AlertDescription,
 } from '@chakra-ui/react';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
@@ -33,11 +36,15 @@ const Login = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   const handleChange = (e) => {
+    // Clear error when user starts typing
+    if (error) setError('');
+    
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -46,6 +53,11 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    // Prevent double submission
+    if (loading) return;
+    
     setLoading(true);
 
     try {
@@ -57,6 +69,9 @@ const Login = () => {
       
       login(accessToken, refreshToken, response.user);
       
+      // Clear any existing errors
+      setError('');
+      
       toast({
         title: 'ログイン成功',
         description: 'おかえりなさい！',
@@ -67,9 +82,32 @@ const Login = () => {
       
       navigate('/dashboard');
     } catch (error) {
+      console.error('Login error:', error);
+      
+      let errorMessage = '認証情報が無効です';
+      
+      // Handle different error scenarios
+      if (error.response?.data) {
+        if (error.response.data.error) {
+          errorMessage = error.response.data.error;
+        } else if (error.response.data.detail) {
+          errorMessage = error.response.data.detail;
+        } else if (error.response.data.message) {
+          errorMessage = error.response.data.message;
+        }
+      } else if (error.message) {
+        errorMessage = error.message.includes('Network Error') 
+          ? 'ネットワークエラーが発生しました。接続を確認してください。'
+          : error.message;
+      }
+      
+      // Set persistent error message
+      setError(errorMessage);
+      
+      // Also show toast for immediate feedback
       toast({
         title: 'ログイン失敗',
-        description: error.response?.data?.error || error.response?.data?.detail || '認証情報が無効です',
+        description: errorMessage,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -104,8 +142,16 @@ const Login = () => {
           </Box>
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <Stack spacing={4}>
+              {/* Error Alert */}
+              {error && (
+                <Alert status="error" borderRadius="md">
+                  <AlertIcon />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
               <FormControl isRequired>
                 <FormLabel>メールアドレス</FormLabel>
                 <Input
@@ -115,6 +161,7 @@ const Login = () => {
                   onChange={handleChange}
                   placeholder="メールアドレスを入力"
                   size="lg"
+                  autoComplete="email"
                 />
               </FormControl>
 
@@ -127,6 +174,7 @@ const Login = () => {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="パスワードを入力"
+                    autoComplete="current-password"
                   />
                   <InputRightElement>
                     <IconButton
@@ -134,6 +182,7 @@ const Login = () => {
                       icon={showPassword ? <FiEyeOff /> : <FiEye />}
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示'}
+                      tabIndex={-1}
                     />
                   </InputRightElement>
                 </InputGroup>
@@ -146,6 +195,7 @@ const Login = () => {
                 fontSize="md"
                 isLoading={loading}
                 loadingText="ログイン中..."
+                disabled={loading || !formData.email || !formData.password}
               >
                 ログイン
               </Button>

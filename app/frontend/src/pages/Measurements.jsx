@@ -248,12 +248,27 @@ const Measurements = () => {
   const bmr = latestMeasurement ? calculateBMR(latestMeasurement.weight, latestMeasurement.height, 28, 'M') : null;
   const tdee = bmr ? calculateTDEE(bmr, 'moderate') : null;
 
-  // Prepare chart data
-  const chartData = measurements.slice(0, 10).reverse().map(m => ({
-    date: formatDate(m.date),
-    weight: m.weight,
-    bodyFat: m.body_fat_percentage,
-  }));
+  // Format date for chart (more compact)
+  const formatChartDate = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleDateString('ja-JP', { 
+      month: 'numeric', 
+      day: 'numeric' 
+    });
+  };
+
+  // Prepare chart data - show more data points for better visibility
+  const maxChartPoints = measurements.length <= 30 ? measurements.length : 30; // Show all if 30 or fewer, otherwise limit to 30
+  const chartData = measurements
+    .slice(0, maxChartPoints) // Show more data points (up to 30)
+    .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort by date ascending for proper chart display
+    .map(m => ({
+      date: formatChartDate(m.date), // Use compact date format for chart
+      fullDate: formatDate(m.date), // Keep full date for tooltip
+      weight: m.weight,
+      bodyFat: m.body_fat_percentage,
+    }));
 
   if (loading) {
     return (
@@ -413,19 +428,49 @@ const Measurements = () => {
       {chartData.length > 0 && (
         <Card bg={bgColor} borderWidth="1px" borderColor={borderColor} mb={8}>
           <CardHeader>
-            <Heading size="md">体重の推移</Heading>
+            <Flex justify="space-between" align="center">
+              <Heading size="md">体重の推移</Heading>
+              <Text fontSize="sm" color="gray.500">
+                {chartData.length}件のデータを表示中
+              </Text>
+            </Flex>
           </CardHeader>
           <CardBody>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
+                <XAxis 
+                  dataKey="date" 
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  interval={0}
+                />
                 <YAxis />
-                <Tooltip />
+                <Tooltip 
+                  formatter={(value, name) => [value, name]}
+                  labelFormatter={(label, payload) => 
+                    payload && payload[0] ? payload[0].payload.fullDate : label
+                  }
+                />
                 <Legend />
-                <Line type="monotone" dataKey="weight" stroke="#4F46E5" name="体重 (kg)" />
-                {chartData[0].bodyFat && (
-                  <Line type="monotone" dataKey="bodyFat" stroke="#10B981" name="体脂肪率 %" />
+                <Line 
+                  type="monotone" 
+                  dataKey="weight" 
+                  stroke="#4F46E5" 
+                  name="体重 (kg)"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                />
+                {chartData[0]?.bodyFat && (
+                  <Line 
+                    type="monotone" 
+                    dataKey="bodyFat" 
+                    stroke="#10B981" 
+                    name="体脂肪率 %"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                  />
                 )}
               </LineChart>
             </ResponsiveContainer>

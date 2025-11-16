@@ -47,8 +47,12 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    // If error is 401 and we haven't tried to refresh token yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Skip token refresh for login/register endpoints
+    const isAuthEndpoint = originalRequest.url?.includes('/auth/login/') || 
+                          originalRequest.url?.includes('/auth/register/')
+
+    // If error is 401 and we haven't tried to refresh token yet and it's not a login request
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true
 
       try {
@@ -74,7 +78,10 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // If refresh fails, logout user
         useAuthStore.getState().logout()
-        window.location.href = '/login'
+        // Use navigate instead of window.location.href to avoid full page reload
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+          window.location.href = '/login'
+        }
         return Promise.reject(refreshError)
       }
     }

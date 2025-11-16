@@ -29,6 +29,10 @@ const Progress = () => {
   const [progressData, setProgressData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('30');
+  const [selectedMealPlan, setSelectedMealPlan] = useState(() => {
+    const saved = localStorage.getItem('selectedMealPlan');
+    return saved ? JSON.parse(saved) : null;
+  });
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
@@ -37,12 +41,33 @@ const Progress = () => {
     loadProgressData();
   }, [timeRange]);
 
+  // Listen for changes to selected meal plan in localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const saved = localStorage.getItem('selectedMealPlan');
+      setSelectedMealPlan(saved ? JSON.parse(saved) : null);
+    };
+
+    // Listen for storage events from other tabs/windows
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check periodically in case change happened in same tab
+    const interval = setInterval(handleStorageChange, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
   const loadProgressData = async () => {
     try {
       setLoading(true);
-      const response = await analyticsService.getProgress({ days: timeRange });
-      setProgressData(response.data);
+      const data = await analyticsService.getProgress({ days: timeRange });
+      console.log('Progress data received:', data); // Debug log
+      setProgressData(data);
     } catch (error) {
+      console.error('Progress data error:', error); // Debug log
       toast({
         title: '進捗データ読み込みエラー',
         description: error.response?.data?.detail || 'データの読み込みに失敗しました',
@@ -63,7 +88,24 @@ const Progress = () => {
     );
   }
 
-  // Prepare chart data
+  if (!progressData) {
+    return (
+      <Box>
+        <Heading size="lg" mb={4}>進捗追跡</Heading>
+        <Center h="400px" flexDirection="column">
+          <Text fontSize="lg" color="gray.600" mb={4}>
+            進捗データを読み込めませんでした
+          </Text>
+          <Text fontSize="sm" color="gray.500" textAlign="center">
+            体重や体脂肪率、ワークアウト、栄養データが必要です。<br/>
+            まずはこれらのデータを登録してください。
+          </Text>
+        </Center>
+      </Box>
+    );
+  }
+
+  // Prepare chart data with fallbacks
   const weightData = progressData?.weight_history?.map(item => ({
     date: formatDate(item.date),
     weight: item.weight,
@@ -83,8 +125,10 @@ const Progress = () => {
   const calorieData = progressData?.calorie_trends?.map(item => ({
     date: formatDate(item.date),
     calories: item.calories,
-    target: progressData.target_calories,
+    target: selectedMealPlan?.daily_calories || selectedMealPlan?.target_calories || progressData.target_calories || 2000,
   })) || [];
+
+  console.log('Chart data prepared:', { weightData, bodyFatData, workoutData, calorieData }); // Debug log
 
   return (
     <Box>
@@ -153,7 +197,11 @@ const Progress = () => {
               <StatLabel>平均カロリー摂取</StatLabel>
               <StatNumber>{progressData?.avg_calories || 0}</StatNumber>
               <StatHelpText>
-                目標: {progressData?.target_calories || 2000} kcal
+                {selectedMealPlan ? (
+                  <>目標: {selectedMealPlan.daily_calories || selectedMealPlan.target_calories || 2000} kcal (プラン: {selectedMealPlan.name})</>
+                ) : (
+                  <>目標: {progressData?.target_calories || 2000} kcal</>
+                )}
               </StatHelpText>
             </Stat>
           </CardBody>

@@ -87,7 +87,10 @@ const Nutrition = () => {
   const [modalSearchLoading, setModalSearchLoading] = useState(false);
   const [foodToDelete, setFoodToDelete] = useState(null);
   const [planToDelete, setPlanToDelete] = useState(null);
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [selectedPlan, setSelectedPlan] = useState(() => {
+    const saved = localStorage.getItem('selectedMealPlan');
+    return saved ? JSON.parse(saved) : null;
+  });
   
   // Debounce search terms
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -172,6 +175,15 @@ const Nutrition = () => {
     localStorage.setItem('recipeFavorites', JSON.stringify(recipeFavorites));
   }, [recipeFavorites]);
 
+  // Save selected meal plan to localStorage
+  useEffect(() => {
+    if (selectedPlan) {
+      localStorage.setItem('selectedMealPlan', JSON.stringify(selectedPlan));
+    } else {
+      localStorage.removeItem('selectedMealPlan');
+    }
+  }, [selectedPlan]);
+
   // Effect for Food Database tab search
   useEffect(() => {
     if (activeTab === 1) {
@@ -197,8 +209,22 @@ const Nutrition = () => {
       ]);
       setMeals(mealsResponse.results || mealsResponse);
       setFavorites(favoritesResponse.results || favoritesResponse);
-      setMealPlans(mealPlansResponse.results || mealPlansResponse);
+      const loadedMealPlans = mealPlansResponse.results || mealPlansResponse;
+      setMealPlans(loadedMealPlans);
       setCustomRecipes(recipesResponse.results || recipesResponse);
+      
+      // Validate selectedPlan still exists in loaded meal plans
+      if (selectedPlan) {
+        const planStillExists = loadedMealPlans.find(plan => plan.id === selectedPlan.id);
+        if (!planStillExists) {
+          // Plan no longer exists, clear it
+          setSelectedPlan(null);
+          localStorage.removeItem('selectedMealPlan');
+        } else {
+          // Update with fresh data from server
+          setSelectedPlan(planStillExists);
+        }
+      }
       
       // Load initial foods
       await searchFoods('');
@@ -1204,7 +1230,7 @@ const Nutrition = () => {
                             </Text>
                           ) : calories > 0 ? (
                             <Text fontSize="xs" color="green.600" mt={1}>
-                              {calories} kcal
+                              {calories.toFixed(1)} kcal
                             </Text>
                           ) : (
                             <Text fontSize="xs" color="gray.400" mt={1}>
@@ -1849,7 +1875,7 @@ const Nutrition = () => {
                   mb={1}
                 />
                 <Text fontSize="xs" color="gray.600">
-                  残り {Math.max(0, targetCalories - todayCalories)} kcal
+                  残り {Math.max(0, targetCalories - todayCalories).toFixed(1)} kcal
                 </Text>
               </Box>
 

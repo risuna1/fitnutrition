@@ -323,13 +323,90 @@ class ProgressAnalyzer:
     @classmethod
     def get_comprehensive_report(cls, user, days=30):
         """Get comprehensive progress report"""
-        return {
-            'weight_progress': cls.get_weight_progress(user, days),
-            'body_composition': cls.get_body_composition_progress(user, days),
-            'nutrition_trends': cls.get_nutrition_trends(user, days),
-            'workout_trends': cls.get_workout_trends(user, days),
-            'period_days': days
+        # Get individual reports
+        weight_progress = cls.get_weight_progress(user, days)
+        body_composition = cls.get_body_composition_progress(user, days)
+        nutrition_trends = cls.get_nutrition_trends(user, days)
+        workout_trends = cls.get_workout_trends(user, days)
+        
+        # Format data for frontend compatibility
+        result = {
+            'period_days': days,
+            'weight_history': [],
+            'body_fat_history': [],
+            'workout_frequency': [],
+            'calorie_trends': [],
+            'weight_change': 0,
+            'body_fat_change': 0,
+            'total_workouts': 0,
+            'workout_consistency': 0,
+            'avg_calories': 0,
+            'target_calories': 2000,
+            'current_weight': 0,
+            'weight_goal': 0,
+            'current_body_fat': 0,
+            'body_fat_goal': 0,
+            'workout_goal': 5,
+            'workouts_this_week': 0,
+            'achievements': []
         }
+        
+        # Process weight data
+        if weight_progress and weight_progress.get('data'):
+            result['weight_history'] = [
+                {'date': item['date'], 'weight': item['weight']} 
+                for item in weight_progress['data']
+            ]
+            result['weight_change'] = weight_progress.get('weight_change', 0)
+            result['current_weight'] = weight_progress.get('current_weight', 0)
+        
+        # Process body composition data
+        if body_composition:
+            if body_composition.get('measurements'):
+                result['body_fat_history'] = [
+                    {'date': item['date'], 'body_fat_percentage': item['body_fat_percentage']}
+                    for item in body_composition['measurements']
+                    if item['body_fat_percentage'] is not None
+                ]
+            result['body_fat_change'] = body_composition.get('body_fat_change', 0)
+            if result['body_fat_history']:
+                result['current_body_fat'] = result['body_fat_history'][-1]['body_fat_percentage']
+        
+        # Process nutrition data
+        if nutrition_trends:
+            result['avg_calories'] = nutrition_trends.get('average_daily_calories', 0)
+            # Create mock calorie trends data if we have nutrition data
+            if nutrition_trends.get('total_meals_logged', 0) > 0:
+                start_date = timezone.now().date() - timedelta(days=days)
+                for i in range(min(days, 10)):  # Show last 10 days max
+                    date = start_date + timedelta(days=i)
+                    result['calorie_trends'].append({
+                        'date': date,
+                        'calories': nutrition_trends.get('average_daily_calories', 0)
+                    })
+        
+        # Process workout data
+        if workout_trends:
+            result['total_workouts'] = workout_trends.get('total_workouts', 0)
+            result['workout_consistency'] = workout_trends.get('completion_rate', 0)
+            # Create mock workout frequency data (weekly)
+            weeks = max(1, days // 7)
+            workouts_per_week = result['total_workouts'] / weeks if weeks > 0 else 0
+            for i in range(weeks):
+                result['workout_frequency'].append({
+                    'week': f'Week {i+1}',
+                    'count': int(workouts_per_week)
+                })
+        
+        # Get user goals from profile
+        try:
+            profile = user.profile
+            if hasattr(profile, 'target_weight') and profile.target_weight:
+                result['weight_goal'] = float(profile.target_weight)
+        except:
+            pass
+        
+        return result
 
 
 class GoalTracker:

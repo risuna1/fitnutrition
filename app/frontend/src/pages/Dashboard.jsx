@@ -399,18 +399,31 @@ const Dashboard = () => {
                     </Text>
                   </Box>
                   
-                  {dashboardData.recent_progress.body_composition?.body_fat_change !== undefined && dashboardData.recent_progress.body_composition?.body_fat_change !== null && (
-                    <Box p={4} bg={useColorModeValue('green.50', 'green.900')} borderRadius="md">
-                      <HStack justify="space-between" mb={2}>
-                        <Text fontWeight="medium">体脂肪率の変化</Text>
-                        <Badge colorScheme="green">
-                          {dashboardData.recent_progress.body_composition.body_fat_change > 0 ? '+' : ''}
-                          {dashboardData.recent_progress.body_composition.body_fat_change}%
-                        </Badge>
-                      </HStack>
-                      <Text fontSize="sm" color="gray.600">過去7日間</Text>
-                    </Box>
-                  )}
+                  <Box p={4} bg={useColorModeValue('green.50', 'green.900')} borderRadius="md">
+                    <HStack justify="space-between" mb={2}>
+                      <Text fontWeight="medium">体脂肪率の変化</Text>
+                      <Badge colorScheme={
+                        dashboardData.recent_progress.body_fat_change === undefined || 
+                        dashboardData.recent_progress.body_fat_change === null ||
+                        dashboardData.recent_progress.body_fat_change === 0
+                          ? 'gray' 
+                          : dashboardData.recent_progress.body_fat_change < 0 
+                            ? 'green' 
+                            : 'orange'
+                      }>
+                        {dashboardData.recent_progress.body_fat_change !== undefined && 
+                         dashboardData.recent_progress.body_fat_change !== null ? (
+                          <>
+                            {dashboardData.recent_progress.body_fat_change > 0 ? '+' : ''}
+                            {dashboardData.recent_progress.body_fat_change}%
+                          </>
+                        ) : (
+                          'データなし'
+                        )}
+                      </Badge>
+                    </HStack>
+                    <Text fontSize="sm" color="gray.600">過去7日間</Text>
+                  </Box>
                   
                   <Box p={4} bg={useColorModeValue('purple.50', 'purple.900')} borderRadius="md">
                     <HStack justify="space-between" mb={2}>
