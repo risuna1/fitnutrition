@@ -24,3 +24,6 @@ nutrition pages done
 
 v2.0
 workouts pages done
+
+v2.1
+progress (data connections done, changing graph / data), login error handling done
