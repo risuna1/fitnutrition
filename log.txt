@@ -27,3 +27,6 @@ workouts pages done
 
 v2.1
 progress (data connections done, changing graph / data), login error handling done
+
+v2.2
+overall done (check note)
