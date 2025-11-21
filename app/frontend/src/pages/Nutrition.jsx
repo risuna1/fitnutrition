@@ -66,6 +66,7 @@ import { useDebounce } from '../hooks/useDebounce';
 const Nutrition = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isCreateFoodOpen, onOpen: onCreateFoodOpen, onClose: onCreateFoodClose } = useDisclosure();
+  const { isOpen: isEditFoodOpen, onOpen: onEditFoodOpen, onClose: onEditFoodClose } = useDisclosure();
   const { isOpen: isCreatePlanOpen, onOpen: onCreatePlanOpen, onClose: onCreatePlanClose } = useDisclosure();
   const { isOpen: isCreateRecipeOpen, onOpen: onCreateRecipeOpen, onClose: onCreateRecipeClose } = useDisclosure();
   const { isOpen: isEditRecipeOpen, onOpen: onEditRecipeOpen, onClose: onEditRecipeClose } = useDisclosure();
@@ -86,6 +87,7 @@ const Nutrition = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [modalSearchLoading, setModalSearchLoading] = useState(false);
   const [foodToDelete, setFoodToDelete] = useState(null);
+  const [foodToEdit, setFoodToEdit] = useState(null);
   const [planToDelete, setPlanToDelete] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(() => {
     const saved = localStorage.getItem('selectedMealPlan');
@@ -482,6 +484,7 @@ const Nutrition = () => {
         carbohydrates: parseFloat(newFoodData.carbohydrates),
         fats: parseFloat(newFoodData.fats),
         serving_size: parseFloat(newFoodData.serving_size),
+        unit: newFoodData.unit,
       });
 
       toast({
@@ -637,6 +640,74 @@ const Nutrition = () => {
     });
     setRecipeImagePreview(null);
     onCreateRecipeOpen();
+  };
+
+  const handleEditFood = (food) => {
+    setFoodToEdit(food);
+    setNewFoodData({
+      name: food.name,
+      category: food.category || 'other',
+      calories: food.calories.toString(),
+      protein: food.protein.toString(),
+      carbohydrates: food.carbohydrates.toString(),
+      fats: food.fats.toString(),
+      serving_size: food.serving_size.toString(),
+      unit: food.unit || 'g',
+    });
+    onEditFoodOpen();
+  };
+
+  const handleUpdateFood = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const foodData = {
+        name: newFoodData.name,
+        category: newFoodData.category,
+        calories: parseFloat(newFoodData.calories),
+        protein: parseFloat(newFoodData.protein),
+        carbohydrates: parseFloat(newFoodData.carbohydrates),
+        fats: parseFloat(newFoodData.fats),
+        serving_size: parseFloat(newFoodData.serving_size),
+        unit: newFoodData.unit,
+      };
+
+      await nutritionService.foods.update(foodToEdit.id, foodData);
+
+      toast({
+        title: '食品を更新しました',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+
+      onEditFoodClose();
+      await loadData();
+      
+      // Reset form
+      setNewFoodData({
+        name: '',
+        category: 'other',
+        calories: '',
+        protein: '',
+        carbohydrates: '',
+        fats: '',
+        serving_size: '',
+        unit: 'g',
+      });
+      setFoodToEdit(null);
+    } catch (error) {
+      console.error('Error updating food:', error);
+      toast({
+        title: 'エラー',
+        description: '食品の更新に失敗しました',
+        status: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleEditRecipe = (recipe) => {
@@ -1362,7 +1433,7 @@ const Nutrition = () => {
                         <Box>
                           <Text fontWeight="medium">{food.name}</Text>
                           <Text fontSize="sm" color="gray.600">
-                            {food.calories} kcal • P: {food.protein}g • C: {food.carbohydrates}g • F: {food.fats}g
+                            {food.serving_size}{food.unit || 'g'} • {food.calories} kcal • P: {food.protein}g • C: {food.carbohydrates}g • F: {food.fats}g
                           </Text>
                         </Box>
                         <HStack>
@@ -1385,16 +1456,28 @@ const Nutrition = () => {
                             onClick={() => handleFoodSelect(food)}
                           /> */}
                           {food.is_custom && (
-                            <Tooltip label="削除" placement="top">
-                              <IconButton
-                                aria-label="削除"
-                                icon={<FiTrash2 />}
-                                size="sm"
-                                variant="ghost"
-                                colorScheme="red"
-                                onClick={() => handleDeleteFood(food)}
-                              />
-                            </Tooltip>
+                            <>
+                              <Tooltip label="編集" placement="top">
+                                <IconButton
+                                  aria-label="編集"
+                                  icon={<FiEdit />}
+                                  size="sm"
+                                  variant="ghost"
+                                  colorScheme="blue"
+                                  onClick={() => handleEditFood(food)}
+                                />
+                              </Tooltip>
+                              <Tooltip label="削除" placement="top">
+                                <IconButton
+                                  aria-label="削除"
+                                  icon={<FiTrash2 />}
+                                  size="sm"
+                                  variant="ghost"
+                                  colorScheme="red"
+                                  onClick={() => handleDeleteFood(food)}
+                                />
+                              </Tooltip>
+                            </>
                           )}
                         </HStack>
                       </Flex>
@@ -2103,13 +2186,13 @@ const Nutrition = () => {
       </Grid>
 
       {/* Log Meal Modal */}
-      <Modal isOpen={isOpen} onClose={onClose} size={{ base: "full", md: "4xl" }} scrollBehavior="inside">
+      <Modal isOpen={isOpen} onClose={onClose} size={{ base: "full", md: "4xl" }}>
         <ModalOverlay />
-        <ModalContent maxH={{ base: "100vh", md: "90vh" }} my={{ base: 0, md: "auto" }}>
+        <ModalContent maxH={{ base: "100vh", md: "90vh" }} m={{ base: 0, md: 4 }}>
           <form onSubmit={handleSubmit}>
             <ModalHeader fontSize={{ base: "md", md: "lg" }}>食事を記録</ModalHeader>
             <ModalCloseButton />
-            <ModalBody px={{ base: 3, md: 6 }} py={{ base: 4, md: 6 }}>
+            <ModalBody maxH={{ base: "calc(100vh - 140px)", md: "calc(90vh - 140px)" }} overflowY="auto" px={{ base: 3, md: 6 }} py={{ base: 4, md: 6 }}>
               <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={{ base: 4, md: 6 }}>
                 {/* Meal Details */}
                 <Box>
@@ -2430,6 +2513,147 @@ const Nutrition = () => {
         </ModalContent>
       </Modal>
 
+      {/* Edit Food Modal */}
+      <Modal isOpen={isEditFoodOpen} onClose={onEditFoodClose} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <form onSubmit={handleUpdateFood}>
+            <ModalHeader>食品を編集</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <VStack spacing={4}>
+                <FormControl isRequired>
+                  <FormLabel>食品名</FormLabel>
+                  <Input
+                    name="name"
+                    value={newFoodData.name}
+                    onChange={handleNewFoodChange}
+                    placeholder="例: 鶏胸肉"
+                  />
+                </FormControl>
+
+                <FormControl isRequired>
+                  <FormLabel>カテゴリー</FormLabel>
+                  <Select
+                    name="category"
+                    value={newFoodData.category}
+                    onChange={handleNewFoodChange}
+                  >
+                    <option value="protein">タンパク質</option>
+                    <option value="carbs">炭水化物</option>
+                    <option value="fats">脂質</option>
+                    <option value="vegetables">野菜</option>
+                    <option value="fruits">果物</option>
+                    <option value="dairy">乳製品</option>
+                    <option value="grains">穀物</option>
+                    <option value="snacks">スナック</option>
+                    <option value="beverages">飲料</option>
+                    <option value="other">その他</option>
+                  </Select>
+                </FormControl>
+
+                <Grid templateColumns="repeat(2, 1fr)" gap={4} w="full">
+                  <FormControl isRequired>
+                    <FormLabel>カロリー (kcal)</FormLabel>
+                    <Input
+                      type="number"
+                      name="calories"
+                      value={newFoodData.calories}
+                      onChange={handleNewFoodChange}
+                      placeholder="100"
+                      step="0.1"
+                    />
+                  </FormControl>
+
+                  <FormControl isRequired>
+                    <FormLabel>タンパク質 (g)</FormLabel>
+                    <Input
+                      type="number"
+                      name="protein"
+                      value={newFoodData.protein}
+                      onChange={handleNewFoodChange}
+                      placeholder="20"
+                      step="0.1"
+                    />
+                  </FormControl>
+
+                  <FormControl isRequired>
+                    <FormLabel>炭水化物 (g)</FormLabel>
+                    <Input
+                      type="number"
+                      name="carbohydrates"
+                      value={newFoodData.carbohydrates}
+                      onChange={handleNewFoodChange}
+                      placeholder="30"
+                      step="0.1"
+                    />
+                  </FormControl>
+
+                  <FormControl isRequired>
+                    <FormLabel>脂質 (g)</FormLabel>
+                    <Input
+                      type="number"
+                      name="fats"
+                      value={newFoodData.fats}
+                      onChange={handleNewFoodChange}
+                      placeholder="10"
+                      step="0.1"
+                    />
+                  </FormControl>
+                </Grid>
+
+                <Grid templateColumns="2fr 1fr" gap={4} w="full">
+                  <FormControl isRequired>
+                    <FormLabel>サービングサイズ</FormLabel>
+                    <Input
+                      type="number"
+                      name="serving_size"
+                      value={newFoodData.serving_size}
+                      onChange={handleNewFoodChange}
+                      placeholder="100"
+                      step="0.1"
+                    />
+                  </FormControl>
+
+                  <FormControl isRequired>
+                    <FormLabel>単位</FormLabel>
+                    <Select
+                      name="unit"
+                      value={newFoodData.unit}
+                      onChange={handleNewFoodChange}
+                    >
+                      <option value="g">g</option>
+                      <option value="ml">ml</option>
+                      <option value="個">個</option>
+                      <option value="枚">枚</option>
+                      <option value="本">本</option>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Box w="full" p={4} bg="blue.50" borderRadius="md">
+                  <Text fontSize="sm" color="blue.800" fontWeight="semibold" mb={2}>
+                    💡 ヒント
+                  </Text>
+                  <Text fontSize="xs" color="blue.700">
+                    栄養情報は100gあたりの値を入力してください。サービングサイズは1回分の量です。
+                  </Text>
+                </Box>
+              </VStack>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button variant="ghost" mr={3} onClick={onEditFoodClose}>
+                キャンセル
+              </Button>
+              <Button colorScheme="brand" type="submit" isLoading={submitting}>
+                更新
+              </Button>
+            </ModalFooter>
+          </form>
+        </ModalContent>
+      </Modal>
+
       {/* Recipe Detail Modal */}
       <Modal isOpen={isRecipeDetailOpen} onClose={onRecipeDetailClose} size="2xl">
         <ModalOverlay />
@@ -2729,6 +2953,13 @@ const Nutrition = () => {
                       value={newRecipeData.calories}
                       onChange={handleNewRecipeChange}
                       placeholder="400"
+                      min="0"
+                      step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormControl isRequired>
@@ -2738,6 +2969,12 @@ const Nutrition = () => {
                       value={newRecipeData.time}
                       onChange={handleNewRecipeChange}
                       placeholder="例: 30分"
+                      pattern="[0-9]+分?"
+                      onKeyPress={(e) => {
+                        if (!/[0-9分]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                 </Grid>
@@ -2751,6 +2988,13 @@ const Nutrition = () => {
                       value={newRecipeData.protein}
                       onChange={handleNewRecipeChange}
                       placeholder="40"
+                      min="0"
+                      step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormControl isRequired>
@@ -2761,6 +3005,13 @@ const Nutrition = () => {
                       value={newRecipeData.carbs}
                       onChange={handleNewRecipeChange}
                       placeholder="30"
+                      min="0"
+                      step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormControl isRequired>
@@ -2771,6 +3022,13 @@ const Nutrition = () => {
                       value={newRecipeData.fats}
                       onChange={handleNewRecipeChange}
                       placeholder="15"
+                      min="0"
+                      step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                 </Grid>
@@ -2782,6 +3040,12 @@ const Nutrition = () => {
                     value={newRecipeData.servings}
                     onChange={handleNewRecipeChange}
                     placeholder="例: 2人分"
+                    pattern="[0-9]+人分?"
+                    onKeyPress={(e) => {
+                      if (!/[0-9人分]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
                 
@@ -2899,6 +3163,13 @@ const Nutrition = () => {
                       value={newRecipeData.calories}
                       onChange={handleNewRecipeChange}
                       placeholder="400"
+                      min="0"
+                      step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormControl isRequired>
@@ -2908,6 +3179,12 @@ const Nutrition = () => {
                       value={newRecipeData.time}
                       onChange={handleNewRecipeChange}
                       placeholder="例: 30分"
+                      pattern="[0-9]+分?"
+                      onKeyPress={(e) => {
+                        if (!/[0-9分]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                 </Grid>
@@ -2921,6 +3198,13 @@ const Nutrition = () => {
                       value={newRecipeData.protein}
                       onChange={handleNewRecipeChange}
                       placeholder="40"
+                      min="0"
+                      step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormControl isRequired>
@@ -2931,6 +3215,13 @@ const Nutrition = () => {
                       value={newRecipeData.carbs}
                       onChange={handleNewRecipeChange}
                       placeholder="30"
+                      min="0"
+                      step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormControl isRequired>
@@ -2941,6 +3232,13 @@ const Nutrition = () => {
                       value={newRecipeData.fats}
                       onChange={handleNewRecipeChange}
                       placeholder="15"
+                      min="0"
+                      step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                 </Grid>
@@ -2952,6 +3250,12 @@ const Nutrition = () => {
                     value={newRecipeData.servings}
                     onChange={handleNewRecipeChange}
                     placeholder="例: 2人分"
+                    pattern="[0-9]+人分?"
+                    onKeyPress={(e) => {
+                      if (!/[0-9人分]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
                 

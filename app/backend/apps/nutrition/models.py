@@ -32,8 +32,14 @@ class Food(models.Model):
         max_digits=6,
         decimal_places=1,
         default=100,
-        help_text='Default serving size in grams',
-        verbose_name='Serving Size (g)'
+        help_text='Default serving size',
+        verbose_name='Serving Size'
+    )
+    unit = models.CharField(
+        max_length=20,
+        default='g',
+        help_text='Unit of measurement (g, ml, 個, etc.)',
+        verbose_name='Unit'
     )
     calories = models.DecimalField(
         max_digits=6,

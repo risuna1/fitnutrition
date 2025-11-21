@@ -18,7 +18,7 @@ class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Food
         fields = [
-            'id', 'name', 'category', 'brand', 'serving_size',
+            'id', 'name', 'category', 'brand', 'serving_size', 'unit',
             'calories', 'protein', 'carbohydrates', 'fats',
             'fiber', 'sugar', 'sodium', 'vitamin_a', 'vitamin_c',
             'calcium', 'iron', 'description', 'image',
@@ -34,7 +34,7 @@ class FoodCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Food
         fields = [
-            'name', 'category', 'brand', 'serving_size',
+            'name', 'category', 'brand', 'serving_size', 'unit',
             'calories', 'protein', 'carbohydrates', 'fats',
             'fiber', 'sugar', 'sodium', 'vitamin_a', 'vitamin_c',
             'calcium', 'iron', 'description', 'image'
