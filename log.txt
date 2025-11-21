@@ -30,3 +30,6 @@ progress (data connections done, changing graph / data), login error handling do
 
 v2.2
 overall done (check note)
+
+v2.3
+presentation ready (need data and debugging)
