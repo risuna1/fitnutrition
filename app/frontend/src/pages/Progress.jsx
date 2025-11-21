@@ -22,14 +22,18 @@ import {
   Input,
   HStack,
   Button,
+  Link,
 } from '@chakra-ui/react';
+import { Link as RouterLink } from 'react-router-dom';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import analyticsService from '../services/analytics';
+import measurementsService from '../services/measurements';
 import { formatDate } from '../utils/helpers';
 
 const Progress = () => {
   const toast = useToast();
   const [progressData, setProgressData] = useState(null);
+  const [latestMeasurement, setLatestMeasurement] = useState(null);
   const [loading, setLoading] = useState(true);
   
   // Date range state
@@ -58,6 +62,7 @@ const Progress = () => {
 
   useEffect(() => {
     loadProgressData();
+    loadLatestMeasurement();
   }, []);
 
   // Listen for changes to selected meal plan in localStorage
@@ -78,6 +83,17 @@ const Progress = () => {
       clearInterval(interval);
     };
   }, []);
+
+  const loadLatestMeasurement = async () => {
+    try {
+      const measurementResponse = await measurementsService.getLatestMeasurement();
+      const data = measurementResponse.data || measurementResponse;
+      setLatestMeasurement(data);
+    } catch (error) {
+      console.error('Error loading latest measurement:', error);
+      setLatestMeasurement(null);
+    }
+  };
 
   const loadProgressData = async () => {
     // Validate dates
@@ -511,7 +527,7 @@ const Progress = () => {
                   {progressData?.weight_goal || '未設定'} kg
                 </Text>
                 <Text fontSize="xs" color="gray.600">
-                  現在: {progressData?.current_weight || 0} kg
+                  現在: {latestMeasurement?.weight || progressData?.current_weight || 'N/A'} kg
                 </Text>
               </Box>
               <Box p={4} borderWidth="1px" borderRadius="md">
@@ -520,17 +536,38 @@ const Progress = () => {
                   {progressData?.body_fat_goal || '未設定'}%
                 </Text>
                 <Text fontSize="xs" color="gray.600">
-                  現在: {progressData?.current_body_fat || 0}%
+                  現在: {latestMeasurement?.body_fat_percentage ? `${latestMeasurement.body_fat_percentage}%` : (progressData?.current_body_fat ? `${progressData.current_body_fat}%` : 'N/A')}
                 </Text>
               </Box>
               <Box p={4} borderWidth="1px" borderRadius="md">
                 <Text fontSize="sm" fontWeight="medium" mb={2}>週間ワークアウト目標</Text>
-                <Text fontSize="xl" fontWeight="bold" color="purple.500">
-                  {progressData?.workout_goal || 5} 回
-                </Text>
-                <Text fontSize="xs" color="gray.600">
-                  今週: {progressData?.workouts_this_week || 0}
-                </Text>
+                {progressData?.workout_goal && progressData.workout_goal > 0 ? (
+                  <>
+                    <Text fontSize="xl" fontWeight="bold" color="purple.500">
+                      {progressData.workout_goal} 回
+                    </Text>
+                    <Text fontSize="xs" color="gray.600">
+                      今週: {progressData?.workouts_this_week || 0}
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text fontSize="xl" fontWeight="bold" color="gray.400">
+                      - 回
+                    </Text>
+                    <Link 
+                      as={RouterLink} 
+                      to="/workouts" 
+                      state={{ tab: 2 }}
+                      fontSize="xs" 
+                      color="orange.600" 
+                      fontWeight="medium"
+                      _hover={{ textDecoration: 'underline', color: 'orange.700' }}
+                    >
+                      ⚠️ ワークアウトプランを選択してください
+                    </Link>
+                  </>
+                )}
               </Box>
             </SimpleGrid>
           </CardBody>

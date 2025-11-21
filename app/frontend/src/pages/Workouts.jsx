@@ -46,6 +46,7 @@ import {
   Image,
   CloseButton,
 } from '@chakra-ui/react';
+import { useLocation } from 'react-router-dom';
 import { 
   FiPlus, 
   FiCheck, 
@@ -67,6 +68,7 @@ import { formatDate } from '../utils/helpers';
 import { getImageUrl } from '../services/api';
 
 const Workouts = () => {
+  const location = useLocation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isCreateExerciseOpen, onOpen: onCreateExerciseOpen, onClose: onCreateExerciseClose } = useDisclosure();
   const { isOpen: isEditExerciseOpen, onOpen: onEditExerciseOpen, onClose: onEditExerciseClose } = useDisclosure();
@@ -156,7 +158,15 @@ const Workouts = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+    
+    // Check for tab in location state
+    if (location.state?.tab !== undefined) {
+      const tabIndex = location.state.tab;
+      if (!isNaN(tabIndex) && tabIndex >= 0 && tabIndex <= 3) {
+        setActiveTab(tabIndex);
+      }
+    }
+  }, [location]);
 
   const loadData = async () => {
     try {
@@ -2159,18 +2169,28 @@ const Workouts = () => {
                 const totalWeeks = plan.duration_weeks || 12;
                 const progressPercentage = Math.min((weeksPassed / totalWeeks) * 100, 100);
                 
-                // Calculate this week's workouts
+                // Calculate this week's workouts (only from active schedule)
                 const startOfWeek = new Date(today);
                 startOfWeek.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
                 const endOfWeek = new Date(startOfWeek);
                 endOfWeek.setDate(startOfWeek.getDate() + 6);
                 
+                // Filter workouts that are within this week and belong to this schedule
                 const thisWeekWorkouts = workouts.filter(w => {
                   const workoutDate = new Date(w.date);
-                  return workoutDate >= startOfWeek && workoutDate <= endOfWeek;
+                  const scheduleStart = new Date(activeSchedule.start_date);
+                  const scheduleEnd = new Date(activeSchedule.start_date);
+                  scheduleEnd.setDate(scheduleEnd.getDate() + (plan.duration_weeks * 7));
+                  
+                  // Check if workout is within this week AND within schedule period
+                  return workoutDate >= startOfWeek && 
+                         workoutDate <= endOfWeek &&
+                         workoutDate >= scheduleStart &&
+                         workoutDate <= scheduleEnd;
                 });
-                const completedThisWeek = thisWeekWorkouts.filter(w => w.completed).length;
+                
                 const daysPerWeek = plan.days_per_week || 5;
+                const completedThisWeek = thisWeekWorkouts.filter(w => w.completed).length;
                 
                 return (
                   <Box>
@@ -2221,8 +2241,18 @@ const Workouts = () => {
                     {/* Quick Stats */}
                     <SimpleGrid columns={2} spacing={2} mb={3}>
                       <Box bg={hoverBg} p={2} borderRadius="md" textAlign="center">
-                        <Text fontSize="xs" color="gray.600">今週</Text>
-                        <Text fontSize="lg" fontWeight="bold" color="green.600">{completedThisWeek}/{daysPerWeek}</Text>
+                        <Text fontSize="xs" color="gray.600">今週のワークアウト</Text>
+                        <Text 
+                          fontSize="lg" 
+                          fontWeight="bold" 
+                          color={
+                            completedThisWeek < daysPerWeek 
+                              ? "red.600" 
+                              : "green.600"
+                          }
+                        >
+                          {completedThisWeek}/{daysPerWeek}
+                        </Text>
                         <Text fontSize="xs" color="gray.500">完了</Text>
                       </Box>
                       <Box bg={hoverBg} p={2} borderRadius="md" textAlign="center">
@@ -2230,7 +2260,7 @@ const Workouts = () => {
                         <Text fontSize="lg" fontWeight="bold" color="purple.600">
                           {daysPerWeek > 0 ? Math.round((completedThisWeek / daysPerWeek) * 100) : 0}%
                         </Text>
-                        <Text fontSize="xs" color="gray.500">継続中</Text>
+                        <Text fontSize="xs" color="gray.500">今週</Text>
                       </Box>
                     </SimpleGrid>
 

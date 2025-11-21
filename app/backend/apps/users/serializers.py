@@ -152,6 +152,10 @@ class UserDetailSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(read_only=True)
     food_preferences = FoodPreferenceSerializer(read_only=True)
     age = serializers.ReadOnlyField()
+    total_measurements = serializers.SerializerMethodField()
+    total_meals = serializers.SerializerMethodField()
+    total_workouts = serializers.SerializerMethodField()
+    days_active = serializers.SerializerMethodField()
     
     class Meta:
         model = User
@@ -159,9 +163,47 @@ class UserDetailSerializer(serializers.ModelSerializer):
             'id', 'username', 'email', 'first_name', 'last_name',
             'phone', 'date_of_birth', 'age', 'profile_picture',
             'profile', 'food_preferences',
+            'total_measurements', 'total_meals', 'total_workouts', 'days_active',
             'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def get_total_measurements(self, obj):
+        """Get total number of measurements"""
+        from apps.measurements.models import BodyMeasurement
+        return BodyMeasurement.objects.filter(user=obj).count()
+    
+    def get_total_meals(self, obj):
+        """Get total number of meals logged"""
+        from apps.nutrition.models import Meal
+        return Meal.objects.filter(user=obj).count()
+    
+    def get_total_workouts(self, obj):
+        """Get total number of completed workouts"""
+        from apps.workouts.models import Workout
+        return Workout.objects.filter(user=obj, completed=True).count()
+    
+    def get_days_active(self, obj):
+        """Get number of unique days user has been active"""
+        from django.db.models import Q
+        from apps.measurements.models import BodyMeasurement
+        from apps.nutrition.models import Meal
+        from apps.workouts.models import Workout
+        from datetime import datetime
+        
+        # Get unique dates from measurements
+        measurement_dates = set(BodyMeasurement.objects.filter(user=obj).values_list('date', flat=True))
+        
+        # Get unique dates from meals
+        meal_dates = set(Meal.objects.filter(user=obj).values_list('date', flat=True))
+        
+        # Get unique dates from workouts
+        workout_dates = set(Workout.objects.filter(user=obj).values_list('date', flat=True))
+        
+        # Combine all unique dates
+        all_dates = measurement_dates.union(meal_dates).union(workout_dates)
+        
+        return len(all_dates)
 
 
 class UserPreferencesSerializer(serializers.ModelSerializer):

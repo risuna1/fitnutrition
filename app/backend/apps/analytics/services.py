@@ -626,7 +626,7 @@ class ProgressAnalyzer:
             'weight_goal': 0,
             'current_body_fat': 0,
             'body_fat_goal': 0,
-            'workout_goal': 5,
+            'workout_goal': 0,
             'workouts_this_week': 0,
             'achievements': []
         }
@@ -718,6 +718,45 @@ class ProgressAnalyzer:
         except:
             pass
         
+        # Get workout goal from active workout schedule
+        try:
+            from ..workouts.models import WorkoutSchedule
+            active_schedule = WorkoutSchedule.objects.filter(
+                user=user,
+                is_active=True,
+                completed=False
+            ).select_related('workout_plan').first()
+            
+            if active_schedule and active_schedule.workout_plan:
+                result['workout_goal'] = active_schedule.workout_plan.days_per_week
+                
+                # Calculate workouts this week for active schedule
+                from datetime import datetime
+                today = timezone.now().date()
+                # Get start of week (Monday)
+                start_of_week = today - timedelta(days=today.weekday())
+                end_of_week = start_of_week + timedelta(days=6)
+                
+                # Count workouts within this week and within schedule period
+                schedule_start = active_schedule.start_date
+                schedule_end = active_schedule.end_date
+                
+                workouts_this_week = Workout.objects.filter(
+                    user=user,
+                    date__gte=max(start_of_week, schedule_start),
+                    date__lte=min(end_of_week, schedule_end) if schedule_end else end_of_week
+                ).count()
+                
+                result['workouts_this_week'] = workouts_this_week
+            else:
+                # No active schedule, set to 0
+                result['workout_goal'] = 0
+                result['workouts_this_week'] = 0
+        except Exception as e:
+            # If error, set to 0
+            result['workout_goal'] = 0
+            result['workouts_this_week'] = 0
+        
         return result
     
     @classmethod
@@ -746,7 +785,7 @@ class ProgressAnalyzer:
             'weight_goal': 0,
             'current_body_fat': 0,
             'body_fat_goal': 0,
-            'workout_goal': 5,
+            'workout_goal': 0,
             'workouts_this_week': 0,
             'achievements': []
         }
@@ -842,6 +881,44 @@ class ProgressAnalyzer:
                 result['body_fat_goal'] = float(profile.target_body_fat_percentage)
         except:
             pass
+        
+        # Get workout goal from active workout schedule
+        try:
+            from ..workouts.models import WorkoutSchedule
+            active_schedule = WorkoutSchedule.objects.filter(
+                user=user,
+                is_active=True,
+                completed=False
+            ).select_related('workout_plan').first()
+            
+            if active_schedule and active_schedule.workout_plan:
+                result['workout_goal'] = active_schedule.workout_plan.days_per_week
+                
+                # Calculate workouts this week for active schedule
+                today = timezone.now().date()
+                # Get start of week (Monday)
+                start_of_week = today - timedelta(days=today.weekday())
+                end_of_week = start_of_week + timedelta(days=6)
+                
+                # Count workouts within this week and within schedule period
+                schedule_start = active_schedule.start_date
+                schedule_end = active_schedule.end_date
+                
+                workouts_this_week = Workout.objects.filter(
+                    user=user,
+                    date__gte=max(start_of_week, schedule_start),
+                    date__lte=min(end_of_week, schedule_end) if schedule_end else end_of_week
+                ).count()
+                
+                result['workouts_this_week'] = workouts_this_week
+            else:
+                # No active schedule, set to 0
+                result['workout_goal'] = 0
+                result['workouts_this_week'] = 0
+        except Exception as e:
+            # If error, set to 0
+            result['workout_goal'] = 0
+            result['workouts_this_week'] = 0
         
         return result
 
