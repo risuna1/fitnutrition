@@ -283,7 +283,7 @@ const Nutrition = () => {
   };
 
   const handleFoodSelect = (food) => {
-    setSelectedFoods([...selectedFoods, { ...food, quantity: 100 }]);
+    setSelectedFoods([...selectedFoods, { ...food, quantity: food.serving_size || 100 }]);
   };
 
   const handleFoodRemove = (index) => {
@@ -450,7 +450,7 @@ const Nutrition = () => {
       meal_type: 'breakfast',
       date: selectedDate.toISOString().split('T')[0],
     });
-    setSelectedFoods([{ ...favorite.food, quantity: 100 }]);
+    setSelectedFoods([{ ...favorite.food, quantity: favorite.food.serving_size || 100 }]);
     onOpen();
   };
 
@@ -2229,7 +2229,7 @@ const Nutrition = () => {
                           <Box>
                             <Text fontSize="sm" fontWeight="medium">{food.name}</Text>
                             <Text fontSize="xs" color="gray.600">
-                              100gあたり {food.calories} kcal
+                              {food.serving_size}{food.unit || 'g'}あたり {food.calories} kcal
                             </Text>
                           </Box>
                           <HStack>
@@ -2239,9 +2239,9 @@ const Nutrition = () => {
                               width="80px"
                               value={food.quantity}
                               onChange={(e) => handleQuantityChange(index, parseFloat(e.target.value))}
-                              placeholder="100"
+                              placeholder={food.serving_size}
                             />
-                            <Text fontSize="xs" color="gray.600">g</Text>
+                            <Text fontSize="xs" color="gray.600">{food.unit || 'g'}</Text>
                             <Button size="sm" colorScheme="red" variant="ghost" onClick={() => handleFoodRemove(index)}>
                               ×
                             </Button>
@@ -2280,7 +2280,9 @@ const Nutrition = () => {
                         </Center>
                       ) : (
                         <VStack spacing={2} align="stretch">
-                          {foods.slice(0, 10).map((food) => (
+                          {foods
+                            .filter(food => !selectedFoods.some(selected => selected.id === food.id))
+                            .slice(0, 10).map((food) => (
                             <HStack
                               key={food.id}
                               p={3}
@@ -2421,6 +2423,11 @@ const Nutrition = () => {
                       onChange={handleNewFoodChange}
                       placeholder="100"
                       step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
 
@@ -2433,6 +2440,11 @@ const Nutrition = () => {
                       onChange={handleNewFoodChange}
                       placeholder="20"
                       step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
 
@@ -2445,6 +2457,11 @@ const Nutrition = () => {
                       onChange={handleNewFoodChange}
                       placeholder="30"
                       step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
 
@@ -2457,6 +2474,11 @@ const Nutrition = () => {
                       onChange={handleNewFoodChange}
                       placeholder="10"
                       step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                 </Grid>
@@ -2471,6 +2493,11 @@ const Nutrition = () => {
                       onChange={handleNewFoodChange}
                       placeholder="100"
                       step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
 
@@ -2562,6 +2589,11 @@ const Nutrition = () => {
                       onChange={handleNewFoodChange}
                       placeholder="100"
                       step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
 
@@ -2574,6 +2606,11 @@ const Nutrition = () => {
                       onChange={handleNewFoodChange}
                       placeholder="20"
                       step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
 
@@ -2586,6 +2623,11 @@ const Nutrition = () => {
                       onChange={handleNewFoodChange}
                       placeholder="30"
                       step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
 
@@ -2598,6 +2640,11 @@ const Nutrition = () => {
                       onChange={handleNewFoodChange}
                       placeholder="10"
                       step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                 </Grid>
@@ -2612,6 +2659,11 @@ const Nutrition = () => {
                       onChange={handleNewFoodChange}
                       placeholder="100"
                       step="0.1"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
 
@@ -2782,6 +2834,11 @@ const Nutrition = () => {
                     placeholder="2000"
                     step="1"
                     min="0"
+                    onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
                 
@@ -2796,6 +2853,11 @@ const Nutrition = () => {
                       placeholder="150"
                       step="0.1"
                       min="0"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormControl>
@@ -2808,6 +2870,11 @@ const Nutrition = () => {
                       placeholder="200"
                       step="0.1"
                       min="0"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormControl>
@@ -2820,6 +2887,11 @@ const Nutrition = () => {
                       placeholder="60"
                       step="0.1"
                       min="0"
+                      onKeyPress={(e) => {
+                        if (!/[0-9.]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                   </FormControl>
                 </Grid>
@@ -3036,13 +3108,15 @@ const Nutrition = () => {
                 <FormControl isRequired>
                   <FormLabel>人数</FormLabel>
                   <Input
+                    type="number"
                     name="servings"
                     value={newRecipeData.servings}
                     onChange={handleNewRecipeChange}
-                    placeholder="例: 2人分"
-                    pattern="[0-9]+人分?"
+                    placeholder="2"
+                    min="1"
+                    step="1"
                     onKeyPress={(e) => {
-                      if (!/[0-9人分]/.test(e.key)) {
+                      if (!/[0-9]/.test(e.key)) {
                         e.preventDefault();
                       }
                     }}
@@ -3246,13 +3320,15 @@ const Nutrition = () => {
                 <FormControl isRequired>
                   <FormLabel>人数</FormLabel>
                   <Input
+                    type="number"
                     name="servings"
                     value={newRecipeData.servings}
                     onChange={handleNewRecipeChange}
-                    placeholder="例: 2人分"
-                    pattern="[0-9]+人分?"
+                    placeholder="2"
+                    min="1"
+                    step="1"
                     onKeyPress={(e) => {
-                      if (!/[0-9人分]/.test(e.key)) {
+                      if (!/[0-9]/.test(e.key)) {
                         e.preventDefault();
                       }
                     }}

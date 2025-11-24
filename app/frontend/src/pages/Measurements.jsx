@@ -680,6 +680,11 @@ const Measurements = () => {
                     value={formData.weight}
                     onChange={handleChange}
                     placeholder="70.5"
+                    onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
 
@@ -691,6 +696,11 @@ const Measurements = () => {
                     value={formData.height}
                     onChange={handleChange}
                     placeholder="175"
+                    onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
 
@@ -703,6 +713,11 @@ const Measurements = () => {
                     value={formData.body_fat_percentage}
                     onChange={handleChange}
                     placeholder="18.5"
+                    onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
 
@@ -715,6 +730,11 @@ const Measurements = () => {
                     value={formData.chest}
                     onChange={handleChange}
                     placeholder="98"
+                    onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
 
@@ -727,6 +747,11 @@ const Measurements = () => {
                     value={formData.waist}
                     onChange={handleChange}
                     placeholder="82"
+                    onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
 
@@ -739,6 +764,11 @@ const Measurements = () => {
                     value={formData.hips}
                     onChange={handleChange}
                     placeholder="95"
+                    onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
 
@@ -751,6 +781,11 @@ const Measurements = () => {
                     value={formData.arms}
                     onChange={handleChange}
                     placeholder="35"
+                    onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
 
@@ -763,6 +798,11 @@ const Measurements = () => {
                     value={formData.thighs}
                     onChange={handleChange}
                     placeholder="58"
+                    onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
 
@@ -775,6 +815,11 @@ const Measurements = () => {
                     value={formData.calves}
                     onChange={handleChange}
                     placeholder="38"
+                    onKeyPress={(e) => {
+                      if (!/[0-9.]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                 </FormControl>
               </Grid>

@@ -74,13 +74,18 @@ const SidebarContent = ({ onClose, ...rest }) => {
       <Flex h="16" alignItems="center" px="6" py="4" justifyContent="space-between" mb={2}>
         <Flex alignItems="center" gap={3}>
           <Box
-            bg="gradient-to-br"
-            bgGradient="linear(to-br, purple.400, purple.600)"
-            p={2.5}
+            p={0}
             borderRadius="xl"
             boxShadow="0 4px 12px rgba(139, 92, 246, 0.3)"
+            w="48px"
+            h="48px"
+            overflow="hidden"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            bg="none"
           >
-            <Icon as={FiActivity} color="white" fontSize="26px" />
+            <img src="/favicon.svg" alt="FitNutrition Logo" style={{ width: 44, height: 44, display: 'block' }} />
           </Box>
           <Text fontSize="24px" fontWeight="extrabold" color="white" letterSpacing="tight">
             FitNutrition

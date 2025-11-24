@@ -45,6 +45,9 @@ import {
   Divider,
   Image,
   CloseButton,
+  Checkbox,
+  CheckboxGroup,
+  Stack,
 } from '@chakra-ui/react';
 import { useLocation } from 'react-router-dom';
 import { 
@@ -119,6 +122,8 @@ const Workouts = () => {
     calories_per_minute: '5.0',
     image_url: '',
   });
+  // Secondary muscles options based on muscle_group
+  const [availableSecondaryMuscles, setAvailableSecondaryMuscles] = useState([]);
   const [exerciseMediaFiles, setExerciseMediaFiles] = useState([]);
   const [exerciseMediaPreviews, setExerciseMediaPreviews] = useState([]);
   const [mediaUrl, setMediaUrl] = useState('');
@@ -306,10 +311,35 @@ const Workouts = () => {
   };
 
   const handleNewExerciseChange = (e) => {
-    setNewExerciseData({
-      ...newExerciseData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value, options } = e.target;
+    if (name === 'secondary_muscles') {
+      // Multi-select
+      const selected = Array.from(options).filter(o => o.selected).map(o => o.value);
+      setNewExerciseData({
+        ...newExerciseData,
+        secondary_muscles: selected,
+      });
+    } else {
+      setNewExerciseData({
+        ...newExerciseData,
+        [name]: value,
+      });
+      // Update secondary muscle options if muscle_group changes
+      if (name === 'muscle_group') {
+        // Example: hardcoded, ideally fetch from API or config
+        const secondaryMap = {
+          '胸': ['三角筋前部', '上腕三頭筋', '小胸筋'],
+          '背中': ['広背筋', '僧帽筋', '大円筋', '菱形筋'],
+          '肩': ['三角筋中部', '三角筋後部', '棘上筋'],
+          '腕': ['上腕二頭筋', '上腕三頭筋', '前腕筋'],
+          '脚': ['大腿四頭筋', 'ハムストリング', '腓腹筋', '大臀筋'],
+          '腹筋': ['腹直筋', '腹斜筋', '腸腰筋'],
+          '全身': ['体幹', '心肺機能'],
+        };
+        setAvailableSecondaryMuscles(secondaryMap[value] || []);
+        setNewExerciseData(prev => ({ ...prev, secondary_muscles: [] }));
+      }
+    }
   };
 
   const handleMediaUpload = (e) => {
@@ -2397,6 +2427,13 @@ const Workouts = () => {
                             value={formData.duration}
                             onChange={handleChange}
                             placeholder="45"
+                            min={1}
+                            step={1}
+                            onKeyPress={(e) => {
+                              if (!/[0-9]/.test(e.key)) {
+                                e.preventDefault();
+                              }
+                            }}
                           />
                         </FormControl>
                       </Grid>
@@ -2563,6 +2600,26 @@ const Workouts = () => {
                     <option value="全身">全身</option>
                   </Select>
                 </FormControl>
+                {/* Secondary Muscles Field */}
+                {newExerciseData.muscle_group && (
+                  <FormControl mt={2}>
+                    <FormLabel>副次筋群</FormLabel>
+                    <CheckboxGroup
+                      colorScheme="brand"
+                      value={newExerciseData.secondary_muscles}
+                      onChange={vals => setNewExerciseData({
+                        ...newExerciseData,
+                        secondary_muscles: vals,
+                      })}
+                    >
+                      <Stack direction="column">
+                        {availableSecondaryMuscles.map((muscle) => (
+                          <Checkbox key={muscle} value={muscle}>{muscle}</Checkbox>
+                        ))}
+                      </Stack>
+                    </CheckboxGroup>
+                  </FormControl>
+                )}
 
                 <FormControl isRequired>
                   <FormLabel>器具</FormLabel>
@@ -2848,6 +2905,26 @@ const Workouts = () => {
                     <option value="全身">全身</option>
                   </Select>
                 </FormControl>
+                {/* Secondary Muscles Field */}
+                {newExerciseData.muscle_group && (
+                  <FormControl mt={2}>
+                    <FormLabel>副次筋群</FormLabel>
+                    <CheckboxGroup
+                      colorScheme="brand"
+                      value={newExerciseData.secondary_muscles}
+                      onChange={vals => setNewExerciseData({
+                        ...newExerciseData,
+                        secondary_muscles: vals,
+                      })}
+                    >
+                      <Stack direction="column">
+                        {availableSecondaryMuscles.map((muscle) => (
+                          <Checkbox key={muscle} value={muscle}>{muscle}</Checkbox>
+                        ))}
+                      </Stack>
+                    </CheckboxGroup>
+                  </FormControl>
+                )}
 
                 <FormControl isRequired>
                   <FormLabel>器具</FormLabel>
@@ -3199,6 +3276,13 @@ const Workouts = () => {
                             value={formData.duration}
                             onChange={handleChange}
                             placeholder="45"
+                            min={1}
+                            step={1}
+                            onKeyPress={(e) => {
+                              if (!/[0-9]/.test(e.key)) {
+                                e.preventDefault();
+                              }
+                            }}
                           />
                         </FormControl>
                       </Grid>
@@ -3450,6 +3534,11 @@ const Workouts = () => {
                       min={1}
                       max={52}
                       placeholder="8"
+                      onKeyPress={(e) => {
+                        if (!/[0-9]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                     <Text fontSize="xs" color="gray.600" mt={1}>
                       プログラム全体の期間を設定
@@ -3471,6 +3560,11 @@ const Workouts = () => {
                       min={1}
                       max={7}
                       placeholder="4"
+                      onKeyPress={(e) => {
+                        if (!/[0-9]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
                     />
                     <Text fontSize="xs" color="gray.600" mt={1}>
                       1週間に何日トレーニングするか
@@ -3550,7 +3644,11 @@ const Workouts = () => {
                   </Heading>
                   {exerciseMediaView.primary_muscles && exerciseMediaView.primary_muscles.length > 0 && (
                     <Text color="whiteAlpha.900" mt={2} textShadow="0 1px 2px rgba(0,0,0,0.5)">
-                      {exerciseMediaView.primary_muscles.join(', ')} • {exerciseMediaView.equipment || '自重'}
+                      {exerciseMediaView.primary_muscles.join(', ')}
+                      {' • '}
+                      {exerciseMediaView.secondary_muscles && exerciseMediaView.secondary_muscles.length > 0
+                        ? exerciseMediaView.secondary_muscles.join(', ')
+                        : 'none'}
                     </Text>
                   )}
                 </Box>

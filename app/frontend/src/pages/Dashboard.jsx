@@ -421,7 +421,7 @@ const Dashboard = () => {
                             {dashboardData.recent_progress.body_fat_change}%
                           </>
                         ) : (
-                          'データなし'
+                          '0 %'
                         )}
                       </Badge>
                     </HStack>
