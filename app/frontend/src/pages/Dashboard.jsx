@@ -45,6 +45,10 @@ const Dashboard = () => {
   const [todayCalories, setTodayCalories] = useState(null);
   const [weekWorkouts, setWeekWorkouts] = useState(null);
   const [errors, setErrors] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState(() => {
+    const saved = localStorage.getItem('selectedMealPlan');
+    return saved ? JSON.parse(saved) : null;
+  });
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
@@ -54,6 +58,19 @@ const Dashboard = () => {
 
   useEffect(() => {
     loadDashboardData();
+  }, []);
+
+  // Listen for changes to selected meal plan
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'selectedMealPlan') {
+        const newPlan = e.newValue ? JSON.parse(e.newValue) : null;
+        setSelectedPlan(newPlan);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const loadDashboardData = async () => {
@@ -143,23 +160,31 @@ const Dashboard = () => {
   const calculateTodayCalories = () => {
     if (!todayCalories || !Array.isArray(todayCalories)) return 0;
     return todayCalories.reduce((total, meal) => {
-      const mealCalories = meal.foods?.reduce((sum, food) => sum + (food.calories || 0), 0) || 0;
-      return total + mealCalories;
+      return total + (meal.total_calories || 0);
     }, 0);
   };
 
-  // Get calorie target from TDEE or default
+  // Get calorie target from selected plan or TDEE or default
   const getCalorieTarget = () => {
-    return dashboardData?.metabolism?.tdee ? Math.round(dashboardData.metabolism.tdee) : 2200;
+    // First try selected meal plan
+    if (selectedPlan?.daily_calories) {
+      return selectedPlan.daily_calories;
+    }
+    // Fall back to TDEE
+    if (dashboardData?.metabolism?.tdee) {
+      return Math.round(dashboardData.metabolism.tdee);
+    }
+    // Default
+    return 2200;
   };
 
   // Calculate this week's workout stats
   const calculateWeekWorkoutStats = () => {
     if (!weekWorkouts || !Array.isArray(weekWorkouts)) {
-      return { completed: 0, total: 5, percentage: 0 };
+      return { completed: 0, total: 0, percentage: 0 };
     }
     const completed = weekWorkouts.filter(w => w.status === 'completed').length;
-    const total = 5; // Weekly goal
+    const total = weekWorkouts.length; // Total workouts this week
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
     return { completed, total, percentage };
   };
@@ -425,7 +450,9 @@ const Dashboard = () => {
                         )}
                       </Badge>
                     </HStack>
-                    <Text fontSize="sm" color="gray.600">過去7日間</Text>
+                    <Text fontSize="sm" color="gray.600">
+                      過去7日間: {dashboardData.recent_progress.start_body_fat?.toFixed(1)}% → {dashboardData.recent_progress.current_body_fat?.toFixed(1)}%
+                    </Text>
                   </Box>
                   
                   <Box p={4} bg={progressPurpleBg} borderRadius="md">

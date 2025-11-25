@@ -199,13 +199,14 @@ class WorkoutSerializer(serializers.ModelSerializer):
     )
     exercise_count = serializers.SerializerMethodField()
     completion_percentage = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
 
     class Meta:
         model = Workout
         fields = [
             'id', 'workout_plan', 'workout_plan_name', 'name', 'date',
             'start_time', 'end_time', 'duration_minutes',
-            'total_calories_burned', 'notes', 'completed',
+            'total_calories_burned', 'notes', 'completed', 'status',
             'exercises', 'exercise_count', 'completion_percentage',
             'created_at', 'updated_at'
         ]
@@ -220,6 +221,9 @@ class WorkoutSerializer(serializers.ModelSerializer):
             completed_exercises = obj.exercises.filter(completed=True).count()
             return (completed_exercises / total_exercises) * 100
         return 0
+
+    def get_status(self, obj):
+        return 'completed' if obj.completed else 'pending'
 
     def create(self, validated_data):
         request = self.context.get('request')

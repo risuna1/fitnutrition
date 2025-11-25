@@ -288,6 +288,8 @@ class ProgressAnalyzer:
             result['body_fat_change'] = round(
                 float(last.body_fat_percentage) - float(first.body_fat_percentage), 2
             )
+            result['start_body_fat'] = float(first.body_fat_percentage)
+            result['current_body_fat'] = float(last.body_fat_percentage)
         
         # Calculate estimated muscle mass (weight * (1 - body_fat_percentage))
         if first.body_fat_percentage and last.body_fat_percentage:
@@ -348,6 +350,8 @@ class ProgressAnalyzer:
             result['body_fat_change'] = round(
                 float(last.body_fat_percentage) - float(first.body_fat_percentage), 2
             )
+            result['start_body_fat'] = float(first.body_fat_percentage)
+            result['current_body_fat'] = float(last.body_fat_percentage)
         
         # Calculate estimated muscle mass (weight * (1 - body_fat_percentage))
         if first.body_fat_percentage and last.body_fat_percentage:
@@ -648,10 +652,8 @@ class ProgressAnalyzer:
                     for item in body_composition['measurements']
                 ]
             result['body_fat_change'] = body_composition.get('body_fat_change', 0)
-            # Get current body fat from last non-null value
-            non_null_measurements = [m for m in body_composition['measurements'] if m['body_fat_percentage'] is not None]
-            if non_null_measurements:
-                result['current_body_fat'] = non_null_measurements[-1]['body_fat_percentage']
+            result['start_body_fat'] = body_composition.get('start_body_fat')
+            result['current_body_fat'] = body_composition.get('current_body_fat')
         
         # Process nutrition data and workout calories
         from ..nutrition.models import Meal
@@ -757,6 +759,24 @@ class ProgressAnalyzer:
             result['workout_goal'] = 0
             result['workouts_this_week'] = 0
         
+        # Add nested structures for frontend compatibility
+        if weight_progress:
+            result['weight_progress'] = {
+                'weight_change': weight_progress.get('weight_change', 0),
+                'start_weight': weight_progress.get('start_weight', 0),
+                'current_weight': weight_progress.get('current_weight', 0)
+            }
+        else:
+            result['weight_progress'] = None
+            
+        if workout_trends:
+            result['workout_trends'] = {
+                'total_workouts': workout_trends.get('completed_workouts', 0),
+                'total_duration_minutes': workout_trends.get('total_duration_minutes', 0)
+            }
+        else:
+            result['workout_trends'] = None
+        
         return result
     
     @classmethod
@@ -807,10 +827,8 @@ class ProgressAnalyzer:
                     for item in body_composition['measurements']
                 ]
             result['body_fat_change'] = body_composition.get('body_fat_change', 0)
-            # Get current body fat from last non-null value
-            non_null_measurements = [m for m in body_composition['measurements'] if m['body_fat_percentage'] is not None]
-            if non_null_measurements:
-                result['current_body_fat'] = non_null_measurements[-1]['body_fat_percentage']
+            result['start_body_fat'] = body_composition.get('start_body_fat')
+            result['current_body_fat'] = body_composition.get('current_body_fat')
         
         # Process nutrition data and workout calories
         start_date = timezone.now().date() - timedelta(days=days)
@@ -919,6 +937,24 @@ class ProgressAnalyzer:
             # If error, set to 0
             result['workout_goal'] = 0
             result['workouts_this_week'] = 0
+        
+        # Add nested structures for frontend compatibility
+        if weight_progress:
+            result['weight_progress'] = {
+                'weight_change': weight_progress.get('weight_change', 0),
+                'start_weight': weight_progress.get('start_weight', 0),
+                'current_weight': weight_progress.get('current_weight', 0)
+            }
+        else:
+            result['weight_progress'] = None
+            
+        if workout_trends:
+            result['workout_trends'] = {
+                'total_workouts': workout_trends.get('completed_workouts', 0),
+                'total_duration_minutes': workout_trends.get('total_duration_minutes', 0)
+            }
+        else:
+            result['workout_trends'] = None
         
         return result
 
